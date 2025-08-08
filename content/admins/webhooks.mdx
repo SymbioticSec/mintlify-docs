@@ -1,133 +1,129 @@
 ---
 title: "Webhooks"
-description: "How to set-up webhooks"
+description: "Set-up webhooks and connect Symbiotic to your ecosystem"
 ---
 
 ## Configure a  webhook
 
-To add, modify or delete a webhook go to 👉🏻 https://app.symbioticsec.ai/settings/webhook
-
-![Capture d’écran 2024-10-10 à 10.09.40.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/6215c802-c2a3-46a9-8f21-e2604f4086b4/875fc82a-e9e4-49b4-b7f6-4df98403253c/Capture_decran_2024-10-10_a_10.09.40.png)
-
-To add a webhook, you will be asked : 
+To add a webhook, you will be asked :
 
 - the endpoint URL
 - which event you want to send
 
 Once created, we will give you the signature key that you could use to verify webhook’s authenticity.
 
-![Capture d’écran 2024-10-10 à 10.11.24.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/6215c802-c2a3-46a9-8f21-e2604f4086b4/9f1a36f2-9aad-4826-bc32-d4ce20235ce9/Capture_decran_2024-10-10_a_10.11.24.png)
-
-<aside>
-⚠️
-
-Webhooks are shared across all users of an organization.
-
-</aside>
+<Warning>
+  Webhooks are shared across all users of an organization.
+</Warning>
 
 ## Webhook format
 
-Our webhooks payload are in a JSON format and follow the same structure : 
+Our webhooks payload are in a JSON format and follow the same structure :
 
-→ `event` : the event name 
+→ `event` : the event name
 
 → `timestamp` : timestamp of when the webhook was sent
 
 → `data` : an object containing properties to describe the event
 
-- Vulnerability Created
-    
-    
-    ```json
-    "data":{
-          "pubkey": public key of the vulnerability - **string**
-          "creator": email of the user that detected the vulnerability - **string**
-          "rule_id": scanner_id of the rule - **string**
-          "resource_path": path of the resource affected - **string**
-          "created_at": vulnerability detection date - **timestamp**
-          }
-    ```
-    
-    Example:
-    
-    ```json
-    {
-       "event":"vulnerability.created",
-       "timestamp":1728463677,
-       "data":{
-          "pubkey":"0ef8ac7e-1b9d-48d9-82eb-2f2355ba2b31",
-          "creator":"alexis.colonna@symbioticsec.ai",
-          "rule_id":"AVD-AWS-0088",
-          "resource_path":"aws_s3_bucket.financials",
-          "created_at":1728463677
-       }
-    }
-    ```
-    
-- Vulnerability Remediated
-    
-    
-    ```json
-    "data":{
-          "pubkey": public key of the vulnerability - **string**
-          "creator": email of the user that detected the vulnerability - **string**
-          "rule_id": scanner_id of the rule - **string**
-          "resource_path": path of the resource affected - **string**
-          "remediated_at": vulnerability remediation date - **timestamp**
-          }
-    ```
-    
-    Example:
-    
-    ```json
-    {
-       "event":"vulnerability.remediated",
-       "timestamp":1728463676,
-       "data":{
-          "pubkey":"91ef872c-3402-43e9-b8a8-d5cead98c5c9",
-          "creator":"abir.khalladi@symbioticsec.ai",
-          "rule_id":"AVD-AWS-0132",
-          "resource_path":"aws_s3_bucket.operations",
-          "remediated_at":1728463676
-       }
-    }
-    ```
-    
-- Training Completed
-    
-    
-    ```json
-    "data":{
-          "started_at": when the user has started the training - **timestamp**
-          "completed_at": when the user has completed the training - **timestamp**
-          "user": email address of the user - **string**
-          "training": name of the training - **string**
-          "score": score of the user - **int**
-       }
-    ```
-    
-    Example:
-    
-    ```json
-    {
-       "event":"training.completed",
-       "timestamp":1728467227,
-       "data":{
-          "started_at":1728466979,
-          "completed_at":1728467227,
-          "user":"alexis.colonna@symbioticsec.ai",
-          "training":"Unencrypted S3 bucket",
-          "score":110
-       }
-    }
-    ```
-    
+### Vulnerability Created
+
+<CodeGroup>
+
+```json Description
+"data":{
+      "pubkey": public key of the vulnerability - **string**
+      "creator": email of the user that detected the vulnerability - **string**
+      "rule_id": scanner_id of the rule - **string**
+      "resource_path": path of the resource affected - **string**
+      "created_at": vulnerability detection date - **timestamp**
+      }
+```
+
+
+```json Example
+{
+   "event":"vulnerability.created",
+   "timestamp":1728463677,
+   "data":{
+      "pubkey":"0ef8ac7e-1b9d-48d9-82eb-2f2355ba2b31",
+      "creator":"alexis.colonna@symbioticsec.ai",
+      "rule_id":"AVD-AWS-0088",
+      "resource_path":"aws_s3_bucket.financials",
+      "created_at":1728463677
+   }
+}
+```
+
+</CodeGroup>
+
+### Vulnerability Remediated
+
+<CodeGroup>
+
+```json Description
+"data":{
+      "pubkey": public key of the vulnerability - **string**
+      "creator": email of the user that detected the vulnerability - **string**
+      "rule_id": scanner_id of the rule - **string**
+      "resource_path": path of the resource affected - **string**
+      "remediated_at": vulnerability remediation date - **timestamp**
+      }
+```
+
+
+```json Example
+{
+   "event":"vulnerability.remediated",
+   "timestamp":1728463676,
+   "data":{
+      "pubkey":"91ef872c-3402-43e9-b8a8-d5cead98c5c9",
+      "creator":"abir.khalladi@symbioticsec.ai",
+      "rule_id":"AVD-AWS-0132",
+      "resource_path":"aws_s3_bucket.operations",
+      "remediated_at":1728463676
+   }
+}
+```
+
+</CodeGroup>
+
+### Training Completed
+
+<CodeGroup>
+
+```json Description
+"data":{
+      "started_at": when the user has started the training - **timestamp**
+      "completed_at": when the user has completed the training - **timestamp**
+      "user": email address of the user - **string**
+      "training": name of the training - **string**
+      "score": score of the user - **int**
+   }
+```
+
+
+```json Example
+{
+   "event":"training.completed",
+   "timestamp":1728467227,
+   "data":{
+      "started_at":1728466979,
+      "completed_at":1728467227,
+      "user":"alexis.colonna@symbioticsec.ai",
+      "training":"Unencrypted S3 bucket",
+      "score":110
+   }
+}
+```
+
+</CodeGroup>
 
 ## Verify webhooks
 
-You can verify the authenticity of a Symbiotic webhook you receive using the signature key [available in your Symbiotic account](https://app.symbioticsec.ai/settings/webhook) and the header `symbioticsec_signature` 
+You can verify the authenticity of a Symbiotic webhook you receive using the signature key [available in your Symbiotic account](https://app.symbioticsec.ai/settings/webhook) and the header `symbioticsec_signature`
 
-Signature is calculated using the following code on our side : 
+Signature is calculated using the following code on our side :
 
 ```python
 import hashlib

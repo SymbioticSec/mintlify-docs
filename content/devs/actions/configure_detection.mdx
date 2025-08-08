@@ -1,31 +1,47 @@
 ---
 title: "Configure detection"
-description: "How to configure a what's blocking or must be ignored in a repository ?"
+description: "Configure vulnerabilities that should be blocking in CI or ignored using our configuration file"
 ---
 
-Using our configuration file you can tailor the detection to your context and focus on what’s important to remediate. It allows you to define `Policy Breaching` vulnerabilities (that will be highlighted in the IDE and blocking in CI) but also which vulnerabilities to ignore. 
+Using our configuration file you can tailor the detection to your context and focus on what’s important to remediate. It allows you to define `Policy Breaching` vulnerabilities (that will be highlighted in the IDE and blocking in CI) but also which vulnerabilities to ignore.
 
 Those configurations can be written based on the file path, severity, language, vulnerability id provider or service.
 
 To be taken into account the YAML file must be named `symbiotic.yml` and placed at the root of the repository.
 
-You can download the following template :
+Here are some templates of configuration file, you can use to start :
 
-[symbiotic.yml](attachment:f312a8f0-7b3f-47f0-8cd2-a8d35f9ed5ce:symbiotic.yml)
+<CodeGroup>
 
-Or copy/paste the following example: 
+```yaml Minimal
+# SYMBIOTIC SECURITY CONFIGURATION FILE
+ignored:
+	vulnerabilities:
+		#ID of vulnerabilities you want to ignore in the repository
+		- SYM_PY_001
+		- SYM_JSTS_003# SYMBIOTIC SECURITY CONFIGURATION FILE
+```
 
-```yaml
-# =========================================
+
+```yaml Basic
+# SYMBIOTIC SECURITY CONFIGURATION FILE
+blocking:
+	vulnerabilities:
+		#ID of vulnerabilities that must block CI if detected
+		- SYM_PY_001
+		- SYM_JSTS_003# SYMBIOTIC SECURITY CONFIGURATION FILE
+ignored:
+	vulnerabilities:
+		#ID of vulnerabilities you want to ignore in the repository
+		- SYM_PY_001
+		- SYM_JSTS_003# SYMBIOTIC SECURITY CONFIGURATION FILE
+```
+
+
+```yaml Full
 # SYMBIOTIC SECURITY CONFIGURATION FILE
 # =========================================
 
-# This configuration file is used by the Symbiotic IDE extension
-# and the CI integration to determine:
-#   - What rules are blocking (in CI)
-#   - What should be ignored (in both IDE and CI)
-#
-# ⚠️ To be taken into account, this file must be placed at the root of the repository.
 
 # --------------------------------------------
 # SECTION: blocking
@@ -39,8 +55,8 @@ blocking:
 
   # List of cloud providers for which *all* related vulnerabilities
   # are treated as blocking, regardless of their individual severity.
-  #providers:
-  #   - Azure
+  providers:
+     - Azure
   #   - AWS
   #   - Google
 
@@ -93,7 +109,7 @@ ignored:
   #     - elasticache
 
   # Vulnerability IDs to explicitly ignore, even if they appear in blocking lists.
-  #vulnerabilities:
+  vulnerabilities:
   #   - TF-0010
   #   - TF-0213
   #   - TF-0399
@@ -105,3 +121,5 @@ ignored:
 # - Keep this file version-controlled and up to date.
 # - Use comments to track reasoning for each rule (e.g., why something is ignored).
 ```
+
+</CodeGroup>
