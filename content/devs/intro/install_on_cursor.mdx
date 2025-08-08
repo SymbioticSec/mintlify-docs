@@ -1,27 +1,28 @@
 ---
 title: "Install on Cursor"
-description: "Install the Symbiotic Security extension on Cursor"
+description: "Detect, learn and fix issues directly in Cursor"
 ---
-1️⃣ You can download the extension at your first login or using this [link](https://symbioticsec-production-vscode-plugin-builds.s3.us-west-2.amazonaws.com/latest/symbioticsec.vsix)
 
-2️⃣ In Cursor, use the command `Extensions: Install from VSIX…`
+<Steps>
+  <Step title="Download the extension" titleSize="p">
+    You can download the extension at your first login or using this [link](https://symbioticsec-production-vscode-plugin-builds.s3.us-west-2.amazonaws.com/latest/symbioticsec.vsix)
+  </Step>
+  <Step title="Install the extension in Cursor" titleSize="p">
+    Use the command `Extensions: Install from VSIX…` to install the extension VSIX you've downloaded.
 
-![Cursor 2025-07-18 14:17:55 - Frame 648.png](attachment:8fb8ddf0-d574-45b0-b96a-a07ac8b36704:Cursor_2025-07-18_141755_-_Frame_648.png)
+    ![Install From Vsix Cursor Pn](/content/devs/images/install_from_vsix_cursor.png)
+  </Step>
+  <Step title="Retrieve you  authentication token" titleSize="p">
+    Go to your [settings page](https://app.symbioticsec.ai/settings/api-token) to copy your personal access token
 
-3️⃣ Select the file and click on `Install`
+    ![Portal Token Pn](/content/devs/images/portal_token.png)
+  </Step>
+  <Step title="Authenticate in Cursor" titleSize="p">
+    Go back to your IDE, use the command `Symbiotic Security: Provide authentication token`, paste your token then hit `Enter` to log in.
 
-![Cursor 2025-07-18 14:17:55 - Frame 872.png](attachment:e4a2b5bf-4bf9-43f5-b95d-e9738bbb844e:Cursor_2025-07-18_141755_-_Frame_872.png)
-
-4️⃣  Go to your [settings page](https://app.symbioticsec.ai/settings/api-token) to copy your personal access token
-
-![Area 2025-07-18 14:23:08 - Frame 115.png](attachment:1d645686-1010-410e-a3df-554295211b31:Area_2025-07-18_142308_-_Frame_115.png)
-
-![Area 2025-07-18 14:23:08 - Frame 316.png](attachment:d3f0eef7-d205-4eb1-8817-195ed167e81f:Area_2025-07-18_142308_-_Frame_316.png)
-
-5️⃣  Go back to your IDE, use the command `Symbiotic Security: Provide authentication token`, paste your token then hit *Enter* to log in.
-
-![Cursor 2025-07-18 14:21:25 - Frame 594.png](attachment:1d49baa5-dc36-4c5d-b749-6c27e22eed08:Cursor_2025-07-18_142125_-_Frame_594.png)
-
-![Cursor 2025-07-18 14:21:25 - Frame 840.png](attachment:edc5e301-ffb3-4e98-b0af-2f5cf5b8272b:Cursor_2025-07-18_142125_-_Frame_840.png)
-
-🎉 In a second or two, your first scan will start.
+    ![Authenticate Cursor Pn](/content/devs/images/authenticate_cursor.png)
+  </Step>
+  <Step title="You're now authenticated" icon="party-popper">
+    Your first scan should start in a second or two...
+  </Step>
+</Steps>
