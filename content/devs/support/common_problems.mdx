@@ -1,0 +1,41 @@
+---
+title: "Common problems"
+description: "Common problems and solutions"
+---
+
+### CLI is seen as a malware by Windows
+
+We've requested to be whitelisted by Microsoft, but depending on your system's update status, our CLI used by the IDE extension might be detected as malware. 
+
+To force an update of Windows Defender's malware definitions, please follow these steps: 
+
+1. Open command prompt as administrator and change directory to c:\Program Files\Windows Defender
+2. Run "MpCmdRun.exe -removedefinitions -dynamicsignatures"
+3. Run "MpCmdRun.exe -SignatureUpdate"
+
+Alternatively, the latest definition is available for download [here](https://docs.microsoft.com/microsoft-365/security/defender-endpoint/manage-updates-baselines-microsoft-defender-antivirus)
+
+### Login issues with browser redirection
+
+If you’re not able to log in using the browser redirection, you can do it by using your token : 
+
+1. Go https://app.symbioticsec.ai/settings/api-token
+2. Click on the token to open it on a side panel 
+    
+    ![Area 2025-03-20 14:18:12 - Frame 125.png](attachment:cf306775-b6c4-4853-9d52-8180be644aae:Area_2025-03-20_141812_-_Frame_125.png)
+    
+3. Copy your token 
+    
+    ![Area 2025-03-20 14:18:12 - Frame 285.png](attachment:dcaf501e-2506-4d14-8085-2eb41e335390:Area_2025-03-20_141812_-_Frame_285.png)
+    
+4. In the IDE search the command 
+`> Symbiotic Security : Provide authentication token`
+    
+    ![Cursor 2025-03-20 14:20:48 - Frame 540.png](attachment:7aae529c-ec6d-4eb6-9cfd-6867a540ad61:Cursor_2025-03-20_142048_-_Frame_540.png)
+    
+5. Paste you token and press ENTER
+    
+    ![Cursor 2025-03-20 14:20:48 - Frame 666.png](attachment:74b9dc76-13d3-4fb9-8cdf-5cea825e1631:Cursor_2025-03-20_142048_-_Frame_666.png)
+    
+
+🎉 You’re now authenticated. Wait a few seconds and a scan will be launched.

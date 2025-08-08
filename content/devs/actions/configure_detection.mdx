@@ -1,0 +1,107 @@
+---
+title: "Configure detection"
+description: "How to configure a what's blocking or must be ignored in a repository ?"
+---
+
+Using our configuration file you can tailor the detection to your context and focus on what’s important to remediate. It allows you to define `Policy Breaching` vulnerabilities (that will be highlighted in the IDE and blocking in CI) but also which vulnerabilities to ignore. 
+
+Those configurations can be written based on the file path, severity, language, vulnerability id provider or service.
+
+To be taken into account the YAML file must be named `symbiotic.yml` and placed at the root of the repository.
+
+You can download the following template :
+
+[symbiotic.yml](attachment:f312a8f0-7b3f-47f0-8cd2-a8d35f9ed5ce:symbiotic.yml)
+
+Or copy/paste the following example: 
+
+```yaml
+# =========================================
+# SYMBIOTIC SECURITY CONFIGURATION FILE
+# =========================================
+
+# This configuration file is used by the Symbiotic IDE extension
+# and the CI integration to determine:
+#   - What rules are blocking (in CI)
+#   - What should be ignored (in both IDE and CI)
+#
+# ⚠️ To be taken into account, this file must be placed at the root of the repository.
+
+# --------------------------------------------
+# SECTION: blocking
+# Defines what is considered blocking in CI.
+# --------------------------------------------
+blocking:
+
+  # Minimum severity level that will cause a detection to fail the CI pipeline.
+  # Possible values: low, medium, high, critical
+  severity_threshold: high
+
+  # List of cloud providers for which *all* related vulnerabilities
+  # are treated as blocking, regardless of their individual severity.
+  #providers:
+  #   - Azure
+  #   - AWS
+  #   - Google
+
+  # Specific cloud services per provider where *all* vulnerabilities
+  # are considered blocking.
+  services:
+    AWS:
+      - s3         # Example: Block any unsafe or non-compliant usage of S3
+    # Google:
+    #   - compute   # Example: Block misconfigurations in Google Compute Engine
+    #   - gke       # Example: Block issues in Google Kubernetes Engine
+
+  # Explicit list of vulnerability IDs that are always treated as blocking.
+  #vulnerabilities:
+  #   - TF-0444
+  #   - TF-0081
+  #   - TF-0201
+
+# ------------------------------------------------------------
+# SECTION: ignored
+# Defines what will be ignored in the IDE and CLI.
+# Ignored rules take priority over blocking rules.
+# ------------------------------------------------------------
+ignored:
+
+  # Maximum severity level below which detections are ignored.
+  severity_threshold: low
+
+  # List of file paths or glob patterns to exclude from analysis.
+  # Wildcards are supported (e.g., "*/azure/*")
+  paths:
+    - "*/azure/*"      # Example: Ignore all files inside "azure" directories
+
+  # Languages to exclude from analysis.
+  #languages:
+  #   - terraform
+  #   - go
+  
+  # List of cloud providers for which *all* related vulnerabilities
+  # are treated as blocking, regardless of their individual severity.
+  #providers:
+  #   - Azure
+  #   - AWS
+  #   - Google
+
+  # Specific cloud services to exclude from detection, per provider.
+  #services:
+  #   AWS:
+  #     - documentdb
+  #     - elasticache
+
+  # Vulnerability IDs to explicitly ignore, even if they appear in blocking lists.
+  #vulnerabilities:
+  #   - TF-0010
+  #   - TF-0213
+  #   - TF-0399
+
+# =====================================================
+# END OF CONFIGURATION
+# =====================================================
+# 💡 Tips:
+# - Keep this file version-controlled and up to date.
+# - Use comments to track reasoning for each rule (e.g., why something is ignored).
+```

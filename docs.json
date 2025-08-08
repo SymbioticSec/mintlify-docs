@@ -1,108 +1,91 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
-  "name": "Mint Starter Kit",
+  "name": "Symbiotic Security",
   "colors": {
     "primary": "#C45D97",
     "light": "#C45D97",
     "dark": "#C45D97"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "images/favicon_symbiotic.png",
+  "icons": {
+    "library": "lucide"
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Devs",
         "groups": [
           {
             "group": "Getting started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "content/devs/intro/quickstart",
+              "content/devs/intro/understand_extension"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Actions",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "content/devs/actions/configure_detection",
+              "content/devs/actions/ignore",
+              "content/devs/actions/false_positive"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Support",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "content/devs/support/share_logs",
+              "content/devs/support/support_bundle",
+              "content/devs/support/common_problems"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
+        "tab": "Admins",
+        "pages": [
+          "content/admins/user_management",
+          "content/admins/github_integration",
+          "content/admins/webhooks"
         ]
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Website",
+          "href": "https://symbioticsec.ai",
+          "icon": "globe"
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "anchor": "Portal",
+          "href": "https://app.symbioticsec.ai",
+          "icon": "app-window"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Changelog",
+          "href": "https://symbioticsecurity.mintlify.app/changelog",
+          "icon": "logs"
         }
       ]
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "images/logo/logo horizontal_black.svg",
+    "dark": "images/logo/logo horizontal_white.svg"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@symbioticsec.ai"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Download extension",
+      "href": "https://symbioticsec-production-vscode-plugin-builds.s3.us-west-2.amazonaws.com/latest/symbioticsec.vsix"
     }
   },
   "contextual": {
@@ -119,9 +102,7 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "linkedin": "https://linkedin.com/company/symbiotic-security"
     }
   }
 }
