@@ -1,230 +1,63 @@
 ---
 title: "Introduction"
-description: "Welcome to the new home for your documentation"
+description: "Let's make your code secure"
 ---
+
+Symbiotic Security’s extension allows you to detect, remediate and learn directly when it matters the most : **while you’re writing code** ! 
+We support all commons languages (Python, JS/TS, Java, C, C#, Go, Ruby, PHP, etc.) and the major cloud providers (AWS, GCP, Azure).
 
 ## Setting up
 
-Get your documentation site up and running in minutes.
+Create your account, install our extension in your favorite IDE and make your code more secure in minutes.
 
 <Card
   title="Start here"
   icon="rocket"
-  href="/quickstart"
+  href="/content/devs/intro/quickstart"
   horizontal
 >
-  Follow our three step quickstart guide.
+  Follow our two steps quickstart guide.
 </Card>
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
+## Learn the basics
+Understand how our extension works to make the most of it.
 <Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
+  
     <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
+    title="Discover the extension"
+    icon="compass"
+    href="/content/devs/intro/understand_extension"
   >
-    Organize your docs to help users find what they need and succeed with your product.
+    When does it scan ? How to remediate ? Where to find more informations ?
+    </Card>
+  <Card
+    title="Configure the detection"
+    icon="file-cog"
+    href="/content/devs/actions/configure_detection"
+  >
+    How to define what's should be ignored and what should block the CI ?
   </Card>
   <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
+    title="Ignore a vulnerability"
+    icon="square-slash"
+    href="/content/devs/actions/ignore"
   >
-    Auto-generate API documentation from OpenAPI specifications.
+    How to ignore a non relevant issue in a file or in the whole repository ?
+  </Card>
+  <Card
+    title="Declare false positives"
+    icon="flag"
+    href="/content/devs/actions/false_positive"
+  >
+    How to declare a false positive and help us improve the detection ?
   </Card>
 </Columns>
 
-## Create beautiful pages
+## Get help
 
-Everything you need to create world-class documentation.
+If you have questions or need help, you can contact us using the dedicated Slack channel or email us at support@symbioticsecurity.ai.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+<Tip>
+  If your problem concern the extension, we suggest you to generate a [Support Bundle](/content/devs/support/support_bundle) before contacting us.
+</Tip>
 
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
-
-
-Symbiotic Security’s extension allows you to detect, remediate and learn directly when it matters the most : while you’re writing code ! Our extension allow you to secure more than 30 coding languages and IaC languages. 
-
-***NB: this extension is currently in private beta mode***
-
-We support all commons languages (Python, JS/TS, Java, C, C#, Go, Ruby, PHP, etc.) and the major cloud providers (AWS, GCP, Azure)
-
-# How does it works ?
-
-Each time your files are saved, a local detection scans for any vulnerabilities you may have created. When a vulnerability is found, it appears as a red underline beneath the vulnerable resource or property. 
-
-![VSCodium 2024-12-17 11:06:37 - Frame 138.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/6215c802-c2a3-46a9-8f21-e2604f4086b4/caa10815-c38d-45f4-8e35-54c0087eab48/VSCodium_2024-12-17_110637_-_Frame_138.png)
-
-When you hover over the problem, you'll find information about the vulnerability, including its name and description. You can also access to more informations on the vulnerability or generate a fix using our AI. 
-
-![Trae 2025-07-31 14:58:30 - Frame 804.png](attachment:a775eee3-99aa-4d42-a61d-98531cadbac1:Trae_2025-07-31_145830_-_Frame_804.png)
-
-# Tree view
-
-The tree view shows the list of issues detected in the current workspace. A filled red dot indicates an issue that breaches the policy. 
-
-## Filter
-
-You can filter which issues appear in the tree view by clicking the :funnel: icon in the top-right corner.
-
-![Trae 2025-07-31 14:58:30 - Frame 17609.png](attachment:41dcb03b-e329-4333-b83d-ff0d62e299f4:Trae_2025-07-31_145830_-_Frame_17609.png)
-
-You can select to show or hide issues based on the following criteria: 
-
-- status : ignored, policy breaching
-- tags : historical issues
-- confidence
-- severity
-    
-    
-
-ℹ️ You also have the ability to search in the issues
-
-## Grouping
-
-![Trae 2025-07-31 14:58:30 - Frame 17834.png](attachment:71987252-5be2-4f8b-b7e0-02f4c16f4438:Trae_2025-07-31_145830_-_Frame_17834.png)
-
-You can change how issues are grouped by clicking on the list icon : either by file or by vulnerability.
-
-# Detailed view
-
-The detailed view contains comprehensive information about the vulnerability, organized into different tabs. 
-
-## Overview
-
-This tab contains all the informations you need about the vulnerability, including its description, potential impacts, other vulnerable examples, links to documentation and an AI generated remediation suggestion.
-
-![Trae 2025-07-31 14:58:30 - Frame 585.png](attachment:481009ab-56b7-4417-9702-db3eee23df5a:Trae_2025-07-31_145830_-_Frame_585.png)
-
-If the vulnerability is located on a resource used as a module, you'll see a blast radius section that shows the path of each resource using this vulnerable module, indicating which resources have become vulnerable as a result.
-
-## Assistant
-
-This tab allows you to chat with our AI about this vulnerability. You can use presets to start a discussion or ask any question you have. 
-
-![Trae 2025-07-31 14:58:30 - Frame 18557.png](attachment:ec62862c-3c35-4a96-a0b4-d5527246af3f:Trae_2025-07-31_145830_-_Frame_18557.png)
-
-## Occurrences
-
-If the same vulnerability appears on other resources in the opened workspace, you will find links to those vulnerable resources in this tab.
-
-![Trae 2025-07-31 16:00:56 - Frame 281.png](attachment:e6d47473-e78e-4d0b-b802-7d7473fb094a:Trae_2025-07-31_160056_-_Frame_281.png)
-
-# How to ignore a vulnerability ?
-
-![Trae 2025-07-31 14:58:30 - Frame 13159.png](attachment:7bf6248b-99fe-48ac-bd9a-e497cda051b3:Trae_2025-07-31_145830_-_Frame_13159.png)
-
-If a vulnerability is not relevant, you can ignore it directly from the IDE. 
-
-Based on the scope of your ignore you have two possibilities : 
-
-1. If you want to ignore on this specific issues or issues in this file, click on the ignore button in the detailed view of a vulnerability and choose :
-    - Ignore: The detection is correct but you want still to ignore this issue
-    - Declare a false positive: The detection is incorrect and you want to flag a false positive
-2. If you want to ignore this vulnerability on the whole repository, you can use the [Configuration File](https://www.notion.so/Configuration-File-1d6d0df03fd38087b3f1c30253c85a99?pvs=21) 
-
-## Ignore comment
-
-![Trae 2025-07-31 14:58:30 - Frame 14043.png](attachment:c2b823a8-a33d-41fd-a2b6-bad6b2ce6b3f:Trae_2025-07-31_145830_-_Frame_14043.png)
-
-The ignore comment will be generated by clicking on the ignore button, but you can also write it yourself by following this syntax : 
-
-`# nosymbiotic {rule_id} -- {ignore_comment}`
-
-To ignore multiple rules you can write all the rules you want to ignore separated by a comma.
-
-## Declare a false positive
-
-![Trae 2025-07-31 14:58:30 - Frame 16413.png](attachment:c8e032ba-1364-4e02-ae0a-7255503d8d6a:Trae_2025-07-31_145830_-_Frame_16413.png)
-
-You can declare a false positive by adding a tag `-fp` in the ignore comment or by using the action available in the issue hover or the ignore button. 
-
-In that case, you will be ask to select the scope of the false positive and give an explanation about it. This part is really important as it allows us to review false positives with your admins and make the detection pattern evolve.
-
-NB : Every ignored vulnerability is still visible in the treeview of the extension.
-
-# How to configure detection ?
-
-Using our [Configuration File](https://www.notion.so/Configuration-File-1d6d0df03fd38087b3f1c30253c85a99?pvs=21) you can tailor the detection to your context and focus on what’s important to remediate. 
-
-This file allow you to define `Policy Breaching` vulnerabilities (that will be highlighted in the IDE and blocking in CI) but also which vulnerabilities to ignore. 
-
-Those configurations can be written based on the file path, severity, language, vulnerability id provider or service.
-
-# Experiencing a Bug?
-
-If you encounter a bug, you can generate and share a support bundle with us using the command `Symbiotic Security : Upload support bundle`
-
-To learn more about this feature and how to customize the support bundle content, please refer to the [IDE Plugin Documentation](https://www.notion.so/Support-bundle-162d0df03fd3808aaf3ef27d89a03d94?pvs=21)
-
-- OLD Images
-    
-    ![VSCodium 2024-12-17 11:06:37 - Frame 138.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/6215c802-c2a3-46a9-8f21-e2604f4086b4/caa10815-c38d-45f4-8e35-54c0087eab48/VSCodium_2024-12-17_110637_-_Frame_138.png)
-    
-    ![VSCodium 2025-03-14 15:30:14 - Frame 495.png](attachment:a631595c-1148-42c1-a2e2-e090a70b7ee7:VSCodium_2025-03-14_153014_-_Frame_495.png)
-    
-    ![VSCodium 2025-01-07 18:15:17 - Frame 1419.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/6215c802-c2a3-46a9-8f21-e2604f4086b4/04373c81-c7b9-4925-a14b-f087f5fa1c1f/VSCodium_2025-01-07_181517_-_Frame_1419.png)
-    
-    ![VSCodium 2025-01-07 18:15:17 - Frame 1466.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/6215c802-c2a3-46a9-8f21-e2604f4086b4/03348965-6594-4ea9-89dd-a4a3be47d327/VSCodium_2025-01-07_181517_-_Frame_1466.png)
-    
-    ![VSCodium 2025-03-14 15:30:14 - Frame 183.png](attachment:4f2399bf-249b-4f04-856c-44194a3e8f49:VSCodium_2025-03-14_153014_-_Frame_183.png)
-    
-    ![VSCodium 2025-03-14 15:30:14 - Frame 257.png](attachment:b88e4661-e975-4bf8-a6b0-d779e1980e4b:VSCodium_2025-03-14_153014_-_Frame_257.png)
-    
-    ![VSCodium 2025-03-14 15:55:37 - Frame 350.png](attachment:9792a9f7-4379-438e-98a3-e1bc1bf64a22:VSCodium_2025-03-14_155537_-_Frame_350.png)
-    
-    ![Code 2025-04-25 10:37:04 - Frame 199.png](attachment:5b562049-e0b7-4918-92db-c55de4fdac93:Code_2025-04-25_103704_-_Frame_199.png)
