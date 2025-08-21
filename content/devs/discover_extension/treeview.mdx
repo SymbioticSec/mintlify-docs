@@ -1,0 +1,57 @@
+---
+title: "Treeview"
+description: "How does the treeview work ?"
+---
+Our treeview allows you to see all vulnerabilities detected in the current workspace.
+By default issues are grouped by file and ordered by severity. 
+
+
+![Extension Treeview](/content/devs/images/treeview_withscopes.png)
+
+## Icons 
+
+<Columns cols={2}>
+
+<Icon icon="chevrons-up" color="#FF4040" size={20}/> Critical
+
+<Icon icon="chevron-up" color="#E57260" size={20}/> High
+
+<Icon icon="equal" color="#E5C166" size={20}/> Medium
+
+<Icon icon="chevron-down" color="#6AD9A9" size={20}/> Low
+
+</Columns>
+
+<Info>
+Ignored issues are shown using this icon <Icon icon="ban" color="#939599" size={20}/>
+</Info>
+
+## Actions
+
+Using actions in the treeview you can filter issues, change the grouping or search for a specific vulnerability.
+### Scopes
+To see only issues relevant on your context, you can change the scope of teh treeview by either : 
+- Clicking on teh scope at the top of the treeview 
+- Clicking on the <Icon icon="eye" size={20}/> icon at the top right of the treeview
+- Using the command `Symbiotic Security: Change Scope`
+
+
+
+It will open a selection menu to allow you to choose between : 
+- All: Show all issues detected in the repository
+- Local: Show only issues detected in staged files 
+- Branch: Show only issues detected in files modified in the current branch in the last 10 days
+- Recent: Show only issues detected in files modified in the last 10 days
+- Active: Show all non-historical issues
+
+<Info> 
+If the scope you have selected is empty you will be invite to change the scope or to reset your filters
+</Info>
+
+### Filters
+
+By clicking on the <Icon icon="filter" size={20}/> icon at the top right of the treeview you can filter the issues by severity, policy breaching or ignored.
+
+### Grouping
+
+By clicking on the <Icon icon="list-tree" size={20}/> icon at the top right of the treeview you can change the grouping of the issues either by vulnerabilities or files.

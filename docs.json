@@ -20,8 +20,17 @@
             "group": "Getting started",
             "pages": [
               "index",
-              "content/devs/intro/quickstart",
-              "content/devs/intro/understand_extension"
+              "content/devs/intro/quickstart"
+            ]
+          },
+          {
+            "group": "Discover our extension",
+            "pages": [
+              "content/devs/discover_extension/detection",
+              "content/devs/discover_extension/treeview",
+              "content/devs/discover_extension/details",
+              "content/devs/discover_extension/hover",
+              "content/devs/discover_extension/status"
             ]
           },
           {
@@ -53,7 +62,7 @@
       }
     ],
     "global": {
-      "anchors": [
+    "anchors": [
         {
           "anchor": "Website",
           "href": "https://symbioticsec.ai",
