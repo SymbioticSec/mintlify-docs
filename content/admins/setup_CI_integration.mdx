@@ -70,20 +70,20 @@ If you are not using Github you can still use our cli in your pipelines :
 <Steps>
   <Step title="Install our CLI" titleSize="p">
     ```bash
-    |
           curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh | bash
-          echo 'export PATH="$HOME/.local/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export PATH="$HOME/.local/bin:$PATH"'
     ```
+    <Warning>
+        We advise you to set `SYMBIOTIC_API_TOKEN` as an environment variable in your pipeline.
+      </Warning>  
   </Step>
   <Step title="Launch our CLI" titleSize="p">
     <CodeGroup>
         ```bash Launch infra scan
-        |
           symbiotic-cli ci infra ./
          ```
 
         ```bash Launch code scan
-        |
           symbiotic-cli ci code ./
          ```
       </CodeGroup>
