@@ -30,7 +30,8 @@
               "content/devs/discover_extension/treeview",
               "content/devs/discover_extension/details",
               "content/devs/discover_extension/hover",
-              "content/devs/discover_extension/status"
+              "content/devs/discover_extension/status",
+              "content/devs/discover_extension/MCP"
             ]
           },
           {

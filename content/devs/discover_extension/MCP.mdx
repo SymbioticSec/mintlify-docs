@@ -1,0 +1,67 @@
+---
+title: "MCP"
+description: "Secure AI generated code using our MCP"
+---
+
+## Install
+
+<Steps>
+  <Step title="Install our CLI">
+    ```bash
+          curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh | bash
+          echo 'export PATH="$HOME/.local/bin:$PATH"'
+    ```
+  </Step>
+  <Step title="Retrieve your API token">
+    In your Symbiotic Security account, create a [personal access token](https://app.symbioticsec.ai/settings/api-token) and copy it.
+  </Step>
+  <Step title="Clone our MCP repository">
+    Clone our MCP repository using the following command :
+    ```bash
+      git clone https://github.com/SymbioticSec/mcp.git
+    ```
+  </Step>
+  <Step title="Install and build the MCP">
+    Open the repository and launch the following command :
+    ```bash
+      npm install
+      npm run build
+    ```
+    After build copy the path of the index.js file in the build folder.
+  </Step>
+</Steps>
+
+## Use in your IDE
+
+You can now declare this MCP in your IDE using the following configuration :
+
+<CodeGroup>
+
+```json In VS Code
+{
+ "servers": {
+  "symbiotic-security": {
+       "command": "node",
+      "args": ["path_of_the_index.js_file"],
+      "env": {
+        "SYMBIOTIC_API_TOKEN": "your_token_here"
+    }
+  },
+}
+```
+
+```json In other IDEs
+{
+  "mcpServers": {
+    "symbiotic-security": {
+      "command": "node",
+      "args": ["path_of_the_index.js_file"],
+      "env": {
+        "SYMBIOTIC_API_TOKEN": "your_token_here"
+      }
+    }
+  }
+}
+```
+
+</CodeGroup>
