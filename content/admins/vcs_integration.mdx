@@ -1,0 +1,49 @@
+---
+title: "Discover PR Integration"
+description: "Detect, review and remediate directly in your PR"
+---
+
+# In PR Detection 
+Our Github integration allows you to automaticlaly scan PRs after each push.
+
+## Summary
+On opening a PR you will see a Security Summary comment that list all issues introduced and/or remediated by this PR.
+
+![Security Summary](/content/admins/images/security_summary.png)
+
+In this summary you will find a table of vulnerabilities with the following information: 
+- Severity 
+- ID of the rule 
+- Name of the rule 
+- Filepath
+- Line
+
+<Info>
+You can click on the rule id to open our vulnerability database or on the line to see the snippet of code that triggered the rule.
+</Info>
+
+![Summary Table](/content/admins/images/summary_table.png)
+
+## Review
+
+If you want to know more about a specific issue you can launch a review using the command `/symbot review <vuln-id>` posted as a PR comment. 
+It will create a review comment on the code snippet that triggered the issue with the following information:
+- Rule explanation
+- Potential impact
+- Tailored remediation suggestion
+
+![Review Comment](/content/admins/images/review_comment.png)
+
+## Chat
+
+If you have any questions, you can ask directly our model by answering in the comment and tagging `/symbot`.
+
+![Chat Comment](/content/admins/images/chat_comment.png)
+
+# In PR Activation
+
+Our Github integration allows you to push the usage of our extension using an automatic comment.
+On a regular basis, we will remind developers that havent scan the branch thay are working in their IDE that they can use our extension to detect issues earlier.
+
+![Activation Comment](/content/admins/images/activation_comment.png)
+

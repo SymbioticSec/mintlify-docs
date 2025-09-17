@@ -54,11 +54,22 @@
       },
       {
         "tab": "Admins",
-        "pages": [
-          "content/admins/user_management",
-          "content/admins/github_integration",
-          "content/admins/webhooks",
-          "content/admins/setup_CI_integration"
+        "groups": [
+          {
+            "group": "Admin features",
+            "pages": [
+              "content/admins/user_management",
+              "content/admins/webhooks"
+            ]
+          },
+          {
+            "group": "PR & CI",
+            "pages": [
+              "content/admins/vcs_integration",
+              "content/admins/github_integration",
+              "content/admins/setup_CI_integration"
+            ]
+          }
         ]
       }
     ],
