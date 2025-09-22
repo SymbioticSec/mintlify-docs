@@ -1,0 +1,99 @@
+---
+title: "Data privacy and security"
+description: "How we handle and protect your data"
+---
+
+<Accordion title="TL;DR">
+
+- We **do not store your entire source code**.  When an issue is detected, we send **minimal metadata** and **small code snippets** related to that specific finding so admins get a centralized, aggregated view.
+- All traffic between our agents and our API is **encrypted in transit (HTTPS)**.
+- Data is **encrypted at rest** in **Amazon RDS** using **AES‑256** with **AWS KMS**. This includes the database storage, automated backups, snapshots, and read replicas.
+- Our application is hosted on **Amazon Web Services (AWS)** in **us‑west‑2 (Oregon, USA)**.
+- Access to customer data is **restricted to a subset of the product team**, actions are **logged**, and we apply a **strict access‑revocation policy** when someone leaves the company.
+- Data is **isolated per organization**. When you’re logged in, you only see data for **your organization**.
+- **AI features are optional**. AI requests stay **inside our AWS tenant**, are **not shared with third‑party AI providers**.
+- For certifications, policies, and real‑time status, see our **[Trust Center](https://app.vanta.com/symbioticsec.ai/trust/9i8otz182y39g3m5d9ki5)**.
+
+</Accordion>
+
+## Hosting & regions
+
+**Where are our servers hosted?**  
+Our application runs on **Amazon Web Services** in the **us‑west‑2** region (Oregon, USA).
+
+## Encryption
+
+**Is data encrypted?**  
+Yes. We encrypt data at rest in **Amazon RDS** using **AES‑256** with **AWS KMS**. The following are encrypted:
+
+- Database storage (DB instance)
+- Automated backups
+- Snapshots
+- Read replicas
+
+All communications between our agents and our API are **encrypted in transit** over **HTTPS**.
+
+## What leaves your IDE (and why)
+
+To avoid sending your entire source code to our API, all scans are performed **locally**.  
+When a vulnerability is found, our agent sends **metadata** and **the minimal code context** that allowed us to detect the issue. This powers the centralized view of vulnerabilities while keeping exposure to a minimum.
+
+**We send two types of information:**
+
+1. **Metadata about the issue**
+   - **Issue location:** repository URL, file path, resource name
+   - **Detection metadata:** user who detected the vulnerability, detection date, remediation date
+   - **Vulnerability metadata:** ID, name, severity
+
+2. **Small code snippets**
+   - **Vulnerable code:** the snippet containing the vulnerability
+   - **Remediation code:** the snippet after remediation
+
+<Info>
+ If you ever find Personally Identifiable Information (PII) in a snippet related to a vulnerability, **contact us** and we’ll remove it.
+</Info>
+## VCS Integration 
+
+To perform a scan, using our Github application, your code is accessed by accesses managed by Github. 
+Your code is temporarily copied to our servers to perform the scan. Just after scan this copy is immediately and automatically deleted. 
+
+
+## Personal data & classification
+
+We track the **lifecycle** of issues detected in code (similar to how a VCS tracks changes) and **classify issues by vulnerability type**.  
+
+
+## Access control
+
+Access to the database is limited to a subset of the product team. This access is **restricted via our back office**, and **every action is logged**. We also apply a **strict access‑revocation policy** when an employee leaves the company.
+
+## AI features
+
+**What data is used in AI prompts?**  
+Our chat and remediation features share the same customer context — the portion of code that needs to be corrected (for example, a Terraform resource). In addition, **Symbiotic’s content** is added to describe the detected vulnerability, examples of secure code, remediation advice, or the remediation snippet already generated for the chat feature.
+
+**Where is this data stored?**  
+AI requests are stored in an **Amazon RDS** database and **encrypted at rest** in our **AWS tenant**.
+
+**Is this data sent to a third‑party AI company (OpenAI, Anthropic, etc.)?**  
+**No.** Data gathered for AI is **not processed by third parties** outside our AWS tenant.
+
+**Is this data used to train a model?**  
+**Yes.** We use **reinforcement learning** to improve the model. We apply **anonymization** to prevent confidential data from appearing in the model.
+
+**Is this data merged with other companies’ data?**  
+Data is **classified per organization**. When you are logged in, you only see data for **your organization**.
+
+**Are AI features mandatory?**  
+**No.** AI features can be **deactivated** for an entire organization. Without AI, recommendations won’t be tailored to your context and you won’t be able to ask questions or provide extra context for code adaptation, but the core product remains available.
+
+<br />
+
+<Card
+  title="Trust Center"
+  icon="radar"
+  href="https://app.vanta.com/symbioticsec.ai/trust/9i8otz182y39g3m5d9ki5"
+  arrow="true"
+>
+  For more information on our controls and audits, you can visit our Vanta Trust Center.
+</Card>
