@@ -47,7 +47,8 @@
             "pages": [
               "content/devs/support/share_logs",
               "content/devs/support/support_bundle",
-              "content/devs/support/common_problems"
+              "content/devs/support/common_problems",
+              "content/devs/support/commands"
             ]
           }
         ]
