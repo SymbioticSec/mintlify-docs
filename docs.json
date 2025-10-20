@@ -60,7 +60,8 @@
             "group": "Admin features",
             "pages": [
               "content/admins/user_management",
-              "content/admins/webhooks"
+              "content/admins/webhooks",
+              "content/admins/guardrails"
             ]
           },
           {
