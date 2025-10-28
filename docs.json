@@ -12,14 +12,33 @@
     "library": "lucide"
   },
   "navigation": {
-    "tabs": [
+    "global": {
+    "anchors":[
+        {
+          "anchor": "Website",
+          "href": "https://symbioticsec.ai",
+          "icon": "globe"
+        },
+        {
+          "anchor": "Portal",
+          "href": "https://app.symbioticsec.ai",
+          "icon": "app-window"
+        },
+        {
+          "anchor": "Changelog",
+          "href": "https://symbioticsecurity.mintlify.app/changelog",
+          "icon": "logs"
+        }
+      ]},
+    "dropdowns": [
       {
-        "tab": "Devs",
+        "dropdown": "Devs",
+        "icon": "binary",
         "groups": [
           {
             "group": "Getting started",
             "pages": [
-              "index",
+              "content/devs/intro/intro",
               "content/devs/intro/quickstart"
             ]
           },
@@ -54,7 +73,8 @@
         ]
       },
       {
-        "tab": "Admins",
+        "dropdown": "Admins",
+        "icon": "user-cog",
         "groups": [
           {
             "group": "Admin features",
@@ -71,29 +91,9 @@
               "content/admins/github_integration",
               "content/admins/setup_CI_integration"
             ]
-          }
-        ]
       }
-    ],
-    "global": {
-    "anchors": [
-        {
-          "anchor": "Website",
-          "href": "https://symbioticsec.ai",
-          "icon": "globe"
-        },
-        {
-          "anchor": "Portal",
-          "href": "https://app.symbioticsec.ai",
-          "icon": "app-window"
-        },
-        {
-          "anchor": "Changelog",
-          "href": "https://symbioticsecurity.mintlify.app/changelog",
-          "icon": "logs"
-        }
-      ]
-    }
+    ]
+    }]
   },
   "logo": {
     "light": "images/logo/logo horizontal_black.svg",
@@ -114,15 +114,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
@@ -130,3 +130,4 @@
     }
   }
 }
+
