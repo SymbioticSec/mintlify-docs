@@ -105,21 +105,21 @@ If you are not using Github you can still use our cli in your pipelines :
 <Accordion title="Example in a Gitlab pipeline">
   ```yaml
   stages:
-     - test
+    - test
   
-   test-full-script:
-     stage: test
-     image: ubuntu:latest
-     variables:
-       SYMBIOTIC_API_TOKEN: $SYMBIOTIC_API_TOKEN
-     before_script:
-       - apt-get update && apt-get install -y curl bash git
-       - curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh| bash
-       - export "PATH=$HOME/.local/bin:$PATH"
-     script:
-       - symbiotic-cli ci code ./
-     rules:
-       - if: '$CI_COMMIT_BRANCH'
+  test-full-script:
+    stage: test
+    image: ubuntu:latest
+  
+    before_script:
+      - apt-get update && apt-get install -y curl bash git unzip
+      - curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh | bash
+      - export "PATH=$HOME/.local/bin:$PATH"
+  
+    script:
+      - symbiotic-cli ci code ./
+    rules:
+      - if: '$CI_COMMIT_BRANCH'
   ```
 </Accordion>
 
