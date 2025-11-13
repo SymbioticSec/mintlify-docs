@@ -3,11 +3,11 @@ title: "Setup CI integration"
 description: "Create a security gate using our CLI or Github Action"
 ---
 
-Our CI integration is available both for our infra scan and our code scan allowing you to avoid merging vulnerable code in your production code.
+Our CI integration is available with both our infra scan and our code scan allowing you to avoid merging vulnerable code in your production code.
 
 # Using Github Actions
 
-To make it easier for organization using Github, we have create a Github Action that you can easily integrate in your pipelines.
+To make it easier for organizations using Github, we have created a Github Action that you can easily integrate in your pipelines.
 
 <CodeGroup>
 
@@ -60,7 +60,7 @@ full-security-scan:
 </CodeGroup>
 
 <Tip>
-  Don't forget to retrieve you [organization token](https://app.symbioticsec.ai/settings/organization-token) and to set it as a secret in your Github setttings.
+  Don't forget to retrieve your [organization token](https://app.symbioticsec.ai/settings/organization-token) and to set it as a secret in your Github setttings.
 </Tip>
 
 # Using our CLI
@@ -92,12 +92,12 @@ If you are not using Github you can still use our cli in your pipelines :
 
     </CodeGroup>
 
-    You can override the seveity threshold defined in the configuration file using the _severity-threshold_ option.
+    You can override the severity threshold defined in the configuration file using the _severity-threshold_ option.
 
     Ex: `symbiotic-cli ci infra ./ --severity-threshold high`
 
     <Warning>
-      As of today scan must be launched on the root folder to take correctly into account the configuration file
+      As of today scans must be launched on the root folder to correctly take into account the configuration file
     </Warning>
   </Step>
 </Steps>
@@ -125,8 +125,8 @@ If you are not using Github you can still use our cli in your pipelines :
 
 # Configuration
 
-You can configure what will make the CI fail using our [configuration file](/content/devs/actions/configure_detection).
+You can configure what makes the CI fail using our [configuration file](/content/devs/actions/configure_detection).
 
 <Info>
-  If there is no configuration file in the repository or if this configurations file have no blocking property, the CI will pass by default.
+  If there is no configuration file in the repository or if this configuration file has no blocking property, the CI will pass by default.
 </Info>
