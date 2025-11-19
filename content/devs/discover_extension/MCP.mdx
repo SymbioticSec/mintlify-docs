@@ -4,18 +4,22 @@ description: "Secure AI generated code using our MCP"
 ---
 
 <Info>
-  If you need an introduction on MCP, here is the [Get Started article of the protocol](https://modelcontextprotocol.io/docs/getting-started/intro).
+  If you need an introduction on MCP, here is the [get Started article of the protocol](https://modelcontextprotocol.io/docs/getting-started/intro).
 </Info>
 
 ## Setup
 
-### MCP Download & Build
+<Note>
+  MCP setup is independant from our extension (that you can download and install [here](/content/devs/intro/intro))
+</Note>
+
+### MCP download & build
 
 To use the Symbiotic Security MCP, you first need to install our CLI and build the MCP from source.
 
 <Steps>
   <Step title="Install our CLI">
-    Download and install our CLI using the command below.\
+    Download and install our CLI  using the command below.\
     The installer will automatically select the correct version for your environment.
 
     ```bash
@@ -34,8 +38,9 @@ To use the Symbiotic Security MCP, you first need to install our CLI and build t
     Navigate into the repository and build the MCP:
 
     ```bash
-      npm install
-      npm run build
+    cd mcp  
+    npm install
+    npm run build
     ```
   </Step>
   <Step title="Retrieve the index.js filepath">
@@ -69,6 +74,7 @@ Once you have these, configure the MCP using the examples below:
       "args": ["path_of_the_index.js_file"],
       "env": {
         "SYMBIOTIC_API_TOKEN": "your_token_here"
+	
     }
   },
 }
