@@ -7,42 +7,53 @@ description: "Secure AI generated code using our MCP"
   If you need an introduction on MCP, here is the [Get Started article of the protocol](https://modelcontextprotocol.io/docs/getting-started/intro).
 </Info>
 
-![MCP Gi](/images/MCP.gif)
+## Setup
 
-## Install
+### MCP Download & Build
+
+To use the Symbiotic Security MCP, you first need to install our CLI and build the MCP from source.
 
 <Steps>
   <Step title="Install our CLI">
+    Download and install our CLI using the command below.\
+    The installer will automatically select the correct version for your environment.
+
     ```bash
           curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh | bash
           echo 'export PATH="$HOME/.local/bin:$PATH"'
     ```
   </Step>
-  <Step title="Retrieve your API token">
-    In your Symbiotic Security account, create a [personal access token](https://app.symbioticsec.ai/settings/api-token) and copy it.
-  </Step>
   <Step title="Clone our MCP repository">
-    Clone our MCP repository using the following command :
+    Clone the official Symbiotic Security MCP repository:
 
     ```bash
       git clone https://github.com/SymbioticSec/mcp.git
     ```
   </Step>
   <Step title="Install and build the MCP">
-    Open the repository and launch the following command :
+    Navigate into the repository and build the MCP:
 
     ```bash
       npm install
       npm run build
     ```
-
-    After build copy the path of the index.js file in the build folder.
+  </Step>
+  <Step title="Retrieve the index.js filepath">
+    After the build completes, a `build` directory will be created.\
+    Locate the **full path** to `build/index.js` — you will need it to configure the MCP in your IDE.
   </Step>
 </Steps>
 
-## Use in your IDE
+### Installtion in your IDE
 
-You can now declare this MCP in your IDE using the following configuration :
+To use the MCP inside your IDE, you must declare it in your MCP settings.
+
+You will need:
+
+1. The full filepath of the inde.js file we retrieved during the build of the MCP
+2. Your Symbiotic personal access token that you can create and retrieve [here](https://app.symbioticsec.ai/settings/api-token)
+
+Once you have these, configure the MCP using the examples below:
 
 <CodeGroup>
 
@@ -75,3 +86,15 @@ You can now declare this MCP in your IDE using the following configuration :
 ```
 
 </CodeGroup>
+
+## Usage
+
+Once configured, you can use the MCP directly from your IDE’s chat interface by asking it to perform a security scan on a file.
+
+If you want your chat agent to automatically scan every piece of AI-generated code, we recommend adding the following MCP usage rule:
+
+```markdown
+ALWAYS use symbiotic-security MCP with the security_scan_files tool EACH time you generate code to scan for security vulnererabilities and remediate issues found.
+
+ALWAYS try to fix issues found by the scanner. 
+```

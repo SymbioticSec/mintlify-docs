@@ -1,0 +1,180 @@
+---
+title: "CLI"
+description: "You can use our CLI to integrate our detection anywhere you want."
+---
+
+# Setup
+
+## Downlod and Install
+
+To download and install the right version of our CLI, use the following command :
+
+```bash
+curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh | bash
+      echo 'export PATH="$HOME/.local/bin:$PATH"'
+```
+
+<Info>
+  If you encounter some problems and you need to reinstall the CLI you can use the command `symbiotic-cli install -f`
+</Info>
+
+## Retrieve and set your token
+
+To use our CLI you will need a **personal access token**, that you can create and retrive [here](https://app.symbioticsec.ai/settings/api-token).
+
+Once you have it, set the `SYMBIOTIC_API_TOKEN` environment variable with your token.
+
+# Usage
+
+## Scan
+
+As of today, two types of scan are available in our CLI :
+
+1. Infrastructure scan to review IaC files
+
+   ```bash
+   symbiotic-cli infra scan [PATH_OF_THE_FOLDER_TO_SCAN]
+   ```
+2. Code scan to review generic programming languages
+
+   ```bash
+   symbiotic-cli code scan [PATH_OF_THE_FOLDER_TO_SCAN]
+   ```
+
+Both commands will return a JSON object with the following structure
+
+```json
+{
+  "fail_results": [],
+  "pass_results": [],
+  "external_results": [],
+  "files": {
+    "files": [],
+    "excluded_files": [],
+    "excluded_folders": []
+  }
+}
+```
+
+Vulnerabilities found will be JSON objects in the fail_results table with the following structure:
+
+<CodeGroup>
+
+```json Structure expandable
+{
+      "rule_id": "",
+      "rule_language": "",
+      "type": "",
+      "title": "",
+      "severity": "",
+      "description": "",
+      "resource_path": "",
+      "resource": "",
+      "resource_name": "",
+      "location": {
+        "start_line": ,
+        "end_line": ,
+        "absolute_filename": "",
+        "relative_filename": "",
+        "start_col": ,
+        "end_col": 
+      },
+      "resolution_advice": "",
+      "snippet": " ",
+      "full_snippet": "",
+      "static_remediation": "",
+      "invocation_chain": [],
+      "references": [],
+      "impact": "",
+      "confidence_level": "",
+      "impact_level": "",
+      "likelihood_level": "",
+      "owasp": "",
+      "cwe": "",
+      "conf_status": "",
+      "scan_status": "",
+      "metadata": {
+        "conf_file_status": "",
+        "scan_status_origin": "",
+        "ignore_comment": "",
+        "false_positive": 
+      },
+      "fingerprint": {
+        "version": "",
+        "rule_id": "",
+        "anchor_hash": "",
+        "content_hash": "",
+        "ordinal": 0,
+        "anchor_string": "",
+        "content_string": "",
+        "full_fingerprint": ""
+      },
+      "fingerprint_metadata": {
+        "generation_time_ms": ,
+        "extraction_method": "",
+        "warnings": []
+      }
+    }
+```
+
+
+```json Example expandable
+{
+      "rule_id": "SYM_JSTS_0102",
+      "rule_language": "javascript",
+      "type": "",
+      "title": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+      "severity": "MEDIUM",
+      "description": "The code uses user-provided input as a file path with Node.js 'fs' functions without proper validation. This allows attackers to manipulate file paths, potentially accessing or modifying unintended files on the server.",
+      "resource_path": "",
+      "resource": "",
+      "resource_name": "",
+      "location": {
+        "start_line": 71,
+        "end_line": 71,
+        "absolute_filename": "/Users/symbiotic/mcp/src/tools/base-tool.ts",
+        "relative_filename": "src/tools/base-tool.ts",
+        "start_col": 20,
+        "end_col": 27
+      },
+      "resolution_advice": "",
+      "snippet": "          await rm(tempDir, { recursive: true });",
+      "full_snippet": "          await rm(tempDir, { recursive: true });",
+      "static_remediation": "",
+      "invocation_chain": [],
+      "references": [
+        "https://owasp.org/www-community/attacks/Path_Traversal"
+      ],
+      "impact": "If exploited, an attacker could read, overwrite, or delete sensitive files outside the intended directory, leading to data breaches, loss of critical information, or system compromise. This can expose confidential data and disrupt application functionality.",
+      "confidence_level": "LOW",
+      "impact_level": "MEDIUM",
+      "likelihood_level": "HIGH",
+      "owasp": "A05:2017 - Broken Access Control",
+      "cwe": "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+      "conf_status": "NO_CONF",
+      "scan_status": "DEFAULT",
+      "metadata": {
+        "conf_file_status": "NO_CONF",
+        "scan_status_origin": "NONE",
+        "ignore_comment": "",
+        "false_positive": false
+      },
+      "fingerprint": {
+        "version": "v1-typescript",
+        "rule_id": "SYM_JSTS_0102",
+        "anchor_hash": "rw9kQFu2FRo",
+        "content_hash": "Tg0j1b4uVfQmT2Atbg1E5A",
+        "ordinal": 0,
+        "anchor_string": "BaseScanTool.withTempDirectory",
+        "content_string": "awaitrm(tempDir,{recursive:true});",
+        "full_fingerprint": "v1-typescript|SYM_JSTS_0102:rw9kQFu2FRo-Tg0j1b4uVfQmT2Atbg1E5A-0"
+      },
+      "fingerprint_metadata": {
+        "generation_time_ms": 3.365167183801532,
+        "extraction_method": "tree_sitter",
+        "warnings": []
+      }
+    }
+```
+
+</CodeGroup>
