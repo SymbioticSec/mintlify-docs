@@ -11,6 +11,9 @@
   "icons": {
     "library": "lucide"
   },
+  "interaction": {
+    "drilldown": true
+  },
   "navigation": {
     "global": {
     "anchors":[
