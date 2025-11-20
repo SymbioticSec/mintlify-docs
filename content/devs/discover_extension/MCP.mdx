@@ -9,6 +9,7 @@ description: "Secure AI generated code using our MCP"
 
 ## Setup
 
+
 <Note>
   MCP setup is independant from our extension (that you can download and install [here](/content/devs/intro/intro))
 </Note>
@@ -62,26 +63,56 @@ You will need:
 1. The full filepath of the index.js file we retrieved during the build of the MCP
 2. Your Symbiotic personal access token that you can create and retrieve [here](https://app.symbioticsec.ai/settings/api-token)
 
-Once you have these, configure the MCP using the examples below:
 
-<CodeGroup>
+#### Visual Studio Code
 
-```json In VS Code
-{
- "servers": {
-  "symbiotic-security": {
-      "command": "node",
-      "args": ["path_of_the_index.js_file"],
-      "env": {
-        "SYMBIOTIC_API_TOKEN": "your_token_here"
+
+
+1. `CTRL/CMD + P` and search for **MCP: Open User Configuration**.
+2. Enter the following configuration, and save teh file.
+    ```json
+    {
+      "mcpServers": {
+        "symbiotic-security": {
+          "command": "node",
+          "args": ["path_of_the_index.js_file"],
+          "env": {
+            "SYMBIOTIC_API_TOKEN": "your_token_here"
+          }
+        }
       }
     }
-  },
-}
-```
+    ```
+3. Activate the server using **MCP: List Servers** and selecting **symbiotic-security**, and selecting **Start Server**.
 
 
-```json In other IDEs
+#### Cursor
+
+1. `CTRL/CMD + P` and search for **Cursor Settings**.
+2. In the settings, find the **Tools & MCP** section.
+3. Click on **New MCP Server** and enter the following configuration:
+    ```json
+    {
+      "mcpServers": {
+        "symbiotic-security": {
+          "command": "node",
+          "args": ["path_of_the_index.js_file"],
+          "env": {
+            "SYMBIOTIC_API_TOKEN": "your_token_here"
+          }
+        }
+      }
+    }
+    ```
+
+#### Windsurf
+
+1. `CTRL/CMD + ,` to open Windsurf settings.
+2. Under Scroll to Cascade -> MCP servers
+3. Select **Add Server -> Add custom server**
+4. Add the following:
+
+```json
 {
   "mcpServers": {
     "symbiotic-security": {
@@ -95,7 +126,34 @@ Once you have these, configure the MCP using the examples below:
 }
 ```
 
-</CodeGroup>
+#### Zed
+
+1. `CMD + ,` to open Zed settings.
+2. Add the following:
+
+```json
+{
+  "mcpServers": {
+    "symbiotic-security": {
+      "command": "node",
+      "args": ["path_of_the_index.js_file"],
+      "env": {
+        "SYMBIOTIC_API_TOKEN": "your_token_here"
+      }
+    }
+  }
+}
+```
+
+#### Others
+
+Hundreds of other tools now support MCP servers, you can configure them to use the Symbiotic MCP server with the following settings:
+
+* **Command**: `node`
+* **Arguments**: `path_of_the_index.js_file`
+* **Environment**: `SYMBIOTIC_API_TOKEN` with your token
+
+
 
 ## Usage
 

@@ -3,9 +3,8 @@ title: "CLI"
 description: "You can use our CLI to integrate our detection anywhere you want."
 ---
 
-# Setup
-
-## Downlod and Install
+## Setup
+### Downlod and Install
 
 To download and install the right version of our CLI, use the following command :
 
@@ -18,15 +17,14 @@ curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.s
   If you encounter some problems and you need to reinstall the CLI you can use the command `symbiotic-cli install -f`
 </Info>
 
-## Retrieve and set your token
+### Retrieve and set your token
 
 To use our CLI you will need a **personal access token**, that you can create and retrive [here](https://app.symbioticsec.ai/settings/api-token).
 
 Once you have it, set the `SYMBIOTIC_API_TOKEN` environment variable with your token.
 
-# Usage
-
-## Scan
+## Usage
+### Scan
 
 As of today, two types of scan are available in our CLI :
 
@@ -176,5 +174,78 @@ Vulnerabilities found will be JSON objects in the fail_results table with the fo
       }
     }
 ```
-
 </CodeGroup>
+
+### AI Services
+
+<Info>
+  To use our AI services you will need to set the target LLM environement variable `SYMBIOTIC_TARGET_LLM_API=https://llm-proxy.symbioticsec.ai/`
+</Info>
+
+#### Remediate
+
+After detecting a vulnerability, you can use the our AI service to generate a tailored remediation using the following command.
+
+<CodeGroup>
+
+```bash Command 
+symbiotic-cli airemediate remediate <PROJECT_DIR> <RULE_ID> <FILE_PATH> 
+                                    <START_LINE> <END_LINE> 
+                                    <START_COL> <END_COL> 
+                                    <LANGUAGE>
+
+```
+
+
+```bash Example 
+ symbiotic-cli airemediate remediate  "/Users/symbiotic/SymCodeGoat" \
+                                      "SYM_JAVA_0023" \
+                                      "/Users/symbiotic/SymCodeGoat/kotlin/Vulnerable.kt" \
+                                      14 14 11 73 "kotlin"
+
+```
+```json Answer format  
+ {
+  "found_vulnerability_rule_id": "",
+  "original_file_path": "",
+  "vuln_doc": "",
+  "code_with_context": "",
+  "project_scope_vuln_context": "",
+  "remediated_code_with_context": "",
+  "remediated_code": "",
+  "status": "",
+  "false_positive_status": ""
+}
+
+```
+</CodeGroup>
+
+
+
+#### Explain false positive reason
+
+If an issue is likely a false positive, remediation will not be generated and `false_positive_status` will be equal to `FALSE_POSITIVE`.
+
+In that case, you can use one of our AI services to know more about why this issues soudns like a false positive with the following command. 
+
+<CodeGroup>
+
+```bash Command 
+symbiotic-cli airemediate fp_reason <PROJECT_DIR> <RULE_ID> <FILE_PATH> 
+                                    <START_LINE> <END_LINE> 
+                                    <START_COL> <END_COL> 
+                                    <LANGUAGE>
+
+```
+
+
+```bash Example 
+ symbiotic-cli airemediate fp_reason  "/Users/symbiotic/SymCodeGoat" \
+                                      "SYM_JAVA_0023" \
+                                      "/Users/symbiotic/SymCodeGoat/kotlin/Vulnerable.kt" \
+                                      14 14 11 73 "kotlin"
+
+```
+</CodeGroup>
+
+The answer will be a Markdown text explaining in details why this issue is likely a false positive.
