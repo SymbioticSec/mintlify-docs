@@ -62,14 +62,13 @@ You will need:
 1. The full filepath of the index.js file we retrieved during the build of the MCP
 2. Your Symbiotic personal access token that you can create and retrieve [here](https://app.symbioticsec.ai/settings/api-token)
 
-
-#### Visual Studio Code
+#### Antigravity
 
 1. `CTRL/CMD + P` and search for **MCP: Open User Configuration**.
 2. Enter the following configuration, and save the file.
     ```json
     {
-      "mcpServers": {
+      "servers": {
         "symbiotic-security": {
           "command": "node",
           "args": ["path_of_the_index.js_file"],
@@ -101,6 +100,53 @@ You will need:
       }
     }
     ```
+#### Kiro
+
+1. `CTRL/CMD + P` and search for **Kiro: Open MCP Config**.
+2. Enter the following configuration, and save the file.
+    ```json
+    {
+      "mcpServers": {
+        "symbiotic-security": {
+          "command": "node",
+          "args": ["path_of_the_index.js_file"],
+          "env": {
+            "SYMBIOTIC_API_TOKEN": "your_token_here"
+          },
+          "disabled": false
+        }
+      }
+    }
+    ```
+
+<Info>
+  To ensure the MCP is used we advise you to create an [Agent Hook](https://docs.kiro.ai/docs/agent-hooks) in Kiro with the following prompt: 
+  ```markdown
+  Run the security_scan_files tool from the symbiotic-security MCP server on the file that was just edited. 
+  Analyze all security issues found in the scan results and correct each issue by modifying the file appropriately. 
+  Make sure to address every vulnerability identified. 
+  Rescan after modification to ensure all issues have been corrected and none were introduced.
+  ```
+</Info> 
+
+#### Visual Studio Code
+
+1. `CTRL/CMD + P` and search for **MCP: Open User Configuration**.
+2. Enter the following configuration, and save the file.
+    ```json
+    {
+      "mcpServers": {
+        "symbiotic-security": {
+          "command": "node",
+          "args": ["path_of_the_index.js_file"],
+          "env": {
+            "SYMBIOTIC_API_TOKEN": "your_token_here"
+          }
+        }
+      }
+    }
+    ```
+3. Activate the server using **MCP: List Servers** and selecting **symbiotic-security**, and selecting **Start Server**.
 
 #### Windsurf
 
@@ -141,6 +187,8 @@ You will need:
   }
 }
 ```
+
+
 
 #### Others
 
