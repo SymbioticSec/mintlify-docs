@@ -81,6 +81,20 @@ You will need:
     ```
 3. Activate the server using **MCP: List Servers** and selecting **symbiotic-security**, and selecting **Start Server**.
 
+#### Continue.dev
+
+1. In continue.dev extension settings add a new MCP
+2. Enter the following configuration:
+    ```yaml
+    mcpServers:
+      - name: Symbiotic Security
+        command: node
+        args:
+          - "path_of_the_index.js_file"
+        env: {
+          "SYMBIOTIC_API_TOKEN": "your_token_here"
+        }
+    ```
 
 #### Cursor
 
