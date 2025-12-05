@@ -3,11 +3,11 @@ title: "Setup CI integration"
 description: "Create a security gate using our CLI or Github Action"
 ---
 
-Our CI integration is available with both our infra scan and our code scan allowing you to avoid merging vulnerable code in your production code.
+Our CI integration provides both infra and code scans, to help you identify vulnerabilities before they reach production.
 
 # Using Github Actions
 
-To make it easier for organizations using Github, we have created a Github Action that you can easily integrate in your pipelines.
+To make it easier for organizations using Github, we created a Github Action that can be easily integrated in your pipelines.
 
 <CodeGroup>
 
@@ -20,7 +20,7 @@ To make it easier for organizations using Github, we have created a Github Actio
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.1.4
+        uses: SymbioticSec/actions/scan@v0.2.0
         with:
           scan-type: infra
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -36,7 +36,7 @@ To make it easier for organizations using Github, we have created a Github Actio
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.1.4
+        uses: SymbioticSec/actions/scan@v0.2.0
         with:
           scan-type: code
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -52,7 +52,7 @@ full-security-scan:
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.1.4
+        uses: SymbioticSec/actions/scan@v0.2.0
         with:
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
 ```
@@ -82,12 +82,38 @@ If you are not using Github you can still use our cli in your pipelines :
     <CodeGroup>
 
     ```bash Launch infra scan
-      symbiotic-cli ci infra ./
+      symbiotic-cli ci infra ./ --skip-upload-results
     ```
 
     
     ```bash Launch code scan
-      symbiotic-cli ci code ./
+      symbiotic-cli ci code ./ --skip-upload-results
+    ```
+
+    </CodeGroup>
+
+    If you want your detected vulnerabilities to be uploaded to Symbiotic's backend to benefit from the dashboard, detailed reports, remediation suggestions and more ;
+    you need to provide information about your git repository to the command. See the example below :
+
+    <CodeGroup>
+
+    ```bash Launch infra scan
+      symbiotic-cli ci infra ./ \
+        --git-remote-url <your repository remote url> \
+        --git-first-commit-sha <your repository first commit sha> \
+        --git-latest-commit-sha <the scanned branch latest commit sha> \
+        --git-default-branch <your repository default branch> \
+        --git-current-branch <the scanned branch>
+    ```
+
+    
+    ```bash Launch code scan
+      symbiotic-cli ci code ./ \
+        --git-remote-url <your repository remote url> \
+        --git-first-commit-sha <your repository first commit sha> \
+        --git-latest-commit-sha <the scanned branch latest commit sha> \
+        --git-default-branch <your repository default branch> \
+        --git-current-branch <the scanned branch>
     ```
 
     </CodeGroup>
@@ -117,7 +143,7 @@ If you are not using Github you can still use our cli in your pipelines :
       - export "PATH=$HOME/.local/bin:$PATH"
   
     script:
-      - symbiotic-cli ci code ./
+      - symbiotic-cli ci code ./ --skip-upload-results
     rules:
       - if: '$CI_COMMIT_BRANCH'
   ```
