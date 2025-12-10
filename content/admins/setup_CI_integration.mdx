@@ -37,7 +37,7 @@ To make it easier for organizations using Github, we created a Github Action tha
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.3.0
+        uses: SymbioticSec/actions/scan@v0.4.0
         with:
           scan-type: code
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -54,7 +54,7 @@ full-security-scan:
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.3.0
+        uses: SymbioticSec/actions/scan@v0.4.0
         with:
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
           diff-scan: true
