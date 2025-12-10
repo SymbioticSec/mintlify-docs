@@ -7,9 +7,7 @@ Our CI integration provides both infra and code scans, to help you identify vuln
 
 # Using Github Actions
 
-To make it easier for organizations using Github, we created a Github Action that can be easily integrated in your pipelines.
-By default, the action will launch a differential scan (only returning new vulnerabilities) when triggered by a pull request event.
-If you want to disable this behavior and always return all vulnerabilities, you can set the diff-scan input to false.
+To make it easier for organizations using Github, we created a Github Action that can be easily integrated in your pipelines. By default, the action will launch a differential scan (only returning new vulnerabilities) when triggered by a pull request event. If you want to disable this behavior and always return all vulnerabilities, you can set the diff-scan input to false.
 
 <CodeGroup>
 
@@ -22,7 +20,7 @@ If you want to disable this behavior and always return all vulnerabilities, you 
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.2.0
+        uses: SymbioticSec/actions/scan@v0.3.0
         with:
           scan-type: infra
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -39,7 +37,7 @@ If you want to disable this behavior and always return all vulnerabilities, you 
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.2.0
+        uses: SymbioticSec/actions/scan@v0.3.0
         with:
           scan-type: code
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -56,7 +54,7 @@ full-security-scan:
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.2.0
+        uses: SymbioticSec/actions/scan@v0.3.0
         with:
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
           diff-scan: true
@@ -97,8 +95,7 @@ If you are not using Github you can still use our cli in your pipelines :
 
     </CodeGroup>
 
-    If you want your detected vulnerabilities to be uploaded to Symbiotic's backend to benefit from the dashboard, detailed reports, remediation suggestions and more ;
-    you need to provide information about your git repository to the command. See the example below :
+    If you want your detected vulnerabilities to be uploaded to Symbiotic's backend to benefit from the dashboard, detailed reports, remediation suggestions and more ; you need to provide information about your git repository to the command. See the example below :
 
     <CodeGroup>
 
