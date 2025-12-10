@@ -62,6 +62,22 @@ full-security-scan:
 
 </CodeGroup>
 
+<Info>
+  To run successfully the action must be triggered with :
+
+  ```yaml expandable
+  on:
+    push:
+      branches:
+        - main
+    pull_request:
+      types:
+        - opened
+        - synchronize
+        - reopened
+  ```
+</Info>
+
 <Tip>
   Don't forget to retrieve your [organization token](https://app.symbioticsec.ai/settings/organization-token) and to set it as a secret in your Github setttings.
 </Tip>
