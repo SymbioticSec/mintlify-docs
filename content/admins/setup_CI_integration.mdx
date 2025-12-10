@@ -8,6 +8,8 @@ Our CI integration provides both infra and code scans, to help you identify vuln
 # Using Github Actions
 
 To make it easier for organizations using Github, we created a Github Action that can be easily integrated in your pipelines.
+By default, the action will launch a differential scan (only returning new vulnerabilities) when triggered by a pull request event.
+If you want to disable this behavior and always return all vulnerabilities, you can set the diff-scan input to false.
 
 <CodeGroup>
 
@@ -24,6 +26,7 @@ To make it easier for organizations using Github, we created a Github Action tha
         with:
           scan-type: infra
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
+          diff-scan: true
 ```
 
 
@@ -40,6 +43,7 @@ To make it easier for organizations using Github, we created a Github Action tha
         with:
           scan-type: code
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
+          diff-scan: true
 ```
 
 
@@ -55,6 +59,7 @@ full-security-scan:
         uses: SymbioticSec/actions/scan@v0.2.0
         with:
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
+          diff-scan: true
 ```
 
 </CodeGroup>
