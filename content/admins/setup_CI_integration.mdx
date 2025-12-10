@@ -20,7 +20,7 @@ To make it easier for organizations using Github, we created a Github Action tha
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.3.0
+        uses: SymbioticSec/actions/scan@v0.4.0
         with:
           scan-type: infra
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -111,31 +111,6 @@ If you are not using Github you can still use our cli in your pipelines :
 
     </CodeGroup>
 
-    If you want your detected vulnerabilities to be uploaded to Symbiotic's backend to benefit from the dashboard, detailed reports, remediation suggestions and more ; you need to provide information about your git repository to the command. See the example below :
-
-    <CodeGroup>
-
-    ```bash Launch infra scan
-      symbiotic-cli ci infra ./ \
-        --git-remote-url <your repository remote url> \
-        --git-first-commit-sha <your repository first commit sha> \
-        --git-latest-commit-sha <the scanned branch latest commit sha> \
-        --git-default-branch <your repository default branch> \
-        --git-current-branch <the scanned branch>
-    ```
-
-    
-    ```bash Launch code scan
-      symbiotic-cli ci code ./ \
-        --git-remote-url <your repository remote url> \
-        --git-first-commit-sha <your repository first commit sha> \
-        --git-latest-commit-sha <the scanned branch latest commit sha> \
-        --git-default-branch <your repository default branch> \
-        --git-current-branch <the scanned branch>
-    ```
-
-    </CodeGroup>
-
     You can override the severity threshold defined in the configuration file using the _severity-threshold_ option.
 
     Ex: `symbiotic-cli ci infra ./ --severity-threshold high`
@@ -145,6 +120,35 @@ If you are not using Github you can still use our cli in your pipelines :
     </Warning>
   </Step>
 </Steps>
+
+<Tip>
+  If you want your detected vulnerabilities to be uploaded to Symbiotic's backend to benefit from the dashboard, detailed reports, remediation suggestions and more: you need to provide information about your git repository to the command.
+
+  See the example below :
+
+  <CodeGroup>
+
+  ```bash Launch infra scan
+    symbiotic-cli ci infra ./ \
+      --git-remote-url <your repository remote url> \
+      --git-first-commit-sha <your repository first commit sha> \
+      --git-latest-commit-sha <the scanned branch latest commit sha> \
+      --git-default-branch <your repository default branch> \
+      --git-current-branch <the scanned branch>
+  ```
+
+  
+  ```bash Launch code scan
+    symbiotic-cli ci code ./ \
+      --git-remote-url <your repository remote url> \
+      --git-first-commit-sha <your repository first commit sha> \
+      --git-latest-commit-sha <the scanned branch latest commit sha> \
+      --git-default-branch <your repository default branch> \
+      --git-current-branch <the scanned branch>
+  ```
+
+  </CodeGroup>
+</Tip>
 
 <Accordion title="Example in a Gitlab pipeline">
   ```yaml
@@ -166,6 +170,7 @@ If you are not using Github you can still use our cli in your pipelines :
       - if: '$CI_COMMIT_BRANCH'
   ```
 </Accordion>
+
 
 # Configuration
 
