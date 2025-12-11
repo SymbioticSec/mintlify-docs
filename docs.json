@@ -114,6 +114,10 @@
       {
         "label": "Support",
         "href": "mailto:support@symbioticsec.ai"
+      },
+      {
+        "label": "Status",
+        "href": "https://status.symbioticsec.ai/"
       }
     ],
     "primary": {
