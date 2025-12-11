@@ -7,7 +7,9 @@ Our CI integration provides both infra and code scans, to help you identify vuln
 
 # Using Github Actions
 
-To make it easier for organizations using Github, we created a Github Action that can be easily integrated in your pipelines. By default, the action will launch a differential scan (only returning new vulnerabilities) when triggered by a pull request event. If you want to disable this behavior and always return all vulnerabilities, you can set the diff-scan input to false.
+To make it easier for organizations using Github, we created a Github Action that can be easily integrated in your pipelines.
+By default, the action will launch a differential scan (only returning new vulnerabilities) when triggered by a pull request event.
+If you want to disable this behavior and always return all vulnerabilities, you can set the diff-scan input to false.
 
 <CodeGroup>
 
@@ -63,13 +65,11 @@ full-security-scan:
 </CodeGroup>
 
 <Info>
-  To run successfully the action must be triggered with :
+  To run the differential scan, the action must be triggered by a pull request event.
+  To do that, make sure to add the following to your workflow triggers:
 
   ```yaml expandable
   on:
-    push:
-      branches:
-        - main
     pull_request:
       types:
         - opened
