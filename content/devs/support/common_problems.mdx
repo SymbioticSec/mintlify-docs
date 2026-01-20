@@ -15,6 +15,23 @@ To force an update of Windows Defender's malware definitions, please follow thes
 
 Alternatively, the latest definition is available for download [here](https://docs.microsoft.com/microsoft-365/security/defender-endpoint/manage-updates-baselines-microsoft-defender-antivirus)
 
+### CLI is seen as a malware by your antivirus
+
+If you encounter issues installing our extension, it might be due to your antivirus flagging our CLI as malware. 
+
+You can try to whitelist the following paths in your antivirus settings:
+- Windows: 
+    - `C:\Users\YourUsername\AppData\Local\symbioticsec`
+    - `C:\Users\YourUsername\AppData\Roaming\YourIDEUser\globalStorage\symbiotic-security.symbiotic-security-vulnerability-scanner`
+- macOS: 
+    - `/Users/YourUsername/Library/Application Support/symbiotic`
+    - `/Users/YourUsername/Library/Application Support/YourIDEUser/User/globalStorage/symbiotic-security.symbiotic-security-vulnerability-scanner`
+- Linux: 
+    - `/home/YourUsername/.config/YourIDEUser/User/globalStorage/symbiotic-security.symbiotic-security-vulnerability-scanner/`
+    - `~/.local/share/symbiotic/`
+
+
+
 ### SSL Certificate issue / TLS Inspection 
 
 If you encounter issues installing our extension with SSL certificate errors, it might be due to a TLS Inspection on your side. 
