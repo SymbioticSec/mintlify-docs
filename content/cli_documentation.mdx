@@ -3,15 +3,19 @@ title: "Our CLI"
 description: "How to use our CLI"
 ---
 
+# CLI
+
+Symbiotic CLI Tool
+
 **Usage**:
 
 ```console
-$ symbiotic-cli [OPTIONS] COMMAND [ARGS]...
+$ [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
 
-* `--telemetry [off|errors|all]`: Enable telemetry  [default: off]
+* `--telemetry [off|crash|error|all]`: Enable telemetry  [default: off]
 * `-v, --verbose`: Increase verbosity (-v=info, -vv=debug)  [default: 0]
 * `--auth-mode [membership|server|organization]`: How to authenticate to the backend  [default: membership]
 * `--install-completion`: Install completion for the current shell.
@@ -20,7 +24,9 @@ $ symbiotic-cli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
+* `init`: Check for CLI updates.
 * `install`: Download and install the security scanners...
+* `logout`: Logout from the Symbiotic backend.
 * `version`: Show the installed CLI version.
 * `collect-files`: Collect files from the current directory...
 * `scan-diff`: Compare two scan outputs and display their...
@@ -29,14 +35,17 @@ $ symbiotic-cli [OPTIONS] COMMAND [ARGS]...
 * `infra`: Infrastructure as Code (IaC) scanning...
 * `code`: Source code security scanning commands and...
 
-## `symbiotic-cli install`
+## `init`
 
-Download and install the security scanners used by the CLI.
+Check for CLI updates.
+Install the scaners.
+Download vulnerability rules.
+Set up authentication.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli install [OPTIONS]
+$ init [OPTIONS]
 ```
 
 **Options**:
@@ -44,28 +53,57 @@ $ symbiotic-cli install [OPTIONS]
 * `-f, --force`: Force install: will remove existing files before re-installing
 * `--help`: Show this message and exit.
 
-## `symbiotic-cli version`
+## `install`
 
-Show the installed CLI version.
+Download and install the security scanners used by the CLI.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli version [OPTIONS]
+$ install [OPTIONS]
+```
+
+**Options**:
+
+* `-f, --force`: Force install: will remove existing files before re-installing
+* `--help`: Show this message and exit.
+
+## `logout`
+
+Logout from the Symbiotic backend.
+
+**Usage**:
+
+```console
+$ logout [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-## `symbiotic-cli collect-files`
+## `version`
+
+Show the installed CLI version.
+
+**Usage**:
+
+```console
+$ version [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `collect-files`
 
 Collect files from the current directory for scanning.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli collect-files [OPTIONS] PATH
+$ collect-files [OPTIONS] PATH
 ```
 
 **Arguments**:
@@ -76,7 +114,7 @@ $ symbiotic-cli collect-files [OPTIONS] PATH
 
 * `--help`: Show this message and exit.
 
-## `symbiotic-cli scan-diff`
+## `scan-diff`
 
 Compare two scan outputs and display their differences.
 
@@ -86,7 +124,7 @@ containing created, unchanged and remediated findings.
 **Usage**:
 
 ```console
-$ symbiotic-cli scan-diff [OPTIONS] BEFORE_PATH AFTER_PATH
+$ scan-diff [OPTIONS] BEFORE_PATH AFTER_PATH
 ```
 
 **Arguments**:
@@ -99,14 +137,14 @@ $ symbiotic-cli scan-diff [OPTIONS] BEFORE_PATH AFTER_PATH
 * `--ci-formatting`: Format output for CI systems
 * `--help`: Show this message and exit.
 
-## `symbiotic-cli airemediate`
+## `airemediate`
 
 AI Remediation-related parameters
 
 **Usage**:
 
 ```console
-$ symbiotic-cli airemediate [OPTIONS] COMMAND [ARGS]...
+$ airemediate [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -118,20 +156,23 @@ $ symbiotic-cli airemediate [OPTIONS] COMMAND [ARGS]...
 * `remediate`: Perform AI-powered remediation for a...
 * `generate_recommendation`: Generate a recommendation after...
 * `fp_reason`
+* `remediation_mode_selection_post_fix`: Challenge the remediation mode after...
 
-### `symbiotic-cli airemediate remediate`
+### `airemediate remediate`
 
-Perform AI-powered remediation for a single SAST vulnerability.
+Perform AI-powered remediation for a single vulnerability (code or infra-as-code).
 
 This command extracts the vulnerable code from a given file and range,
 generates an AI-based fix based on the vulnerability rule metadata,
 and applies it to the file. Optionally, it can output the full
 remediation details to a JSON file.
 
+For IaC vulnerabilities, use --type infra.
+
 **Usage**:
 
 ```console
-$ symbiotic-cli airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [STAGED_ISSUE_PUBKEY]
+$ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [STAGED_ISSUE_PUBKEY]
 ```
 
 **Arguments**:
@@ -149,20 +190,21 @@ $ symbiotic-cli airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH ST
 **Options**:
 
 * `--stream`: Enable streaming mode for live output processing
+* `--type [code|infra]`: Vulnerability type (code or infra)  [default: code]
 * `--vuln-doc TEXT`: Vulnerability documentation
 * `--code-context TEXT`: Code snippet with context around the vulnerability.
 * `--project-context TEXT`: Context about the vulnerability in the project scope.
 * `--override-fp`: Enable streaming mode for live output processing
 
-### `symbiotic-cli airemediate generate_recommendation`
+### `airemediate generate_recommendation`
 
-Generate a recommendation after remediating a SAST vulnerability, suggesting
+Generate a recommendation after remediating a code vulnerability, suggesting
 additional manual changes that may be needed elsewhere in the project.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli airemediate generate_recommendation [OPTIONS] RECOMMENDATION_JSON_PARAMS
+$ airemediate generate_recommendation [OPTIONS] RECOMMENDATION_JSON_PARAMS
 ```
 
 **Arguments**:
@@ -174,12 +216,12 @@ $ symbiotic-cli airemediate generate_recommendation [OPTIONS] RECOMMENDATION_JSO
 
 * `--stream`: Enable streaming mode for live output processing
 
-### `symbiotic-cli airemediate fp_reason`
+### `airemediate fp_reason`
 
 **Usage**:
 
 ```console
-$ symbiotic-cli airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [STAGED_ISSUE_PUBKEY]
+$ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [STAGED_ISSUE_PUBKEY]
 ```
 
 **Arguments**:
@@ -200,14 +242,36 @@ $ symbiotic-cli airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH ST
 * `--vuln-doc TEXT`: Vulnerability documentation
 * `--code-context TEXT`: Code snippet with context around the vulnerability.
 
-## `symbiotic-cli ci`
+### `airemediate remediation_mode_selection_post_fix`
+
+Challenge the remediation mode after remediating a Code vulnerability.
+
+This command evaluates whether a provided remediation is sufficient (&#x27;simple&#x27;) or if the
+vulnerability requires deeper, architectural changes (&#x27;deep&#x27;) to be fully resolved.
+
+**Usage**:
+
+```console
+$ airemediate remediation_mode_selection_post_fix [OPTIONS] RECOMMENDATION_JSON_PARAMS
+```
+
+**Arguments**:
+
+* `RECOMMENDATION_JSON_PARAMS`: JSON string containing remediated code and vulnerability context.
+        You can pass the JSON output generated by the `remediate` command.  [required]
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+## `ci`
 
 CI-related parameters
 
 **Usage**:
 
 ```console
-$ symbiotic-cli ci [OPTIONS] COMMAND [ARGS]...
+$ ci [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -219,14 +283,14 @@ $ symbiotic-cli ci [OPTIONS] COMMAND [ARGS]...
 * `infra`: Run Infrastructure as Code security scan...
 * `code`: Run Code Security scan in CI.
 
-### `symbiotic-cli ci infra`
+### `ci infra`
 
 Run Infrastructure as Code security scan in CI.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli ci infra [OPTIONS] PATH
+$ ci infra [OPTIONS] PATH
 ```
 
 **Arguments**:
@@ -245,14 +309,14 @@ $ symbiotic-cli ci infra [OPTIONS] PATH
 * `--git-current-branch TEXT`: Current branch being scanned
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli ci code`
+### `ci code`
 
 Run Code Security scan in CI.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli ci code [OPTIONS] PATH
+$ ci code [OPTIONS] PATH
 ```
 
 **Arguments**:
@@ -271,14 +335,14 @@ $ symbiotic-cli ci code [OPTIONS] PATH
 * `--git-current-branch TEXT`: Current branch being scanned
 * `--help`: Show this message and exit.
 
-## `symbiotic-cli infra`
+## `infra`
 
 Infrastructure as Code (IaC) scanning commands and utilities.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli infra [OPTIONS] COMMAND [ARGS]...
+$ infra [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -288,19 +352,20 @@ $ symbiotic-cli infra [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 * `install`: Install the Infrastructure as Code (IaC)...
+* `uninstall`: Uninstall the Infrastructure as Code (IaC)...
 * `scan`: Scan a directory using the IaC scanner.
 * `version`: Show the version of the installed IaC...
 * `latest-version`: Show the latest available version of the...
 * `location`: Show the filesystem location of the IaC...
 
-### `symbiotic-cli infra install`
+### `infra install`
 
 Install the Infrastructure as Code (IaC) scanner.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli infra install [OPTIONS]
+$ infra install [OPTIONS]
 ```
 
 **Options**:
@@ -308,14 +373,28 @@ $ symbiotic-cli infra install [OPTIONS]
 * `-f, --force`: Force install: will remove existing files before re-installing
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli infra scan`
+### `infra uninstall`
+
+Uninstall the Infrastructure as Code (IaC) scanner.
+
+**Usage**:
+
+```console
+$ infra uninstall [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+### `infra scan`
 
 Scan a directory using the IaC scanner. Use --raw to output unfiltered results.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli infra scan [OPTIONS] PATH
+$ infra scan [OPTIONS] PATH
 ```
 
 **Arguments**:
@@ -329,56 +408,56 @@ $ symbiotic-cli infra scan [OPTIONS] PATH
 * `--raw / --no-raw`: Show raw output  [default: no-raw]
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli infra version`
+### `infra version`
 
 Show the version of the installed IaC scanner.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli infra version [OPTIONS]
+$ infra version [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli infra latest-version`
+### `infra latest-version`
 
 Show the latest available version of the IaC scanner.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli infra latest-version [OPTIONS]
+$ infra latest-version [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli infra location`
+### `infra location`
 
 Show the filesystem location of the IaC scanner binary.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli infra location [OPTIONS]
+$ infra location [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-## `symbiotic-cli code`
+## `code`
 
 Source code security scanning commands and utilities.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli code [OPTIONS] COMMAND [ARGS]...
+$ code [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -388,19 +467,20 @@ $ symbiotic-cli code [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 * `install`: Install the code security scanner.
+* `uninstall`: Uninstall the code security scanner.
 * `scan`: Scan a directory using the code security...
 * `version`: Show the version of the installed code...
 * `latest-version`: Show the latest available version of the...
 * `location`: Show the filesystem location of the code...
 
-### `symbiotic-cli code install`
+### `code install`
 
 Install the code security scanner.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli code install [OPTIONS]
+$ code install [OPTIONS]
 ```
 
 **Options**:
@@ -408,14 +488,28 @@ $ symbiotic-cli code install [OPTIONS]
 * `-f, --force`: Force install: will remove existing files before re-installing
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli code scan`
+### `code uninstall`
+
+Uninstall the code security scanner.
+
+**Usage**:
+
+```console
+$ code uninstall [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+### `code scan`
 
 Scan a directory using the code security scanner. Use --raw to output unfiltered results.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli code scan [OPTIONS] PATH
+$ code scan [OPTIONS] PATH
 ```
 
 **Arguments**:
@@ -426,44 +520,45 @@ $ symbiotic-cli code scan [OPTIONS] PATH
 
 * `--raw / --no-raw`: Show raw output  [default: no-raw]
 
-### `symbiotic-cli code version`
+### `code version`
 
 Show the version of the installed code scanner.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli code version [OPTIONS]
+$ code version [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli code latest-version`
+### `code latest-version`
 
 Show the latest available version of the code scanner.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli code latest-version [OPTIONS]
+$ code latest-version [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-### `symbiotic-cli code location`
+### `code location`
 
 Show the filesystem location of the code scanner binary.
 
 **Usage**:
 
 ```console
-$ symbiotic-cli code location [OPTIONS]
+$ code location [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
+
