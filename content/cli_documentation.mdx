@@ -287,6 +287,17 @@ $ ci [OPTIONS] COMMAND [ARGS]...
 
 Run Infrastructure as Code security scan in CI.
 
+Exit Codes:
+    0: No blocking vulnerabilities (findings with scan_status: BLOCKING)
+    1: Blocking vulnerabilities found OR missing required git fields OR upload error
+
+Output:
+    stdout: Human-readable formatted output (or &quot;No vulnerabilities detected&quot;)
+    stderr: Errors (API failures, missing fields)
+
+Note: Exit code is determined by count of BLOCKING findings, not scanner exit code.
+Findings with scan_status DEFAULT or IGNORED do not affect exit code.
+
 **Usage**:
 
 ```console
@@ -312,6 +323,17 @@ $ ci infra [OPTIONS] PATH
 ### `ci code`
 
 Run Code Security scan in CI.
+
+Exit Codes:
+    0: No blocking vulnerabilities (findings with scan_status: BLOCKING)
+    1: Blocking vulnerabilities found OR missing required git fields OR upload error
+
+Output:
+    stdout: Human-readable formatted output (or &quot;No vulnerabilities detected&quot;)
+    stderr: Errors (API failures, missing fields)
+
+Note: Exit code is determined by count of BLOCKING findings, not scanner exit code.
+Findings with scan_status DEFAULT or IGNORED do not affect exit code.
 
 **Usage**:
 
@@ -391,6 +413,14 @@ $ infra uninstall [OPTIONS]
 
 Scan a directory using the IaC scanner. Use --raw to output unfiltered results.
 
+Exit Codes:
+    0: Scan completed successfully
+    1: Scanner execution error
+
+Output:
+    stdout: SymbioticScanOutput JSON (or raw Trivy JSON with --raw)
+    stderr: Scanner logs and warnings
+
 **Usage**:
 
 ```console
@@ -406,6 +436,7 @@ $ infra scan [OPTIONS] PATH
 * `--skip-files TEXT`: Files to skip separated by comma
 * `--skip-dirs TEXT`: Directories to skip separated by comma
 * `--raw / --no-raw`: Show raw output  [default: no-raw]
+* `--skip-upload-results`: Skip uploading scan results to Symbiotic backend
 * `--help`: Show this message and exit.
 
 ### `infra version`
@@ -506,6 +537,14 @@ $ code uninstall [OPTIONS]
 
 Scan a directory using the code security scanner. Use --raw to output unfiltered results.
 
+Exit Codes:
+    0: Scan completed successfully
+    1: Scanner execution error
+
+Output:
+    stdout: SymbioticScanOutput JSON (or raw Opengrep JSON with --raw)
+    stderr: Scanner logs and warnings
+
 **Usage**:
 
 ```console
@@ -519,6 +558,7 @@ $ code scan [OPTIONS] PATH
 **Options**:
 
 * `--raw / --no-raw`: Show raw output  [default: no-raw]
+* `--skip-upload-results`: Skip uploading scan results to Symbiotic backend
 
 ### `code version`
 
