@@ -22,7 +22,7 @@ If you want to disable this behavior and always return all vulnerabilities, you 
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.4.1
+        uses: SymbioticSec/actions/scan@v0.4.2
         with:
           scan-type: infra
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -39,7 +39,7 @@ If you want to disable this behavior and always return all vulnerabilities, you 
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.4.1
+        uses: SymbioticSec/actions/scan@v0.4.2
         with:
           scan-type: code
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
@@ -56,7 +56,7 @@ full-security-scan:
       - uses: actions/checkout@v4
 
       - name: Scan
-        uses: SymbioticSec/actions/scan@v0.4.1
+        uses: SymbioticSec/actions/scan@v0.4.2
         with:
           api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
           diff-scan: true
