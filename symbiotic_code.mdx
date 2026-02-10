@@ -1,6 +1,6 @@
 ---
 title: "Symbiotic Code"
-description: "Boost your devs productivity while keeping your code safe"
+description: "ABoost your devs productivity while keeping your code safe"
 ---
 
 To use Symbiotic Code, please launch the following command in your terminal:
@@ -11,7 +11,7 @@ curl ..../install | bash
 
 To launch Symbiotic Code, use the command `symbiotic`in your terminal.
 
-## Authenticate 
+## Authenticate
 
 At the first launch, you will be asked to input your token. Follow steps detailed in the modal to log in.
 
@@ -23,3 +23,14 @@ At the first launch, you will be asked to input your token. Follow steps detaile
 
 `/cd` Use this command to change the directory used by the agent\
 `/session` To find your history and switch between sessions
+
+### Specific tools 
+
+**Guardrails**\
+When working on an existing project, the agent first retrieves the repository’s security guardrails. These guardrails guide the agent and ensure that any suggested implementation follows company standards and repository best practices. You can define and manage guardrails for a repository in the portal [here](https://app.symbioticsec.ai/guardrails).
+
+**Security Check**\
+During feature implementation, the agent may perform a security check by analyzing the code against OWASP security risks. If any risks are identified and not adequately addressed, the agent automatically adjusts the implementation to ensure compliance with security best practices.
+
+**Security Scan**\
+Once implementation is complete, the agent runs a security scan using SAST tools to analyze the generated code for potential vulnerabilities. Based on the scan results, the agent iterates on the implementation until no security issues remain.
