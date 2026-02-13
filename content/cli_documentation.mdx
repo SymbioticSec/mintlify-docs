@@ -287,6 +287,17 @@ $ ci [OPTIONS] COMMAND [ARGS]...
 
 Run Infrastructure as Code security scan in CI.
 
+Exit Codes:
+    0: No blocking vulnerabilities (findings with scan_status: BLOCKING)
+    1: Blocking vulnerabilities found OR missing required git fields OR upload error
+
+Output:
+    stdout: Human-readable formatted output (or &quot;No vulnerabilities detected&quot;)
+    stderr: Errors (API failures, missing fields)
+
+Note: Exit code is determined by count of BLOCKING findings, not scanner exit code.
+Findings with scan_status DEFAULT or IGNORED do not affect exit code.
+
 **Usage**:
 
 ```console
@@ -312,6 +323,17 @@ $ ci infra [OPTIONS] PATH
 ### `ci code`
 
 Run Code Security scan in CI.
+
+Exit Codes:
+    0: No blocking vulnerabilities (findings with scan_status: BLOCKING)
+    1: Blocking vulnerabilities found OR missing required git fields OR upload error
+
+Output:
+    stdout: Human-readable formatted output (or &quot;No vulnerabilities detected&quot;)
+    stderr: Errors (API failures, missing fields)
+
+Note: Exit code is determined by count of BLOCKING findings, not scanner exit code.
+Findings with scan_status DEFAULT or IGNORED do not affect exit code.
 
 **Usage**:
 
@@ -389,7 +411,15 @@ $ infra uninstall [OPTIONS]
 
 ### `infra scan`
 
-Scan a directory using the IaC scanner. Use --raw to output unfiltered results.
+Scan a directory using the IaC scanner.
+
+Exit Codes:
+    0: Scan completed successfully
+    1: Scanner execution error
+
+Output:
+    stdout: SymbioticScanOutput JSON (or raw scanner JSON with --raw)
+    stderr: Scanner logs and warnings
 
 **Usage**:
 
@@ -399,13 +429,15 @@ $ infra scan [OPTIONS] PATH
 
 **Arguments**:
 
-* `PATH`: Path to scan  [required]
+* `PATH`: Filesystem path to scan  [required]
 
 **Options**:
 
-* `--skip-files TEXT`: Files to skip separated by comma
-* `--skip-dirs TEXT`: Directories to skip separated by comma
-* `--raw / --no-raw`: Show raw output  [default: no-raw]
+* `--skip-files TEXT`: Comma-separated files to exclude
+* `--skip-dirs TEXT`: Comma-separated directories to exclude
+* `--raw / --no-raw`: Show raw scanner JSON output  [default: no-raw]
+* `--skip-upload-results`: Skip uploading scan results to Symbiotic backend
+* `--origin [ide|ci|vcs_app|cli_standalone|symbiotic_code]`: Source triggering the scan  [default: cli_standalone]
 * `--help`: Show this message and exit.
 
 ### `infra version`
@@ -504,7 +536,15 @@ $ code uninstall [OPTIONS]
 
 ### `code scan`
 
-Scan a directory using the code security scanner. Use --raw to output unfiltered results.
+Scan a directory using the code security scanner.
+
+Exit Codes:
+    0: Scan completed successfully
+    1: Scanner execution error
+
+Output:
+    stdout: SymbioticScanOutput JSON (or raw Opengrep JSON with --raw)
+    stderr: Scanner logs and warnings
 
 **Usage**:
 
@@ -514,11 +554,14 @@ $ code scan [OPTIONS] PATH
 
 **Arguments**:
 
-* `PATH`: Path to scan  [required]
+* `PATH`: Filesystem path to scan  [required]
 
 **Options**:
 
-* `--raw / --no-raw`: Show raw output  [default: no-raw]
+* `--raw / --no-raw`: Show raw scanner JSON output  [default: no-raw]
+* `--skip-upload-results`: Skip uploading scan results to Symbiotic backend
+* `--origin [ide|ci|vcs_app|cli_standalone|symbiotic_code]`: Source triggering the scan  [default: cli_standalone]
+* `--help`: Show this message and exit.
 
 ### `code version`
 
