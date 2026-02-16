@@ -172,7 +172,7 @@ For IaC vulnerabilities, use --type infra.
 **Usage**:
 
 ```console
-$ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [STAGED_ISSUE_PUBKEY]
+$ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT]
 ```
 
 **Arguments**:
@@ -185,7 +185,7 @@ $ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `START_COL`: The starting column of the vulnerability.  [required]
 * `END_COL`: The ending column of the vulnerability.  [required]
 * `LANGUAGE`: Language of the code we want to remediate  [required]
-* `[STAGED_ISSUE_PUBKEY]`: The public key of the staged issue, used to track interactions with the AI.
+* `[FINGERPRINT]`: Fingerprint of the finding, used to track interactions with the AI.
 
 **Options**:
 
@@ -222,7 +222,7 @@ $ airemediate generate_recommendation [OPTIONS] RECOMMENDATION_JSON_PARAMS
 **Usage**:
 
 ```console
-$ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [STAGED_ISSUE_PUBKEY]
+$ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT]
 ```
 
 **Arguments**:
@@ -235,7 +235,7 @@ $ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `START_COL`: The starting column of the vulnerability.  [required]
 * `END_COL`: The ending column of the vulnerability.  [required]
 * `LANGUAGE`: Language of the code we want to remediate  [required]
-* `[STAGED_ISSUE_PUBKEY]`: The public key of the staged issue, used to track interactions with the AI.
+* `[FINGERPRINT]`: Fingerprint of the finding, used to track interactions with the AI.
 
 **Options**:
 
