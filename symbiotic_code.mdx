@@ -1,34 +1,46 @@
 ---
 title: "Symbiotic Code"
-description: "ABoost your devs productivity while keeping your code safe"
+description: "Boost your devs productivity while keeping your code safe"
 ---
+
+## Get started 
+
+### Download the CLI
 
 To use Symbiotic Code, please launch the following command in your terminal:
 
 ```shellscript
-curl ..../install | bash
+curl -sSL https://github.com/SymbioticSec/code/releases/latest/download/install.sh | bash
+      echo 'export PATH="$HOME/.local/bin:$PATH"'
 ```
 
-To launch Symbiotic Code, use the command `symbiotic`in your terminal.
+To launch Symbiotic Code, use the command `symbiotic` in your terminal.
 
 <Info>
 You may need to perform a `chmod +x symbiotic` to make the file executable.
 </Info>
 
-## Authenticate
+### Authenticate
 
-At the first launch, you will be asked to input your token. Follow steps detailed in the modal to log in.
+<Info>
+To use Symbiotic Code you need to have a Symbiotic Security account. If it's not the case, please ask your admin or Symbiotic's point of contact to create you an access. 
+</Info>
 
-![Authentication Modal](/images/authentication_modal.png)
+At the first launch, you will be asked to input your Symbiotic's personal token.
+1. Click on the link in the modal to be redirected to our portal
+2. Create or copy an existing token
+3. Paste this token in the modal and press Enter to submit
 
-## Start coding
+
+## Start vibing
 
 ### Common Commands
 
-`/cd` Use this command to change the directory used by the agent\
+`/cd` Use this command to change the directory used by the agent
 `/session` To find your history and switch between sessions
+`/new` To create a new session
 
-### Specific tools 
+### Specific tools available
 
 **Guardrails**\
 When working on an existing project, the agent first retrieves the repository’s security guardrails. These guardrails guide the agent and ensure that any suggested implementation follows company standards and repository best practices. You can define and manage guardrails for a repository in the portal [here](https://app.symbioticsec.ai/guardrails).
@@ -38,3 +50,19 @@ During feature implementation, the agent may perform a security check by analyzi
 
 **Security Scan**\
 Once implementation is complete, the agent runs a security scan using SAST tools to analyze the generated code for potential vulnerabilities. Based on the scan results, the agent iterates on the implementation until no security issues remain.
+
+
+## Best way to test Symbiotic Code 
+
+### The value of guardrails
+
+1. On our portal connect to Github 
+2. Create guardrails on one of your repository 
+3. Open this repository in Symbiotic Code and use it to code a feature. 
+
+You should see our agent retrieving guardrails generated in our portal an use them. 
+
+### Security from the first line of code
+
+Another way to see the value is to create a new project from scratch by asking our agent to code something like a weather app, a to do list or a CRM. 
+You should see guardrails creation, security check and security scan in action. 
