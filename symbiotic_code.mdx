@@ -1,68 +1,111 @@
 ---
 title: "Symbiotic Code"
-description: "Boost your devs productivity while keeping your code safe"
+description: "Boost your developers' productivity while keeping your code secure"
 ---
 
-## Get started 
+<Info>
+  **Prerequisites**
+  - A Symbiotic Security account (ask your admin or Symbiotic point of contact for access)
+  - Internet connection
+</Info>
+
+## Installation
 
 ### Download the CLI
 
-To use Symbiotic Code, please launch the following command in your terminal:
+Install Symbiotic Code using the following command:
 
-```shellscript
+```bash
 curl -sSL https://github.com/SymbioticSec/code/releases/latest/download/install.sh | bash
-      echo 'export PATH="$HOME/.local/bin:$PATH"'
 ```
 
-To launch Symbiotic Code, use the command `symbiotic` in your terminal.
+Then add the binary to your PATH:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+To launch Symbiotic Code, use the `symbiotic` command in your terminal.
+
+<Warning>
+You may need to run `chmod +x ~/.local/bin/symbiotic` to make the file executable.
+</Warning>
+
+### Update
+
+If an update is available, the CLI will auto-update on teh next launch. 
+
+## Authentication
 
 <Info>
-You may need to perform a `chmod +x symbiotic` to make the file executable.
+A Symbiotic Security account is required. If you don't have access, contact your administrator or Symbiotic point of contact.
 </Info>
 
-### Authenticate
+On first launch, you'll be prompted to enter your personal access token:
 
-<Info>
-To use Symbiotic Code you need to have a Symbiotic Security account. If it's not the case, please ask your admin or Symbiotic's point of contact to create you an access. 
-</Info>
+1. Click the link in the authentication modal to open the [Symbiotic Portal](https://app.symbioticsec.ai)
+2. Create a new token or copy an existing one from your account settings
+3. Paste the token into the modal and press **Enter**
 
-At the first launch, you will be asked to input your Symbiotic's personal token.
-1. Click on the link in the modal to be redirected to our portal
-2. Create or copy an existing token
-3. Paste this token in the modal and press Enter to submit
+Your token is securely stored and used for all subsequent operations.
 
 
-## Start vibing
+## Using Symbiotic Code
 
 ### Common Commands
 
-`/cd` Use this command to change the directory used by the agent
-`/session` To find your history and switch between sessions
-`/new` To create a new session
+Use these slash commands within the Symbiotic Code interface:
 
-### Specific tools available
+| Command | Description |
+|---------|-------------|
+| `/cd` | Change the working directory for the agent |
+| `/session` | View conversation history and switch between sessions |
+| `/new` | Start a new conversation session |
 
-**Guardrails**\
-When working on an existing project, the agent first retrieves the repository’s security guardrails. These guardrails guide the agent and ensure that any suggested implementation follows company standards and repository best practices. You can define and manage guardrails for a repository in the portal [here](https://app.symbioticsec.ai/guardrails).
+### Security Features
 
-**Security Check**\
-During feature implementation, the agent may perform a security check by analyzing the code against OWASP security risks. If any risks are identified and not adequately addressed, the agent automatically adjusts the implementation to ensure compliance with security best practices.
+<CardGroup >
+  <Card title="Guardrails" icon="shield-check">
+    When working on an existing project, the agent retrieves your repository's security guardrails. These guardrails ensure all suggested implementations follow your company's standards and best practices.
 
-**Security Scan**\
-Once implementation is complete, the agent runs a security scan using SAST tools to analyze the generated code for potential vulnerabilities. Based on the scan results, the agent iterates on the implementation until no security issues remain.
+  </Card>
+
+  <Card title="Security Check" icon="scan-search">
+    During feature implementation, the agent performs continuous security checks against OWASP security risks. If risks are identified, the agent automatically adjusts the implementation to ensure compliance.
+  </Card>
+
+  <Card title="Security Scan" icon="scan-line">
+    After implementation completes, the agent runs a SAST security scan to identify potential vulnerabilities. The agent iterates on the code until all security issues are resolved.
+  </Card>
+</CardGroup>
 
 
-## Best way to test Symbiotic Code 
+## Quick Start Guide
 
-### The value of guardrails
+### Test with Guardrails
 
-1. On our portal connect to Github 
-2. Create guardrails on one of your repository 
-3. Open this repository in Symbiotic Code and use it to code a feature. 
+Experience the value of AI-guided secure development:
 
-You should see our agent retrieving guardrails generated in our portal an use them. 
+1. Connect your GitHub account in the [Symbiotic Portal](https://app.symbioticsec.ai)
+2. Create guardrails for one of your repositories
+3. Open the repository in Symbiotic Code and ask it to implement a feature
 
-### Security from the first line of code
+You'll see the agent automatically retrieve and apply your configured guardrails.
 
-Another way to see the value is to create a new project from scratch by asking our agent to code something like a weather app, a to do list or a CRM. 
-You should see guardrails creation, security check and security scan in action. 
+### Security from Day One
+
+Create a new project from scratch to see all security features in action:
+
+1. Ask the agent to create a simple project (e.g., a weather app, to-do list, or CRM)
+2. Observe the automatic guardrail generation
+3. Watch security checks run during implementation
+4. See the final security scan validate the code
+
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `command not found: symbiotic` | Ensure `~/.local/bin` is in your PATH and restart your terminal |
+| Authentication fails | Verify your token is valid in the portal and hasn't expired |
+| Permission denied | Run `chmod +x ~/.local/bin/symbiotic` | 
