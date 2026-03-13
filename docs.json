@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
+  "theme": "aspen",
   "name": "Symbiotic Security",
   "colors": {
     "primary": "#C45D97",
@@ -16,7 +16,7 @@
   },
   "navigation": {
     "global": {
-    "anchors":[
+      "anchors": [
         {
           "anchor": "Website",
           "href": "https://symbioticsec.ai",
@@ -32,79 +32,102 @@
           "href": "https://symbioticsecurity.mintlify.app/changelog",
           "icon": "logs"
         }
-      ]},
-    "dropdowns": [
+      ]
+    },
+    "products": [
       {
-        "dropdown": "Devs",
-        "icon": "binary",
-        "groups": [
+        "product": "Flow",
+        "description": "Our security scanning solution",
+        "icon": "search-code",
+        "dropdowns": [
           {
-            "group": "Getting started",
-            "pages": [
-              "content/devs/intro/intro",
-              "content/devs/intro/quickstart"
-            ]
-          },
-          {
-            "group": "Tools",
-            "pages": [
+            "dropdown": "Devs",
+            "icon": "binary",
+            "groups": [
               {
-                "group": "IDE extension",
+                "group": "Getting started",
                 "pages": [
-                  "content/devs/discover_extension/detection",
-                  "content/devs/discover_extension/treeview",
-                  "content/devs/discover_extension/details",
-                  "content/devs/discover_extension/deep_remediation",
-                  "content/devs/discover_extension/hover",
-                  "content/devs/discover_extension/status"
-                  
+                  "content/devs/intro/intro",
+                  "content/devs/intro/quickstart"
                 ]
               },
-            "content/devs/discover_extension/MCP",
-            "content/devs/discover_extension/CLI"
+              {
+                "group": "Tools",
+                "pages": [
+                  {
+                    "group": "IDE extension",
+                    "pages": [
+                      "content/devs/discover_extension/detection",
+                      "content/devs/discover_extension/treeview",
+                      "content/devs/discover_extension/details",
+                      "content/devs/discover_extension/deep_remediation",
+                      "content/devs/discover_extension/hover",
+                      "content/devs/discover_extension/status"
+                    ]
+                  },
+                  "content/devs/discover_extension/MCP",
+                  "content/devs/discover_extension/CLI"
+                ]
+              },
+              {
+                "group": "Configurations",
+                "pages": [
+                  "content/devs/actions/configure_detection",
+                  "content/devs/actions/ignore",
+                  "content/devs/actions/false_positive"
+                ]
+              },
+              {
+                "group": "Support",
+                "pages": [
+                  "content/devs/support/share_logs",
+                  "content/devs/support/support_bundle",
+                  "content/devs/support/common_problems",
+                  "content/devs/support/commands"
+                ]
+              }
             ]
           },
           {
-            "group": "Configurations",
-            "pages": [
-              "content/devs/actions/configure_detection",
-              "content/devs/actions/ignore",
-              "content/devs/actions/false_positive"
-            ]
-          },
-          {
-            "group": "Support",
-            "pages": [
-              "content/devs/support/share_logs",
-              "content/devs/support/support_bundle",
-              "content/devs/support/common_problems",
-              "content/devs/support/commands"
+            "dropdown": "Admins",
+            "icon": "user-cog",
+            "groups": [
+              {
+                "group": "Admin features",
+                "pages": [
+                  "content/admins/user_management",
+                  "content/admins/webhooks",
+                  "content/admins/guardrails"
+                ]
+              },
+              {
+                "group": "PR & CI",
+                "pages": [
+                  "content/admins/vcs_integration",
+                  "content/admins/github_integration",
+                  "content/admins/setup_CI_integration"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "dropdown": "Admins",
-        "icon": "user-cog",
-        "groups": [
+        "product": "Code",
+        "description": "Our secure coding agent",
+        "icon": "square-terminal",
+        "pages": [
+          "content/symbiotic_code/symbiotic_code",
           {
-            "group": "Admin features",
+            "group": "Features",
             "pages": [
-              "content/admins/user_management",
-              "content/admins/webhooks",
-              "content/admins/guardrails"
+              "content/symbiotic_code/features/custom_commands",
+              "content/symbiotic_code/features/tool_permisisons"
             ]
-          },
-          {
-            "group": "PR & CI",
-            "pages": [
-              "content/admins/vcs_integration",
-              "content/admins/github_integration",
-              "content/admins/setup_CI_integration"
-            ]
+          }
+        ]
       }
     ]
-    }]
   },
   "logo": {
     "light": "images/logo/logo horizontal_black.svg",
@@ -145,4 +168,3 @@
     }
   }
 }
-

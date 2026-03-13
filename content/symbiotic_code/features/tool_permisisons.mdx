@@ -1,0 +1,212 @@
+---
+title: "Tool permissions"
+description: "Symbiotic supports a layered permission configuration that controls whether the AI can run bash commands, write files, or edit files  without prompting you every time."
+---
+
+
+## Load Order
+
+Configs are deep-merged. **Later sources win.**
+
+| # | Source | Notes |
+| --- | --- | --- |
+| 1 | `symbiotic.json` | Searched upward from project root |
+| 2 | `.symbiotic/symbiotic.json` | Searched upward from project root |
+| 3 | `SYMBIOTIC_CONFIG` env var | Path to a config file — replaces 1 & 2 |
+| 4 | `SYMBIOTIC_PERMISSION` env var | File path or inline JSON — always wins |
+
+---
+
+## Config Schema
+
+```json
+{
+  "permission": {
+    "bash":  <rule>,
+    "write": <rule>,
+    "edit":  <rule>
+  }
+}
+```
+
+A `<rule>` is either:
+
+- A **string**: `"allow"`, `"ask"`, or `"deny"` — applies to all inputs
+- A **pattern map**: `{ "<pattern>": "<rule>", ... }` — matched by specificity
+
+### Pattern Matching
+
+| Wildcard | Matches | Used in |
+| --- | --- | --- |
+| `*` | anything (including spaces for commands, excluding `/` for paths) | both |
+| `**` | anything including `/` | paths only |
+
+The **most specific pattern wins** (longest literal prefix before the first `*`).
+
+
+## Examples
+
+### 1. Deny all bash, ask for writes, auto-allow `src/`
+
+`.symbiotic/symbiotic.json`:
+
+```json
+{
+  "permission": {
+    "bash": "deny",
+    "write": {
+      "*":       "ask",
+      "src/**":  "allow",
+      "*.env":   "deny"
+    },
+    "edit": "ask"
+  }
+}
+```
+
+**What happens:**
+
+| Action | Result |
+| --- | --- |
+| `bash: "ls -la"` | Denied immediately, no prompt |
+| `write: "src/core/tools/bash.ts"` | Auto-allowed (matches `src/**`) |
+| `write: ".env"` | Denied immediately (matches `*.env`) |
+| `write: "README.md"` | Prompts you (matches `*`) |
+| `edit: "any file"` | Prompts you |
+
+---
+
+### 2. Allow safe git commands, deny destructive ones
+
+```json
+{
+  "permission": {
+    "bash": {
+      "*":            "ask",
+      "git *":        "allow",
+      "git commit *": "deny",
+      "git push *":   "deny",
+      "grep *":       "allow",
+      "ls *":         "allow"
+    }
+  }
+}
+```
+
+**What happens:**
+
+| Command | Matched pattern | Result |
+| --- | --- | --- |
+| `git status` | `git *` | Auto-allowed |
+| `git log --oneline` | `git *` | Auto-allowed |
+| `git commit -m "foo"` | `git commit *` | Denied |
+| `git push origin main` | `git push *` | Denied |
+| `grep -r "TODO" src/` | `grep *` | Auto-allowed |
+| `npm install` | `*` | Prompts you |
+
+> Pattern specificity: `git commit *` (11 literal chars) beats `git *` (4 literal chars) beats `*` (0 literal chars).
+> 
+
+---
+
+### 3. Trust the whole project — allow everything
+
+```json
+{
+  "permission": {
+    "bash":  "allow",
+    "write": "allow",
+    "edit":  "allow"
+  }
+}
+```
+
+No prompts at all. Useful for trusted personal projects.
+
+---
+
+### 4. Lock down everything — full review mode
+
+```json
+{
+  "permission": {
+    "bash":  "ask",
+    "write": "ask",
+    "edit":  "ask"
+  }
+}
+```
+
+Every action requires your approval. This is the default behavior when no config is present.
+
+---
+
+
+## Deep Merge Behavior
+
+When multiple sources define rules for the same tool, pattern maps are merged (later keys win), and string rules replace entirely.
+
+**Example:** `symbiotic.json` defines bash rules, `.symbiotic/symbiotic.json` adds more specific ones:
+
+`symbiotic.json`:
+
+```json
+{ "permission": { "bash": { "*": "ask", "ls *": "allow" } } }
+```
+
+`.symbiotic/symbiotic.json`:
+
+```json
+{ "permission": { "bash": { "git push *": "deny" } } }
+```
+
+**Effective config:**
+
+```json
+{ "permission": { "bash": { "*": "ask", "ls *": "allow", "git push *": "deny" } } }
+```
+
+---
+
+## "Allow Always" Persistence
+
+When you choose **Allow always** at a permission prompt, the approval is saved to `.symbiotic/symbiotic.json` automatically and takes effect immediately — no restart needed.
+
+### How patterns are stored
+
+For **bash commands**, the stored pattern depends on the command structure:
+
+| Command | Stored pattern | Rationale |
+| --- | --- | --- |
+| `git commit -m "feat: add x"` | `"git commit *"` | Multi-level CLI: binary + subcommand wildcard |
+| `bun run dev` | `"bun run *"` | Multi-level CLI |
+| `docker build -t app .` | `"docker build *"` | Multi-level CLI |
+| `ls -la` | `"ls -la"` | Exact — single-purpose command |
+| `rm -rf dist/` | `"rm -rf dist/"` | Exact — too dangerous to generalize |
+| `curl <https://api.example.com`> | `"curl <https://api.example.com>"` | Exact |
+
+For **write/edit**, the exact file path is stored.
+
+### Shell operator security
+
+Commands containing `&&`, `||`, `;`, or `|` **always prompt** — they are never auto-allowed by config and never persisted. This prevents a stored pattern like `"git commit *"` from matching `git commit -m "ok" && rm -rf /`.
+
+---
+
+## Live Config Reload
+
+The config is re-read from disk on every tool call. You can edit any config file (`symbiotic.json`, `.symbiotic/symbiotic.json`, or the file pointed to by `SYMBIOTIC_CONFIG`) while Symbiotic is running and changes take effect on the next tool execution — no restart required.
+
+---
+
+## File Locations
+
+```
+your-project/
+├── symbiotic.json              # project-level config (committed)
+├── .symbiotic/
+│   └── symbiotic.json          # local overrides + persisted approvals (gitignore this)
+└── SYMBIOTIC_PERMISSION.json   # pointed to via SYMBIOTIC_PERMISSION env var
+```
+
+Recommended: commit `symbiotic.json` with team-wide defaults, use `.symbiotic/symbiotic.json` for personal overrides, and add `.symbiotic/` to `.gitignore`.
