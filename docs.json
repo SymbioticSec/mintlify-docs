@@ -119,6 +119,12 @@
         "pages": [
           "content/symbiotic_code/symbiotic_code",
           {
+            "group": "Commands",
+            "pages": [
+              "content/symbiotic_code/commands/common_commands"
+            ]
+          },
+          {
             "group": "Features",
             "pages": [
               "content/symbiotic_code/features/custom_commands",
