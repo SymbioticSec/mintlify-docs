@@ -172,7 +172,7 @@ For IaC vulnerabilities, use --type infra.
 **Usage**:
 
 ```console
-$ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT]
+$ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT] [SCAN_IDEMPOTENCY_KEY]
 ```
 
 **Arguments**:
@@ -186,6 +186,7 @@ $ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `END_COL`: The ending column of the vulnerability.  [required]
 * `LANGUAGE`: Language of the code we want to remediate  [required]
 * `[FINGERPRINT]`: Fingerprint of the finding, used to track interactions with the AI.
+* `[SCAN_IDEMPOTENCY_KEY]`: Idempotency key of the scan, used to avoid doublon for a scan.
 
 **Options**:
 
@@ -222,7 +223,7 @@ $ airemediate generate_recommendation [OPTIONS] [RECOMMENDATION_JSON_PARAMS]
 **Usage**:
 
 ```console
-$ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT]
+$ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT] [SCAN_IDEMPOTENCY_KEY]
 ```
 
 **Arguments**:
@@ -236,6 +237,7 @@ $ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `END_COL`: The ending column of the vulnerability.  [required]
 * `LANGUAGE`: Language of the code we want to remediate  [required]
 * `[FINGERPRINT]`: Fingerprint of the finding, used to track interactions with the AI.
+* `[SCAN_IDEMPOTENCY_KEY]`: Idempotency key of the scan, used to avoid doublon for a scan
 
 **Options**:
 
