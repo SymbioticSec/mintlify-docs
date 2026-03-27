@@ -1,33 +1,45 @@
 ---
 title: "Welcome"
 description: "Let's make your code secure"
-mode: "center"
+mode: "custom"
 ---
-
-Symbiotic Security’s extension allows you to detect, remediate and learn directly when it matters the most : **while you’re writing code** !
+<div className="px-4 py-16 lg:py-32 max-w-3xl mx-auto text-center">
+  <h1 className="text-4xl font-medium text-gray-900 dark:text-zinc-50 tracking-tight">
+    Welcome 👋🏻
+  </h1>
+  <p className="mt-4 text-lg text-gray-500 dark:text-zinc-500">
+    Symbiotic Security’s extension allows you to detect, remediate and learn directly when it matters the most : **while you’re writing code** !
 We support all commons languages (Python, JS/TS, Java, C, C#, Go, Ruby, PHP, etc.) and the major cloud providers (AWS, GCP, Azure).
+  </p>
+</div>
 
+
+
+
+
+<div className="max-w-4xl mx-auto px-6">
 ## Access the right documentation based on your role
-
 <Columns cols={2}>
-  <Card title="Devs" icon="binary" href="/content/devs/intro/intro">
+  <Card title="Devs" icon="binary" href="/flow/devs/intro/intro">
     Discover our extension, how to configure the detection, user our MCP, etc.
   </Card>
-  <Card title="Admins" icon="user-cog" href="/content/admins/user_management">
+  <Card title="Admins" icon="user-cog" href="/flow/admins/user_management">
     Learn how to setup AI guardrails, integrate our detection in CI or in Github, etc.
   </Card>
 </Columns>
+</div>
 
 <br />
-
-<Card title="Data privacy and security" icon="file-lock-2" horizontal href="/content/privacy">
+<div className="max-w-4xl mx-auto px-6">
+<Card title="Data privacy and security" icon="file-lock-2" horizontal href="/privacy">
   How we handle your data ? What's collected ? How we ensure a maximum security ?
 </Card>
-
 ## Get help
 
 If you have questions or need help, you can contact us using the dedicated Slack channel or email us at [support@symbioticsec.ai](mailto:support@symbioticsec.ai).
 
 <Tip>
-  If your problem concern the extension, we suggest you to generate a [Support Bundle](/content/devs/support/support_bundle) before contacting us.
+  If your problem concern the extension, we suggest you to generate a [Support Bundle](/flow/devs/support/support_bundle) before contacting us.
 </Tip>
+</div>
+
