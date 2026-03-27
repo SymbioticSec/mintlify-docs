@@ -3,43 +3,79 @@ title: "Welcome"
 description: "Let's make your code secure"
 mode: "custom"
 ---
-<div className="px-4 py-16 lg:py-32 max-w-3xl mx-auto text-center">
-  <h1 className="text-4xl font-medium text-gray-900 dark:text-zinc-50 tracking-tight">
-    Welcome 👋🏻
-  </h1>
-  <p className="mt-4 text-lg text-gray-500 dark:text-zinc-500">
-    Symbiotic Security’s extension allows you to detect, remediate and learn directly when it matters the most : **while you’re writing code** !
-We support all commons languages (Python, JS/TS, Java, C, C#, Go, Ruby, PHP, etc.) and the major cloud providers (AWS, GCP, Azure).
-  </p>
+<div className="relative overflow-hidden px-6 py-24 sm:py-24 lg:px-8 max-w-7xl mx-auto">
+  
+  <div className="mx-auto max-w-3xl text-center">
+    <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
+      Symbiotic Security <br className="hidden sm:block" />
+      <span className="text-primary dark:text-primary-light">Documentation</span>
+    </h1>
+    <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Access all the resources you need to get the most out of our products. Whether you're scanning for vulnerabilities with **Flow** or building securely from scratch with **Code**, you'll find the right guide here.
+    </p>
+  </div>
+</div>
+  
+<div className="max-w-5xl mx-auto px-6 pb-24 border-b border-gray-200 dark:border-white/10">
+  <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+      Explore our products
+    </h2>
+    <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+      Choose the solution that best fits your security needs.
+    </p>
+  </div>
+
+  <CardGroup cols={2}>
+    <Card 
+      title="Flow" 
+      icon="search-code" 
+      href="/flow/devs/intro/intro"
+    >
+      Our comprehensive security scanning solution. Detect and remediate vulnerabilities directly in your IDE or CI/CD pipelines.
+    </Card>
+    <Card 
+      title="Code" 
+      icon="square-terminal" 
+      href="/code/get_started"
+    >
+      Our natively secure coding agent. Build software securely from the ground up with AI-powered guardrails and embedded security tools.
+    </Card>
+  </CardGroup>
 </div>
 
+<div className="max-w-5xl mx-auto px-6 py-16">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+    <div>
+      <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+        Enterprise Security & Privacy
+      </h3>
+      <p className="text-gray-600 dark:text-gray-400 mb-6">
+        We take your code and data privacy seriously. Learn how we handle your data, what's collected, and how we ensure maximum security.
+      </p>
+      <Card 
+        title="Privacy & Security Center" 
+        icon="file-lock-2" 
+        horizontal 
+        href="/privacy"
+      >
+        Read our full security specifications
+      </Card>
+    </div>
+    
+    <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-2xl p-8 border border-gray-100 dark:border-white/10">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        Get Help
+      </h3>
+      <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
+        If you have questions or need help, you can contact us using the dedicated Slack channel or email us at [support@symbioticsec.ai](mailto:support@symbioticsec.ai).
+      </p>
 
-
-
-
-<div className="max-w-4xl mx-auto px-6">
-## Access the right documentation based on your role
-<Columns cols={2}>
-  <Card title="Devs" icon="binary" href="/flow/devs/intro/intro">
-    Discover our extension, how to configure the detection, user our MCP, etc.
-  </Card>
-  <Card title="Admins" icon="user-cog" href="/flow/admins/user_management">
-    Learn how to setup AI guardrails, integrate our detection in CI or in Github, etc.
-  </Card>
-</Columns>
+      <div>
+        <Tip>
+          If your problem concerns the extension, we suggest you generate a [Support Bundle](/flow/devs/support/support_bundle) before contacting us.
+        </Tip>
+      </div>
+    </div>
+  </div>
 </div>
-
-<br />
-<div className="max-w-4xl mx-auto px-6">
-<Card title="Data privacy and security" icon="file-lock-2" horizontal href="/privacy">
-  How we handle your data ? What's collected ? How we ensure a maximum security ?
-</Card>
-## Get help
-
-If you have questions or need help, you can contact us using the dedicated Slack channel or email us at [support@symbioticsec.ai](mailto:support@symbioticsec.ai).
-
-<Tip>
-  If your problem concern the extension, we suggest you to generate a [Support Bundle](/flow/devs/support/support_bundle) before contacting us.
-</Tip>
-</div>
-

@@ -31,6 +31,27 @@
     },
     "products": [
       {
+        "product": "Code",
+        "description": "Our secure coding agent",
+        "icon": "square-terminal",
+        "pages": [
+          "code/get_started",
+          {
+            "group": "Commands",
+            "pages": [
+              "code/commands/common_commands"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "code/features/custom_commands",
+              "code/features/tool_permisisons"
+            ]
+          }
+        ]
+      },
+      {
         "product": "Flow",
         "description": "Our security scanning solution",
         "icon": "search-code",
@@ -103,27 +124,6 @@
                   "flow/admins/setup_CI_integration"
                 ]
               }
-            ]
-          }
-        ]
-      },
-      {
-        "product": "Code",
-        "description": "Our secure coding agent",
-        "icon": "square-terminal",
-        "pages": [
-          "code/get_started",
-          {
-            "group": "Commands",
-            "pages": [
-              "code/commands/common_commands"
-            ]
-          },
-          {
-            "group": "Features",
-            "pages": [
-              "code/features/custom_commands",
-              "code/features/tool_permisisons"
             ]
           }
         ]
