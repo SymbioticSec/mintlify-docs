@@ -1,0 +1,181 @@
+---
+title: "Setup CI integration"
+description: "Create a security gate using our CLI or Github Action"
+---
+
+Our CI integration provides both infra and code scans, to help you identify vulnerabilities before they reach production.
+
+# Using Github Actions
+
+To make it easier for organizations using Github, we created a Github Action that can be easily integrated in your pipelines.
+By default, the action will launch a differential scan (only returning new vulnerabilities) when triggered by a pull request event.
+If you want to disable this behavior and always return all vulnerabilities, you can set the diff-scan input to false.
+
+<CodeGroup>
+
+```yaml Infra Scan
+  
+  code-security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan
+        uses: SymbioticSec/actions/scan@v0.4.2
+        with:
+          scan-type: infra
+          api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
+          diff-scan: true
+```
+
+
+```yaml Code Scan
+
+  code-security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan
+        uses: SymbioticSec/actions/scan@v0.4.2
+        with:
+          scan-type: code
+          api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
+          diff-scan: true
+```
+
+
+```yaml Full Scan
+
+full-security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan
+        uses: SymbioticSec/actions/scan@v0.4.2
+        with:
+          api-token: ${{ secrets.SYMBIOTIC_API_TOKEN }}
+          diff-scan: true
+```
+
+</CodeGroup>
+
+<Info>
+  To run the differential scan, the action must be triggered by a pull request event.
+  To do that, make sure to add the following to your workflow triggers:
+
+  ```yaml expandable
+  on:
+    pull_request:
+      types:
+        - opened
+        - synchronize
+        - reopened
+  ```
+</Info>
+
+<Tip>
+  Don't forget to retrieve your [organization token](https://app.symbioticsec.ai/settings/organization-token) and to set it as a secret in your Github setttings.
+</Tip>
+
+# Using our CLI
+
+If you are not using Github you can still use our cli in your pipelines :
+
+<Steps>
+  <Step title="Install our CLI" titleSize="p">
+    ```bash
+          curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh | bash
+          echo 'export PATH="$HOME/.local/bin:$PATH"'
+    ```
+
+    <Warning>
+      We advise you to set `SYMBIOTIC_API_TOKEN` as an environment variable in your pipeline. You can create or retrieve this token [here](https://app.symbioticsec.ai/settings/organization-token).
+    </Warning>
+  </Step>
+  <Step title="Launch our CLI" titleSize="p">
+    <CodeGroup>
+
+    ```bash Launch infra scan
+      symbiotic-cli ci infra ./ --skip-upload-results
+    ```
+
+    
+    ```bash Launch code scan
+      symbiotic-cli ci code ./ --skip-upload-results
+    ```
+
+    </CodeGroup>
+
+    You can override the severity threshold defined in the configuration file using the _severity-threshold_ option.
+
+    Ex: `symbiotic-cli ci infra ./ --severity-threshold high`
+
+    <Warning>
+      As of today scans must be launched on the root folder to correctly take into account the configuration file
+    </Warning>
+  </Step>
+</Steps>
+
+<Tip>
+  If you want your detected vulnerabilities to be uploaded to Symbiotic's backend to benefit from the dashboard, detailed reports, remediation suggestions and more: you need to provide information about your git repository to the command.
+
+  See the example below :
+
+  <CodeGroup>
+
+  ```bash Launch infra scan
+    symbiotic-cli ci infra ./ \
+      --git-remote-url <your repository remote url> \
+      --git-first-commit-sha <your repository first commit sha> \
+      --git-latest-commit-sha <the scanned branch latest commit sha> \
+      --git-default-branch <your repository default branch> \
+      --git-current-branch <the scanned branch>
+  ```
+
+  
+  ```bash Launch code scan
+    symbiotic-cli ci code ./ \
+      --git-remote-url <your repository remote url> \
+      --git-first-commit-sha <your repository first commit sha> \
+      --git-latest-commit-sha <the scanned branch latest commit sha> \
+      --git-default-branch <your repository default branch> \
+      --git-current-branch <the scanned branch>
+  ```
+
+  </CodeGroup>
+</Tip>
+
+<Accordion title="Example in a Gitlab pipeline">
+  ```yaml
+  stages:
+    - test
+  
+  test-full-script:
+    stage: test
+    image: ubuntu:latest
+  
+    before_script:
+      - apt-get update && apt-get install -y curl bash git unzip
+      - curl -sSL https://github.com/SymbioticSec/cli/releases/latest/download/install.sh | bash
+      - export "PATH=$HOME/.local/bin:$PATH"
+  
+    script:
+      - symbiotic-cli ci code ./ --skip-upload-results
+    rules:
+      - if: '$CI_COMMIT_BRANCH'
+  ```
+</Accordion>
+
+
+# Configuration
+
+You can configure what makes the CI fail using our [configuration file](/flow/devs/actions/configure_detection).
+
+<Info>
+  If there is no configuration file in the repository or if this configuration file has no blocking property, the CI will pass by default.
+</Info>

@@ -1,0 +1,19 @@
+---
+title: "False positive"
+sidebarTitle: "Tag a false positive"
+description: "How to declare a vulnerability as false positive ?"
+---
+
+![False Positive Report Pn](/flow/devs/images/false_positive_report.png)
+
+You can declare a false positive by adding a tag `-fp` in the ignore comment or by using the action available in the issue hover or the ignore button. In that case, you will be ask to select the scope of the false positive and give an explanation about it.
+
+<Note>
+  Reporting false positives is really important as it allows us to review false positives with your admins and make the detection patterns evolve.
+</Note>
+
+Example of a false positive comment:
+
+```javascript
+// nosymbiotic SYM_JTS_0087 -fp
+```

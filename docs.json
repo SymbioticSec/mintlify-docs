@@ -7,6 +7,9 @@
     "light": "#C45D97",
     "dark": "#C45D97"
   },
+  "fonts": {
+    "family": "Instrument Sans"
+  },
   "favicon": "images/favicon_symbiotic.png",
   "icons": {
     "library": "lucide"
@@ -23,21 +26,53 @@
           "icon": "globe"
         },
         {
-          "anchor": "Portal",
-          "href": "https://app.symbioticsec.ai",
-          "icon": "app-window"
-        },
-        {
           "anchor": "Changelog",
           "href": "https://symbioticsecurity.mintlify.app/changelog",
           "icon": "logs"
         }
       ]
     },
-    "products": [
+    "tabs": [
       {
-        "product": "Flow",
-        "description": "Our security scanning solution",
+        "tab": "Code",
+        "icon": "square-terminal",
+        "pages": [
+          "code/get_started",
+          {
+            "group": "Basics",
+            "pages": [
+              "code/basics/models_and_providers",
+              "code/basics/modes",
+              "code/basics/common_commands",
+              "code/basics/rules",
+              "code/basics/configuration_file",
+              "code/basics/troubleshooting"
+            ]
+          },
+          {
+            "group": "Tools",
+            "pages": [
+              "code/tools/custom_commands",
+              "code/tools/custom_agents",
+              "code/tools/custom_tools",
+              "code/tools/security_tools"
+            ]
+          },
+          {
+            "group": "Configurations",
+            "pages": [
+              "code/configurations/mcp",
+              "code/configurations/skills",
+              "code/configurations/plugins",
+              "code/configurations/tool_permissions",
+              "code/configurations/lsp",
+              "code/configurations/acp"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Flow",
         "icon": "search-code",
         "dropdowns": [
           {
@@ -47,8 +82,8 @@
               {
                 "group": "Getting started",
                 "pages": [
-                  "content/devs/intro/intro",
-                  "content/devs/intro/quickstart"
+                  "flow/devs/intro/intro",
+                  "flow/devs/intro/quickstart"
                 ]
               },
               {
@@ -57,33 +92,33 @@
                   {
                     "group": "IDE extension",
                     "pages": [
-                      "content/devs/discover_extension/detection",
-                      "content/devs/discover_extension/treeview",
-                      "content/devs/discover_extension/details",
-                      "content/devs/discover_extension/deep_remediation",
-                      "content/devs/discover_extension/hover",
-                      "content/devs/discover_extension/status"
+                      "flow/devs/discover_extension/detection",
+                      "flow/devs/discover_extension/treeview",
+                      "flow/devs/discover_extension/details",
+                      "flow/devs/discover_extension/deep_remediation",
+                      "flow/devs/discover_extension/hover",
+                      "flow/devs/discover_extension/status"
                     ]
                   },
-                  "content/devs/discover_extension/MCP",
-                  "content/devs/discover_extension/CLI"
+                  "flow/devs/discover_extension/MCP",
+                  "flow/devs/discover_extension/CLI"
                 ]
               },
               {
                 "group": "Configurations",
                 "pages": [
-                  "content/devs/actions/configure_detection",
-                  "content/devs/actions/ignore",
-                  "content/devs/actions/false_positive"
+                  "flow/devs/actions/configure_detection",
+                  "flow/devs/actions/ignore",
+                  "flow/devs/actions/false_positive"
                 ]
               },
               {
                 "group": "Support",
                 "pages": [
-                  "content/devs/support/share_logs",
-                  "content/devs/support/support_bundle",
-                  "content/devs/support/common_problems",
-                  "content/devs/support/commands"
+                  "flow/devs/support/share_logs",
+                  "flow/devs/support/support_bundle",
+                  "flow/devs/support/common_problems",
+                  "flow/devs/support/commands"
                 ]
               }
             ]
@@ -95,40 +130,19 @@
               {
                 "group": "Admin features",
                 "pages": [
-                  "content/admins/user_management",
-                  "content/admins/webhooks",
-                  "content/admins/guardrails"
+                  "flow/admins/user_management",
+                  "flow/admins/webhooks",
+                  "flow/admins/guardrails"
                 ]
               },
               {
                 "group": "PR & CI",
                 "pages": [
-                  "content/admins/vcs_integration",
-                  "content/admins/github_integration",
-                  "content/admins/setup_CI_integration"
+                  "flow/admins/vcs_integration",
+                  "flow/admins/github_integration",
+                  "flow/admins/setup_CI_integration"
                 ]
               }
-            ]
-          }
-        ]
-      },
-      {
-        "product": "Code",
-        "description": "Our secure coding agent",
-        "icon": "square-terminal",
-        "pages": [
-          "content/symbiotic_code/symbiotic_code",
-          {
-            "group": "Commands",
-            "pages": [
-              "content/symbiotic_code/commands/common_commands"
-            ]
-          },
-          {
-            "group": "Features",
-            "pages": [
-              "content/symbiotic_code/features/custom_commands",
-              "content/symbiotic_code/features/tool_permisisons"
             ]
           }
         ]
@@ -152,8 +166,8 @@
     ],
     "primary": {
       "type": "button",
-      "label": "Download extension",
-      "href": "https://symbioticsec-production-vscode-plugin-builds.s3.us-west-2.amazonaws.com/latest/symbioticsec.vsix"
+      "label": "Go to your portal",
+      "href": "https://app.symbioticsec.ai"
     }
   },
   "contextual": {

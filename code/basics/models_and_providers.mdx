@@ -1,0 +1,41 @@
+---
+title: "Models and providers"
+description: "Choose your models and providers"
+---
+
+## Models 
+
+By default you have access to Symbiotic's models. You can list and switch between them using the `/models` command. If you want to use a different model, you can add connect another provider using the `/connect` command.
+
+## Providers 
+
+Symbiotic Code support 75+ LLM providers and it supports running local models.
+
+To add a provider you only need add the API keys for the provider using the /connect command. 
+
+Most popular providers are preloaded by default. If you’ve added the credentials for a provider through the `/connect` command, they’ll be available when you start Symbiotic Code.
+
+
+### Create a custom provider
+If you want to use a local model or a model hosted in your own infrastructure, you can create a custom provider by adding a "provider" section to your symbiotic.json configuration file.
+
+```json symbiotic.json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "myprovider": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "My AI ProviderDisplay Name",
+      "options": {
+        "baseURL": "https://api.myprovider.com/v1"
+      },
+      "models": {
+        "my-model-name": {
+          "name": "My Model Display Name"
+        }
+      }
+    }
+  }
+}
+
+```

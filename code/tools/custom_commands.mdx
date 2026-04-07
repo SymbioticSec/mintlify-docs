@@ -1,0 +1,153 @@
+---
+title: "Custom commands"
+description: "Custom commands let you define reusable prompts that run when you type `/command-name` in the TUI. They support dynamic flow via arguments, shell output, and file references."
+---
+
+## Creating Commands
+
+### Markdown files (recommended)
+
+Create `.md` files in one of two directories:
+
+| Scope | Directory |
+| --- | --- |
+| Global | `~/.symbiotic/commands/` |
+| Project | `.symbiotic/commands/` |
+
+The filename (without `.md`) becomes the command name.
+
+<Warning>
+If your command file is in your project directory, it will only be available if you launch Symbiotic Code from that directory.
+</Warning>
+
+#### Example
+
+**`.symbiotic/commands/test.md`**
+
+```markdown
+---
+description: Run tests with coverage
+model: claude-opus-4-6
+---
+
+Run the full test suite with coverage report and show any failures.
+Focus on the failing tests and suggest fixes.
+```
+
+Use it in the TUI:
+
+```
+/test
+```
+
+### JSON config
+
+Alternatively, define commands in `symbiotic.json` or `.symbiotic/symbiotic.json` (project), or the same files under `~/.symbiotic/` (global):
+
+```json
+{
+  "command": {
+    "fix": {
+      "template": "Fix all issues in @$ARGUMENTS and explain each change.",
+      "description": "Fix a file"
+    },
+    "review": {
+      "template": "Review $1 focusing on $2.\\n\\nRecent changes:\\n!`git diff HEAD~1 HEAD -- $1`",
+      "description": "Review a file with git context"
+    },
+    "test": {
+      "template": "Run the full test suite with coverage report and show any failures.\\nFocus on the failing tests and suggest fixes.",
+      "description": "Run tests with coverage",
+      "model": "claude-sonnet-4-5"
+    }
+  }
+}
+```
+
+Supports `//` single-line comments (`.jsonc` style).
+
+---
+
+## Frontmatter Options
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `description` | No | Short description shown in the command palette |
+| `model` | No | Override the model used for this command |
+
+---
+
+## Template Syntax
+
+### `$ARGUMENTS` — full argument string
+
+```markdown
+---
+description: Fix a file
+---
+
+Fix all issues in $ARGUMENTS and explain each change.
+```
+
+```
+/fix src/core/session.ts
+```
+
+`$ARGUMENTS` is replaced with `src/core/session.ts`.
+
+---
+
+### `$1`, `$2`, `$3`... — positional arguments
+
+```markdown
+---
+description: Create a component
+---
+
+Create a TUI component named $1 in $2.
+Follow the existing patterns in that directory.
+```
+
+```
+/create-component Sidebar src/cli/tui/components
+```
+
+- `$1` → `Sidebar`
+- `$2` → `src/cli/tui/components`
+
+Arguments support quoting:
+
+```
+/create-component "My Component" src/cli/tui/components
+```
+
+---
+
+### `!`command``  — shell output injection
+
+```markdown
+---
+description: Review recent git changes
+---
+
+Recent git changes:
+!`git diff HEAD~1 HEAD --stat`
+
+Review these changes and suggest improvements.
+```
+
+The shell command runs in the current working directory. Its stdout is injected inline into the prompt.
+
+---
+
+## Priority
+
+When the same command name exists in multiple sources, the highest-priority source wins:
+
+```
+project .symbiotic/symbiotic.json > project symbiotic.json > project markdown > global .symbiotic/symbiotic.json > global symbiotic.json > global markdown
+```
+
+This lets project commands override global defaults, and JSON config override markdown for the same name.
+
+---

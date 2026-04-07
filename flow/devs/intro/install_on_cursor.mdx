@@ -1,0 +1,28 @@
+---
+title: "Install on Cursor"
+description: "Detect, learn and fix issues directly in Cursor"
+---
+
+<Steps>
+  <Step title="Download the extension" titleSize="p">
+    You can download the extension at your first login or using this [link](https://symbioticsec-production-vscode-plugin-builds.s3.us-west-2.amazonaws.com/latest/symbioticsec.vsix)
+  </Step>
+  <Step title="Install the extension in Cursor" titleSize="p">
+    Use the command `Extensions: Install from VSIX…` to install the extension VSIX you've downloaded.
+
+    ![Install From Vsix Cursor Pn](/flow/devs/images/install_from_vsix_cursor.png)
+  </Step>
+  <Step title="Retrieve you  authentication token" titleSize="p">
+    Go to your [settings page](https://app.symbioticsec.ai/settings/api-token) to copy your personal access token
+
+    ![Portal Token Pn](/flow/devs/images/portal_token.png)
+  </Step>
+  <Step title="Authenticate in Cursor" titleSize="p">
+    Go back to your IDE, use the command `Symbiotic Security: Provide authentication token`, paste your token then hit `Enter` to log in.
+
+    ![Authenticate Cursor Pn](/flow/devs/images/authenticate_cursor.png)
+  </Step>
+  <Step title="You're now authenticated" icon="party-popper">
+    Your first scan should start in a second or two...
+  </Step>
+</Steps>

@@ -21,35 +21,35 @@ You can preview the docs locally using the Mintlify CLI. No local build step is 
    - or `npx mintlify@latest dev`
 3. Open the printed local URL to preview the docs with hot reload.
 
-The dev server reads `docs.json` for site configuration and the MDX content under `content/` and the root MDX files.
+The dev server reads `docs.json` for site configuration and the MDX flow under `flow/` and the root MDX files.
 
 ## Project structure
 
 - `docs.json` — Mintlify site configuration (theme, navigation, navbar/footer, etc.)
 - `index.mdx` — Landing page
 - `changelog.mdx` — Changelog page
-- `content/` — Sectioned documentation content written in MDX
-  - `content/devs/` — Developer-focused guides and references
-  - `content/admins/` — Admin features and integrations
+- `flow/` — Sectioned documentation flow written in MDX
+  - `flow/devs/` — Developer-focused guides and references
+  - `flow/admins/` — Admin features and integrations
   - Other topical pages as needed
 - `images/` — Static assets referenced by pages
 
-Navigation is primarily configured in `docs.json` (see `navigation.dropdowns`). Each page entry typically references a path without the `.mdx` extension, e.g. `content/devs/intro/quickstart` resolves to `content/devs/intro/quickstart.mdx`.
+Navigation is primarily configured in `docs.json` (see `navigation.dropdowns`). Each page entry typically references a path without the `.mdx` extension, e.g. `flow/devs/intro/quickstart` resolves to `flow/devs/intro/quickstart.mdx`.
 
 ## Authoring guidelines
 
 - Write pages in MDX (`.mdx`). Standard Markdown is supported, plus JSX-style components that Mintlify provides.
 - Keep file and directory names lowercase with hyphens or underscores. Avoid spaces.
-- Add new pages under the appropriate `content/` subsection. Use nested folders to group related topics.
+- Add new pages under the appropriate `flow/` subsection. Use nested folders to group related topics.
 - Update `docs.json` to include new pages in navigation so they appear in the UI.
 - Prefer relative links between pages. Example: `[Quickstart](../intro/quickstart)` from a nearby page.
 - Store images under `images/` and reference them with relative paths from the MDX files.
 
 ## Adding a new page
 
-1. Create the MDX file, e.g. `content/devs/example/new_feature.mdx`.
+1. Create the MDX file, e.g. `flow/devs/example/new_feature.mdx`.
 2. Add the page to the relevant `group` in `docs.json` under `navigation.dropdowns` (omit the `.mdx` extension):
-   - `"content/devs/example/new_feature"`
+   - `"flow/devs/example/new_feature"`
 3. Run `mintlify dev` to verify the page renders and appears in the sidebar.
 
 ## Changelog
