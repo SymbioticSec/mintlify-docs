@@ -2,3 +2,21 @@
 title: "Security tools"
 description: "Security tools for Symbiotic Code"
 ---
+
+Symbiotic Code comes with a set of security tools that will be automatically used by the agent to produce secure code. 
+
+
+
+
+  <Card title="Guardrails" icon="shield-check" horizontal>
+    When working on an existing project, the agent retrieves your repository's security guardrails. These guardrails ensure all suggested implementations follow your company's standards and best practices.
+
+  </Card>
+
+  <Card title="Security Check" icon="scan-search" horizontal>
+    During feature implementation, the agent performs continuous security checks against OWASP security risks. If risks are identified, the agent automatically adjusts the implementation to ensure compliance.
+  </Card>
+
+  <Card title="Security Scan" icon="scan-line" horizontal>
+    After implementation completes, the agent runs a SAST security scan to identify potential vulnerabilities. The agent iterates on the code until all security issues are resolved.
+  </Card>
