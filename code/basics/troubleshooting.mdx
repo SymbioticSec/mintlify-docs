@@ -2,3 +2,38 @@
 title: "Troubleshooting"
 description: "Troubleshooting for Symbiotic Code"
 ---
+
+| Issue | Solution |
+|-------|----------|
+| `command not found: symbiotic` | Ensure `~/.local/bin` is in your PATH and restart your terminal |
+| Authentication fails | Verify your token is valid in the portal and hasn't expired |
+| Permission denied | Run `chmod +x ~/.local/bin/symbiotic` | 
+|I cant' go to the next line | Try one of those keybindings `shift+return`, `ctrl+return`, `alt+return`, `ctrl+j` |
+
+### Copy/paste not working on Linux
+Linux users need to have one of the following clipboard utilities installed for copy/paste functionality to work:
+
+For X11 systems:
+
+```bash
+apt install -y xclip
+# or
+apt install -y xsel
+```
+
+For Wayland systems:
+
+```bash
+apt install -y wl-clipboard
+```
+
+For headless environments:
+
+```bash
+apt install -y xvfb
+# and run:
+Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+export DISPLAY=:99.0
+```
+
+Symbiotic Code will detect if you’re using Wayland and prefer wl-clipboard, otherwise it will try to find clipboard tools in order of: xclip and xsel.

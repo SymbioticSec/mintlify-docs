@@ -8,18 +8,7 @@
     "dark": "#C45D97"
   },
   "fonts": {
-    "heading": {
-      "family": "Instrument Sans",
-      "source": "/fonts/InstrumentSans_SemiCondensed-SemiBold.woff2",
-      "format": "woff2",
-      "weight": 600
-    },
-    "body": {
-      "family": "Instrument Sans",
-      "source": "/fonts/InstrumentSans_SemiCondensed-Regular.woff2",
-      "format": "woff2",
-      "weight": 400
-    }
+    "family": "Instrument Sans"
   },
   "favicon": "images/favicon_symbiotic.png",
   "icons": {
