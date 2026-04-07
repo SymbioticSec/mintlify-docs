@@ -7,6 +7,20 @@
     "light": "#C45D97",
     "dark": "#C45D97"
   },
+  "fonts": {
+    "heading": {
+      "family": "Instrument Sans",
+      "source": "/fonts/InstrumentSans_SemiCondensed-SemiBold.woff2",
+      "format": "woff2",
+      "weight": 600
+    },
+    "body": {
+      "family": "Instrument Sans",
+      "source": "/fonts/InstrumentSans_SemiCondensed-Regular.woff2",
+      "format": "woff2",
+      "weight": 400
+    }
+  },
   "favicon": "images/favicon_symbiotic.png",
   "icons": {
     "library": "lucide"
@@ -29,31 +43,47 @@
         }
       ]
     },
-    "products": [
+    "tabs": [
       {
-        "product": "Code",
-        "description": "Our secure coding agent",
+        "tab": "Code",
         "icon": "square-terminal",
         "pages": [
           "code/get_started",
           {
-            "group": "Commands",
+            "group": "Basics",
             "pages": [
-              "code/commands/common_commands"
+              "code/basics/models_and_providers",
+              "code/basics/modes",
+              "code/basics/common_commands",
+              "code/basics/rules",
+              "code/basics/configuration_file",
+              "code/basics/troubleshooting"
             ]
           },
           {
-            "group": "Features",
+            "group": "Tools",
             "pages": [
-              "code/features/custom_commands",
-              "code/features/tool_permisisons"
+              "code/tools/custom_commands",
+              "code/tools/custom_agents",
+              "code/tools/custom_tools",
+              "code/tools/security_tools"
+            ]
+          },
+          {
+            "group": "Configurations",
+            "pages": [
+              "code/configurations/mcp",
+              "code/configurations/skills",
+              "code/configurations/plugins",
+              "code/configurations/tool_permissions",
+              "code/configurations/lsp",
+              "code/configurations/acp"
             ]
           }
         ]
       },
       {
-        "product": "Flow",
-        "description": "Our security scanning solution",
+        "tab": "Flow",
         "icon": "search-code",
         "dropdowns": [
           {
