@@ -1,9 +1,11 @@
-/* Remove active tab highlight on the homepage */
-[data-page-href="/index"] .nav-tabs-item[data-active] {
-  color: inherit;
-  text-shadow: none;
+/* Remove active tab highlight on the homepage.
+   data-page-mode="custom" is set on <html> only on the homepage,
+   making it a safe ancestor scope for the nav tab override. */
+html[data-page-mode="custom"] .nav-tabs-item[data-active] {
+  color: rgb(var(--gray-800)) !important;
+  text-shadow: none !important;
 }
 
-[data-page-href="/index"] .nav-tabs-item[data-active] > div:last-child {
-  background-color: transparent;
+html[data-page-mode="custom"] .nav-tabs-item[data-active] > div:last-child {
+  background-color: transparent !important;
 }
