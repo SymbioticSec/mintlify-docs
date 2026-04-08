@@ -11,6 +11,12 @@
   font-family: "Peix-Symbio", sans-serif !important;
 }
 
+/* Card product icons: invert to white in dark mode.
+   Uses data attribute to avoid Mintlify's class prefixing system. */
+html.dark [data-theme-icon] {
+  filter: invert(1);
+}
+
 /* Remove active tab highlight on the homepage.
    data-page-mode="custom" is set on <html> only on the homepage,
    making it a safe ancestor scope for the nav tab override. */
