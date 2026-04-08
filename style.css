@@ -20,6 +20,7 @@ html.dark .product-icon {
   filter: invert(1);
 }
 
+/* Remove active tab highlight on the homepage.
    data-page-mode="custom" is set on <html> only on the homepage,
    making it a safe ancestor scope for the nav tab override. */
 html[data-page-mode="custom"] .nav-tabs-item[data-active] {
