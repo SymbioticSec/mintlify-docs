@@ -1,10 +1,12 @@
 ---
 title: "Tool permissions"
-description: "Symbiotic supports a layered permission configuration that controls whether the AI can run bash commands, write files, or edit files  without prompting you every time."
+description: "Control how tools interact with your system"
+---
+Symbiotic Code supports a layered permission configuration that controls whether the AI can run bash commands, write files, or edit files  without prompting you every time
+
 ---
 
-
-## Load Order
+## Load order
 
 Configs are deep-merged. **Later sources win.**
 
@@ -17,7 +19,7 @@ Configs are deep-merged. **Later sources win.**
 
 ---
 
-## Config Schema
+## Config schema
 
 ```json
 {
@@ -31,10 +33,10 @@ Configs are deep-merged. **Later sources win.**
 
 A `<rule>` is either:
 
-- A **string**: `"allow"`, `"ask"`, or `"deny"` — applies to all inputs
-- A **pattern map**: `{ "<pattern>": "<rule>", ... }` — matched by specificity
+- A **string**: `"allow"`, `"ask"`, or `"deny"` -> applies to all inputs
+- A **pattern map**: `{ "<pattern>": "<rule>", ... }` -> matched by specificity
 
-### Pattern Matching
+### Pattern matching
 
 | Wildcard | Matches | Used in |
 | --- | --- | --- |
@@ -55,9 +57,9 @@ The **most specific pattern wins** (longest literal prefix before the first `*`)
   "permission": {
     "bash": "deny",
     "write": {
-      "*":       "ask",
-      "src/**":  "allow",
-      "*.env":   "deny"
+      "*": "ask",
+      "src/**": "allow",
+      "*.env": "deny"
     },
     "edit": "ask"
   }
@@ -82,12 +84,12 @@ The **most specific pattern wins** (longest literal prefix before the first `*`)
 {
   "permission": {
     "bash": {
-      "*":            "ask",
-      "git *":        "allow",
+      "*": "ask",
+      "git *": "allow",
       "git commit *": "deny",
-      "git push *":   "deny",
-      "grep *":       "allow",
-      "ls *":         "allow"
+      "git push *": "deny",
+      "grep *": "allow",
+      "ls *": "allow"
     }
   }
 }
@@ -114,9 +116,9 @@ The **most specific pattern wins** (longest literal prefix before the first `*`)
 ```json
 {
   "permission": {
-    "bash":  "allow",
+    "bash": "allow",
     "write": "allow",
-    "edit":  "allow"
+    "edit": "allow"
   }
 }
 ```
@@ -130,9 +132,9 @@ No prompts at all. Useful for trusted personal projects.
 ```json
 {
   "permission": {
-    "bash":  "ask",
+    "bash": "ask",
     "write": "ask",
-    "edit":  "ask"
+    "edit": "ask"
   }
 }
 ```
@@ -142,7 +144,7 @@ Every action requires your approval. This is the default behavior when no config
 ---
 
 
-## Deep Merge Behavior
+## Deep merge behavior
 
 When multiple sources define rules for the same tool, pattern maps are merged (later keys win), and string rules replace entirely.
 
@@ -168,7 +170,7 @@ When multiple sources define rules for the same tool, pattern maps are merged (l
 
 ---
 
-## "Allow Always" Persistence
+## "Allow always" persistence
 
 When you choose **Allow always** at a permission prompt, the approval is saved to `.symbiotic/symbiotic.json` automatically and takes effect immediately — no restart needed.
 
@@ -193,7 +195,7 @@ Commands containing `&&`, `||`, `;`, or `|` **always prompt** — they are never
 
 ---
 
-## Live Config Reload
+## Live config reload
 
 The config is re-read from disk on every tool call. You can edit any config file (`symbiotic.json`, `.symbiotic/symbiotic.json`, or the file pointed to by `SYMBIOTIC_CONFIG`) while Symbiotic is running and changes take effect on the next tool execution — no restart required.
 
@@ -208,5 +210,10 @@ your-project/
 │   └── symbiotic.json          # local overrides + persisted approvals (gitignore this)
 └── SYMBIOTIC_PERMISSION.json   # pointed to via SYMBIOTIC_PERMISSION env var
 ```
+<Tip>
+**Recommendations** 
 
-Recommended: commit `symbiotic.json` with team-wide defaults, use `.symbiotic/symbiotic.json` for personal overrides, and add `.symbiotic/` to `.gitignore`.
+- Commit `symbiotic.json` with team-wide defaults
+- Use `.symbiotic/symbiotic.json` for personal overrides
+- Add `.symbiotic/` to `.gitignore`
+</Tip>

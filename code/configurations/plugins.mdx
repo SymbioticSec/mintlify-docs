@@ -3,18 +3,16 @@ title: "Plugins"
 description: "Add plugins to Symbiotic Code"
 ---
 
-Plugins allow you to extend Symbiotic Code by hooking into various events and customizing behavior. You can create plugins to add new features, integrate with external services, or modify Symbiotic Code's default behavior.
+Plugins allow you to extend Symbiotic Code by hooking into various events and customizing behavior. You can create plugins to **add new features, integrate with external services, or modify Symbiotic Code's default behavior.**
 
 
 ---
 
-## Use a plugin
+## Use plugins
 
-There are two ways to load plugins.
+There are two ways to load plugins: 
 
----
-
-### From local files
+### 1. From local files
 
 Place JavaScript or TypeScript files in the plugin directory.
 
@@ -25,28 +23,26 @@ Files in these directories are automatically loaded at startup.
 
 ---
 
-### From npm
+### 2. From npm
 
 Specify npm packages in your config file.
 
-```json title="opencode.json"
+```json title="symbiotic.json"
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-helicone-session", "opencode-wakatime", "@my-org/custom-plugin"]
+  "plugin": ["@my-org/custom-plugin"]
 }
 ```
 
 Both regular and scoped npm packages are supported.
 
-Browse available plugins in the [ecosystem](/docs/ecosystem#plugins).
-
 ---
 
 ### How plugins are installed
 
-**npm plugins** are installed automatically using Bun at startup. Packages and their dependencies are cached in `~/.cache/symbioticnode_modules/`.
+- **npm plugins** are installed automatically using Bun at startup. Packages and their dependencies are cached in `~/.cache/symbioticnode_modules/`.
 
-**Local plugins** are loaded directly from the plugin directory. To use external packages, you must create a `package.json` within your config directory (see [Dependencies](#dependencies)), or publish the plugin to npm and [add it to your config](/docs/config#plugins).
+- **Local plugins** are loaded directly from the plugin directory. To use external packages, you must create a `package.json` within your config directory, or publish the plugin to npm and [add it to your config](/code/basics/configuration_file#plugins).
 
 ---
 
@@ -54,8 +50,8 @@ Browse available plugins in the [ecosystem](/docs/ecosystem#plugins).
 
 Plugins are loaded from all sources and all hooks run in sequence. The load order is:
 
-1. Global config (`~/.config/symbioticopencode.json`)
-2. Project config (`opencode.json`)
+1. Global config (`~/.config/symbiotic.json`)
+2. Project config (`symbiotic.json`)
 3. Global plugin directory (`~/.config/symbioticplugins/`)
 4. Project plugin directory (`.symbioticplugins/`)
 

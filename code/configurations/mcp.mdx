@@ -3,19 +3,19 @@ title: "MCP servers"
 description: "Add MCP servers to Symbiotic Code"
 ---
 
-You can add external tools to Symbiotic Code using the Model Context Protocol, or MCP. Symbiotic Code supports both local and remote servers.
+You can add external tools to Symbiotic Code using the [Model Context Protocol](https://modelcontextprotocol.io/docs/getting-started/intro), or MCP. Symbiotic Code supports both local and remote servers.
 
 <Warning>
-When you use an MCP server, it adds to the context. This can quickly add up if you have a lot of tools. So we recommend being careful with which MCP servers you use.
-
-
+When you use an MCP server, it adds to the context. This can quickly add up if you have a lot of tools, as well as **become a potential security liability**. So we recommend being careful with which MCP servers you use.
 </Warning>
+
+---
 
 ## Enable
 
 You can define MCP servers in your [configuration file](/code/basics/configuration_file) under `mcp`. Add each MCP with a unique name. You can refer to that MCP by name when prompting the LLM.
 
-```jsonc title="opencode.jsonc" {6}
+```jsonc title="symbiotic.jsonc" {6}
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
@@ -34,9 +34,9 @@ You can also disable a server by setting `enabled` to `false`. This is useful if
 
 ## Local
 
-Add local MCP servers using `type` to `"local"` within the MCP object.
+Add local MCP servers by setting `type` to `"local"` within the MCP object.
 
-```jsonc title="opencode.jsonc" {15}
+```jsonc title="symbiotic.jsonc" {15}
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
@@ -57,7 +57,7 @@ The command is how the local MCP server is started. You can also pass in a list 
 
 For example, here's how you can add the test [`@modelcontextprotocol/server-everything`](https://www.npmjs.com/package/@modelcontextprotocol/server-everything) MCP server.
 
-```jsonc title="opencode.jsonc"
+```jsonc title="symbiotic.jsonc"
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
@@ -83,8 +83,8 @@ Here are all the options for configuring a local MCP server.
 
 | Option        | Type    | Required | Description                                                                         |
 | ------------- | ------- | -------- | ----------------------------------------------------------------------------------- |
-| `type`        | String  | Y        | Type of MCP server connection, must be `"local"`.                                   |
-| `command`     | Array   | Y        | Command and arguments to run the MCP server.                                        |
+| `type`        | String  | Yes      | Type of MCP server connection, must be `"local"`.                                   |
+| `command`     | Array   | Yes      | Command and arguments to run the MCP server.                                        |
 | `environment` | Object  |          | Environment variables to set when running the server.                               |
 | `enabled`     | Boolean |          | Enable or disable the MCP server on startup.                                        |
 | `timeout`     | Number  |          | Timeout in ms for fetching tools from the MCP server. Defaults to 5000 (5 seconds). |
@@ -95,7 +95,7 @@ Here are all the options for configuring a local MCP server.
 
 Add remote MCP servers by setting `type` to `"remote"`.
 
-```json title="opencode.json"
+```json title="symbiotic.json"
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
@@ -119,9 +119,9 @@ The `url` is the URL of the remote MCP server and with the `headers` option you 
 
 | Option    | Type    | Required | Description                                                                         |
 | --------- | ------- | -------- | ----------------------------------------------------------------------------------- |
-| `type`    | String  | Y        | Type of MCP server connection, must be `"remote"`.                                  |
-| `url`     | String  | Y        | URL of the remote MCP server.                                                       |
+| `type`    | String  | Yes      | Type of MCP server connection, must be `"remote"`.                                  |
+| `url`     | String  | Yes      | URL of the remote MCP server.                                                       |
 | `enabled` | Boolean |          | Enable or disable the MCP server on startup.                                        |
 | `headers` | Object  |          | Headers to send with the request.                                                   |
-| `oauth`   | Object  |          | OAuth authentication configuration. See [OAuth](#oauth) section below.              |
+| `oauth`   | Object  |          | OAuth authentication configuration.          |
 | `timeout` | Number  |          | Timeout in ms for fetching tools from the MCP server. Defaults to 5000 (5 seconds). |
