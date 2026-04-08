@@ -2,3 +2,61 @@
 title: "Plugins"
 description: "Plugins let you define reusable prompts that run when you type `/command-name` in the TUI. They support dynamic flow via arguments, shell output, and file references."
 ---
+
+Plugins allow you to extend Symbiotic Code by hooking into various events and customizing behavior. You can create plugins to add new features, integrate with external services, or modify Symbiotic Code's default behavior.
+
+
+---
+
+## Use a plugin
+
+There are two ways to load plugins.
+
+---
+
+### From local files
+
+Place JavaScript or TypeScript files in the plugin directory.
+
+- `.symbioticplugins/` - Project-level plugins
+- `~/.config/symbioticplugins/` - Global plugins
+
+Files in these directories are automatically loaded at startup.
+
+---
+
+### From npm
+
+Specify npm packages in your config file.
+
+```json title="opencode.json"
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["opencode-helicone-session", "opencode-wakatime", "@my-org/custom-plugin"]
+}
+```
+
+Both regular and scoped npm packages are supported.
+
+Browse available plugins in the [ecosystem](/docs/ecosystem#plugins).
+
+---
+
+### How plugins are installed
+
+**npm plugins** are installed automatically using Bun at startup. Packages and their dependencies are cached in `~/.cache/symbioticnode_modules/`.
+
+**Local plugins** are loaded directly from the plugin directory. To use external packages, you must create a `package.json` within your config directory (see [Dependencies](#dependencies)), or publish the plugin to npm and [add it to your config](/docs/config#plugins).
+
+---
+
+### Load order
+
+Plugins are loaded from all sources and all hooks run in sequence. The load order is:
+
+1. Global config (`~/.config/symbioticopencode.json`)
+2. Project config (`opencode.json`)
+3. Global plugin directory (`~/.config/symbioticplugins/`)
+4. Project plugin directory (`.symbioticplugins/`)
+
+Duplicate npm packages with the same name and version are loaded once. However, a local plugin and an npm plugin with similar names are both loaded separately.

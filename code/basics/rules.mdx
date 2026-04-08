@@ -3,7 +3,7 @@ title: "Rules"
 description: "Rules for Symbiotic Code"
 ---
 
-You can provide custom instructions to opencode by creating an AGENTS.md file. 
+You can provide custom instructions to Symbiotic Code by creating an AGENTS.md file. 
 This is similar to Cursor’s rules. It contains instructions that will be included in the LLM’s context to customize its behavior for your specific project.
 
 ## Initialize
@@ -30,13 +30,13 @@ If you already have an AGENTS.md, `/init` will improve it in place instead of bl
 
 
 ## Types
-opencode also supports reading the AGENTS.md file from multiple locations. And this serves different purposes.
+Symbiotic Code also supports reading the AGENTS.md file from multiple locations. And this serves different purposes.
 
 ### Project
 Place an AGENTS.md in your project root for project-specific rules. These only apply when you are working in this directory or its sub-directories.
 
 ### Global
-You can also have global rules in a `~/.config/symbiotic/AGENTS.md` file. This gets applied across all opencode sessions.
+You can also have global rules in a `~/.config/symbiotic/AGENTS.md` file. This gets applied across all Symbiotic Code sessions.
 
 Since this isn’t committed to Git or shared with your team, we recommend using this to specify any personal rules that the LLM should follow.
 
@@ -56,7 +56,7 @@ export OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 # Disable only .claude/skills
 ```
 
 ## Precedence
-When opencode starts, it looks for rule files in this order:
+When Symbiotic Code starts, it looks for rule files in this order:
 
 - Local files by traversing up from the current directory (AGENTS.md, CLAUDE.md)
 - Global file at ~/.config/symbioticAGENTS.md
@@ -92,7 +92,7 @@ Remote instructions are fetched with a 5 second timeout.
 All instruction files are combined with your AGENTS.md files.
 
 ## Referencing External Files
-While opencode doesn’t automatically parse file references in AGENTS.md, you can achieve similar functionality in two ways:
+While Symbiotic Code doesn’t automatically parse file references in AGENTS.md, you can achieve similar functionality in two ways:
 
 ### Using symbiotic.json
 The recommended approach is to use the instructions field in symbiotic.json:
@@ -105,7 +105,7 @@ The recommended approach is to use the instructions field in symbiotic.json:
 ```
 
 ### Manual Instructions in AGENTS.md
-You can teach opencode to read external files by providing explicit instructions in your AGENTS.md. Here’s a practical example:
+You can teach Symbiotic Code to read external files by providing explicit instructions in your AGENTS.md. Here’s a practical example:
 
 ```markdown AGENTS.md
 # TypeScript Project Rules
@@ -137,7 +137,7 @@ This approach allows you to:
 Create modular, reusable rule files
 Share rules across projects via symlinks or git submodules
 Keep AGENTS.md concise while referencing detailed guidelines
-Ensure opencode loads files only when needed for the specific task
+Ensure Symbiotic Code loads files only when needed for the specific task
 Tip
 
 For monorepos or projects with shared standards, using symbiotic.json with glob patterns (like packages/*/AGENTS.md) is more maintainable than manual instructions.
