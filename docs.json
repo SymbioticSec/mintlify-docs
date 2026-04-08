@@ -38,6 +38,7 @@
         "icon": "square-terminal",
         "pages": [
           "code/get_started",
+          "code/use_cases",
           {
             "group": "Basics",
             "pages": [
@@ -184,7 +185,8 @@
   },
   "footer": {
     "socials": {
-      "linkedin": "https://linkedin.com/company/symbiotic-security"
+      "linkedin": "https://linkedin.com/company/symbiotic-security",
+      "github": "https://github.com/symbioticsec"
     }
   }
 }

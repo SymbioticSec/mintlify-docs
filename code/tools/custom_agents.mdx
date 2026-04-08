@@ -1,14 +1,18 @@
 ---
 title: "Custom agents"
-description: "Custom agents let you define reusable prompts that run when you type `/command-name` in the TUI."
+description: "Configure and use specialized agents"
 ---
 
-You can define agents using markdown files. 
+Custom agents are specialized AI assistants that you can configure to **perform specific tasks and workflows.**
 
-Place them in:
-- Global: `~/.config/symbiotic/agents/`
-- Per-project: `.symbiotic/agents/`
+Symbiotic Code has [built-in agents](/code/basics/modes) for common tasks, but you can also create your own custom agents: 
 
+1. Create a markdown file with the agent configuration.
+2. Place the file in:
+   - Global: `~/.config/symbiotic/agents/`
+   - Per-project: `.symbiotic/agents/`
+
+**Example:**
 
 ```markdown  ~/.config/symbiotic/agents/review.md
 ---
@@ -32,6 +36,4 @@ You are in code review mode. Focus on:
 Provide constructive feedback without making direct changes.
 ```
 
-The markdown file name becomes the agent name. 
-
-For example, review.md creates a review agent.
+The markdown file name becomes the agent name. For example, here `review.md` creates a `review` agent that will be available when cycling through agents with `tab` or the `/agent` command.

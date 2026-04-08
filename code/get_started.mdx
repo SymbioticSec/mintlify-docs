@@ -3,35 +3,41 @@ title: "Get started"
 description: "Boost your developers' productivity while keeping your code secure"
 ---
 
-<Info>
-  **Prerequisites**
-  
-  A **Symbiotic Security account** (ask your admin or Symbiotic point of contact for access)
-</Info>
+--- 
+
+Symbiotic Code is a security-first coding agent that runs in your terminal. To use it you will need:
+
+
+- **A terminal**: Use the default terminal, or a modern terminal emulator like [iTerm](https://iterm2.com) or [Warp](https://warp.dev). It can also run in an IDE terminal (e.g., VS Code terminal).
+- **A Symbiotic Security account**: Ask your admin or Symbiotic point of contact for access.
+
 
 ## Installation
 
 Install Symbiotic Code using the following command:
 
-```bash For MacOS & Linux 
+```bash 
 npm install -g @symbioticsec/code
 ```
 
-<Accordion title="An error during installation ?">
- First check that node and npm are installed using 
+<Accordion title="Error during installation ?">
+ Check that **node** and **npm** are properly installed: 
 ```bash
   node -v
   npm -v
 ```
 
-If they are not installed, you can install them using the [installer](https://nodejs.org/en/download/).
+If they are not installed, install [them](https://nodejs.org/en/download/) and retry.
 
 </Accordion>
 
 
-### Launch 
+### Using Symbiotic Code
 
-To launch Symbiotic Code, use the `symbiotic` command in your terminal.
+To launch Symbiotic Code, use the `symbiotic` command in your terminal:
+```bash
+symbiotic
+```
 
 ### Update
 
@@ -47,29 +53,6 @@ On first launch, you'll be prompted to enter your personal access token:
 
 1. Click the link in the authentication modal to open the [Symbiotic Portal](https://app.symbioticsec.ai)
 2. Create a new token or copy an existing one from your account settings
-3. Paste the token into the modal and press **Enter**
+3. Paste the token in the dialog and press `Enter`
 
-Your token is securely stored and used for all subsequent operations.
-
-
-## Quick Start Guide
-
-### Test with Guardrails
-
-Experience the value of AI-guided secure development:
-
-1. Connect your GitHub account in the [Symbiotic Portal](https://app.symbioticsec.ai)
-2. Create guardrails for one of your repositories
-3. Open the repository in Symbiotic Code and ask it to implement a feature
-
-You'll see the agent automatically retrieve and apply your configured guardrails.
-
-### Security from Day One
-
-Create a new project from scratch to see all security features in action:
-
-1. Ask the agent to create a simple project (e.g., a weather app, to-do list, or CRM)
-2. Observe the automatic guardrail generation
-3. Watch security checks run during implementation
-4. See the final security scan validate the code
-
+Your token is **securely stored** and used for all subsequent operations.
