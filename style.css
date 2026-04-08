@@ -11,6 +11,22 @@
   font-family: "Peix-Symbio", sans-serif !important;
 }
 
+/* Custom tab icons: override Mintlify's inline mask-image with our SVGs.
+   !important is required to beat the inline style attribute. */
+a.nav-tabs-item[href="/code/get_started"] svg {
+  -webkit-mask-image: url("/images/icons/symbiotic-code.svg") !important;
+  mask-image: url("/images/icons/symbiotic-code.svg") !important;
+  mask-size: 100% !important;
+  -webkit-mask-size: 100% !important;
+}
+
+a.nav-tabs-item[href^="/flow"] svg {
+  -webkit-mask-image: url("/images/icons/symbiotic-flow.svg") !important;
+  mask-image: url("/images/icons/symbiotic-flow.svg") !important;
+  mask-size: 100% !important;
+  -webkit-mask-size: 100% !important;
+}
+
 /* Card product icons: invert to white in dark mode.
    Uses data attribute to avoid Mintlify's class prefixing system. */
 html.dark [data-theme-icon] {
