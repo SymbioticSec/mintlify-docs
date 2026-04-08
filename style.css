@@ -1,0 +1,9 @@
+/* Remove active tab highlight on the homepage */
+[data-page-href="/index"] .nav-tabs-item[data-active] {
+  color: inherit;
+  text-shadow: none;
+}
+
+[data-page-href="/index"] .nav-tabs-item[data-active] > div:last-child {
+  background-color: transparent;
+}
