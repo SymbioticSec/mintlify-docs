@@ -6,6 +6,10 @@ html[data-page-mode="custom"] .nav-tabs-item[data-active] {
   text-shadow: none !important;
 }
 
+html.dark[data-page-mode="custom"] .nav-tabs-item[data-active] {
+  color: rgb(var(--gray-200)) !important;
+}
+
 html[data-page-mode="custom"] .nav-tabs-item[data-active] > div:last-child {
   background-color: transparent !important;
 }
