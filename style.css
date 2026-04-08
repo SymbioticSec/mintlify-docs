@@ -6,10 +6,26 @@ html[data-page-mode="custom"] .nav-tabs-item[data-active] {
   text-shadow: none !important;
 }
 
+html[data-page-mode="custom"] .nav-tabs-item[data-active]:hover {
+  color: rgb(var(--gray-800)) !important;
+}
+
 html.dark[data-page-mode="custom"] .nav-tabs-item[data-active] {
   color: rgb(var(--gray-200)) !important;
 }
 
+html.dark[data-page-mode="custom"] .nav-tabs-item[data-active]:hover {
+  color: rgb(var(--gray-300)) !important;
+}
+
 html[data-page-mode="custom"] .nav-tabs-item[data-active] > div:last-child {
   background-color: transparent !important;
+}
+
+html[data-page-mode="custom"] .nav-tabs-item[data-active]:hover > div:last-child {
+  background-color: rgb(var(--gray-200)) !important;
+}
+
+html.dark[data-page-mode="custom"] .nav-tabs-item[data-active]:hover > div:last-child {
+  background-color: rgb(var(--gray-700)) !important;
 }
