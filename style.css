@@ -1,0 +1,66 @@
+/* Peix-Symbio custom font for the homepage title */
+@font-face {
+  font-family: "Peix-Symbio";
+  src: url("/fonts/Peix-Symbio.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.homepage-title {
+  font-family: "Peix-Symbio", sans-serif !important;
+}
+
+/* Custom tab icons: override Mintlify's inline mask-image with our SVGs.
+   !important is required to beat the inline style attribute. */
+a.nav-tabs-item[href="/code/get_started"] svg {
+  -webkit-mask-image: url("/images/icons/symbiotic-code.svg") !important;
+  mask-image: url("/images/icons/symbiotic-code.svg") !important;
+  mask-size: 100% !important;
+  -webkit-mask-size: 100% !important;
+}
+
+a.nav-tabs-item[href^="/flow"] svg {
+  -webkit-mask-image: url("/images/icons/symbiotic-flow.svg") !important;
+  mask-image: url("/images/icons/symbiotic-flow.svg") !important;
+  mask-size: 100% !important;
+  -webkit-mask-size: 100% !important;
+}
+
+/* Card product icons: invert to white in dark mode.
+   Uses data attribute to avoid Mintlify's class prefixing system. */
+html.dark [data-theme-icon] {
+  filter: invert(1);
+}
+
+/* Remove active tab highlight on the homepage.
+   data-page-mode="custom" is set on <html> only on the homepage,
+   making it a safe ancestor scope for the nav tab override. */
+html[data-page-mode="custom"] .nav-tabs-item[data-active] {
+  color: rgb(var(--gray-800)) !important;
+  text-shadow: none !important;
+}
+
+html[data-page-mode="custom"] .nav-tabs-item[data-active]:hover {
+  color: rgb(var(--gray-800)) !important;
+}
+
+html.dark[data-page-mode="custom"] .nav-tabs-item[data-active] {
+  color: rgb(var(--gray-200)) !important;
+}
+
+html.dark[data-page-mode="custom"] .nav-tabs-item[data-active]:hover {
+  color: rgb(var(--gray-300)) !important;
+}
+
+html[data-page-mode="custom"] .nav-tabs-item[data-active] > div:last-child {
+  background-color: transparent !important;
+}
+
+html[data-page-mode="custom"] .nav-tabs-item[data-active]:hover > div:last-child {
+  background-color: rgb(var(--gray-200)) !important;
+}
+
+html.dark[data-page-mode="custom"] .nav-tabs-item[data-active]:hover > div:last-child {
+  background-color: rgb(var(--gray-700)) !important;
+}

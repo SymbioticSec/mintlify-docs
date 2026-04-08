@@ -1,74 +1,76 @@
 ---
-title: "Welcome"
-description: "Let's make your code secure"
+title: "Docs"
+description: "Symbiotic Security product documentation"
 mode: "custom"
 ---
-<div className="relative overflow-hidden px-6 py-24 sm:py-24 lg:px-8 max-w-7xl mx-auto">
+<div className="relative overflow-hidden px-6 py-24 sm:py-16 lg:px-8 max-w-7xl mx-auto">
   
-  <div className="mx-auto max-w-3xl text-center">
-    <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
+  <div className="mx-auto max-w-4xl text-center">
+    <h1 className="homepage-title text-5xl tracking-tighter text-gray-900 dark:text-white sm:text-7xl">
       Symbiotic Security <br className="hidden sm:block" />
       <span className="text-primary dark:text-primary-light">Documentation</span>
     </h1>
-    <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-      Access all the resources you need to get the most out of our products. Whether you're scanning for vulnerabilities with **Flow** or building securely from scratch with **Code**, you'll find the right guide here.
+    <p className="mt-6 text-md leading-8 text-gray-600 dark:text-gray-400 mx-auto">
+       All the help you need to get started with our products
     </p>
   </div>
 </div>
   
-<div className="max-w-5xl mx-auto px-6 pb-24 border-b border-gray-200 dark:border-white/10">
-  <div className="text-center mb-12">
-    <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-      Explore our products
-    </h2>
-    <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-      Choose the solution that best fits your security needs.
-    </p>
+<div className="mx-auto max-w-4xl pb-20 px-6 border-b border-gray-200 dark:border-white/10">
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <a href="/code/get_started" className="group p-6 border border-gray-200 dark:border-white/20 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
+  <div className="flex flex-row gap-4">
+    <img src="/images/icons/symbiotic-code.svg" alt="Symbiotic Code" className="w-8 h-8 shrink-0 mt-1" data-theme-icon="true" />
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-0">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Code</h3>
+        <p className="text-md text-gray-800 dark:text-white/80">Natively secure coding agent</p>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-white/60 mt-1">Build software securely from the ground up with AI-powered guardrails and embedded security tools.</p>
+    </div>
   </div>
-
-  <CardGroup cols={2}>
-    <Card 
-      title="Flow" 
-      icon="search-code" 
-      href="/flow/devs/intro/intro"
-    >
-      Our comprehensive security scanning solution. Detect and remediate vulnerabilities directly in your IDE or CI/CD pipelines.
-    </Card>
-    <Card 
-      title="Code" 
-      icon="square-terminal" 
-      href="/code/get_started"
-    >
-      Our natively secure coding agent. Build software securely from the ground up with AI-powered guardrails and embedded security tools.
-    </Card>
-  </CardGroup>
+  </a>
+  <a href="/flow/devs/intro/intro" className="group p-6 border border-gray-200 dark:border-white/20 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
+  <div className="flex flex-row gap-4">
+    <img src="/images/icons/symbiotic-flow.svg" alt="Symbiotic Flow" className="w-8 h-8 shrink-0 mt-1" data-theme-icon="true" />
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-0">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Flow</h3>
+        <p className="text-md text-gray-800 dark:text-white/80">Comprehensive vulnerability scanner</p>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-white/60 mt-1">Detect and remediate vulnerabilities from your IDE and CI/CD pipelines.</p>
+    </div>
+  </div>
+  </a>  
+</div>
 </div>
 
-<div className="max-w-5xl mx-auto px-6 py-16">
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+<div className="max-w-4xl mx-auto px-6 py-20">
+  <div className="grid grid-cols-1 md:grid-cols-1 gap-16 items-start">
     <div>
-      <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
-        Enterprise Security & Privacy
+      <h3 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-4">
+        Enterprise security & privacy
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">
+      <p className="text-gray-600 tracking-tight dark:text-gray-400 mb-6">
         We take your code and data privacy seriously. Learn how we handle your data, what's collected, and how we ensure maximum security.
       </p>
-      <Card 
-        title="Privacy & Security Center" 
-        icon="file-lock-2" 
-        horizontal 
-        href="/privacy"
-      >
-        Read our full security specifications
-      </Card>
+       <a href="/privacy" className="block p-6 border border-gray-200 dark:border-white/20 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
+        <div className="flex flex-row gap-4">
+        <img src="/images/icons/privacy.svg" alt="Privacy & Security Center" className="w-8 h-8 shrink-0 mt-1" data-theme-icon="true" />
+          <div className="flex flex-col gap-0.5">
+            <h4 className="text-md font-semibold text-gray-900 dark:text-white">Privacy & security center</h4>
+            <p className="text-sm text-gray-800 dark:text-white/80">Learn how we protect your data</p>
+          </div>
+        </div>
+      </a>
     </div>
     
-    <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-2xl p-8 border border-gray-100 dark:border-white/10">
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-        Get Help
+    <div className="bg-gray-50 dark:bg-white/5 p-6 border border-gray-200 dark:border-white/10">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Need help?
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-        If you have questions or need help, you can contact us using the dedicated Slack channel or email us at [support@symbioticsec.ai](mailto:support@symbioticsec.ai).
+      <p className="text-gray-600 dark:text-white/80 mb-6 text-sm">
+        Contact us using the dedicated Slack channel or email us at <span className="text-primary underline dark:text-primary-light">[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span>
       </p>
 
       <div>
