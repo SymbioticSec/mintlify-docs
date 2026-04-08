@@ -1,47 +1,58 @@
 ---
-title: "Welcome"
-description: "Let's make your code secure"
+title: "Docs"
+description: "Symbiotic Security product documentation"
 mode: "custom"
 ---
-<div className="relative overflow-hidden px-6 py-24 sm:py-24 lg:px-8 max-w-7xl mx-auto">
+<div className="relative overflow-hidden px-6 py-24 sm:py-16 lg:px-8 max-w-7xl mx-auto">
   
   <div className="mx-auto max-w-3xl text-center">
-    <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
+    <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
       Symbiotic Security <br className="hidden sm:block" />
       <span className="text-primary dark:text-primary-light">Documentation</span>
     </h1>
-    <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-      Access all the resources you need to get the most out of our products. Whether you're scanning for vulnerabilities with **Flow** or building securely from scratch with **Code**, you'll find the right guide here.
+    <p className="mt-6 text-md leading-8 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+       All the documentation you need to get started with our products. 
     </p>
   </div>
 </div>
   
 <div className="max-w-5xl mx-auto px-6 pb-24 border-b border-gray-200 dark:border-white/10">
-  <div className="text-center mb-12">
-    <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-      Explore our products
-    </h2>
-    <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-      Choose the solution that best fits your security needs.
-    </p>
+<div className="grid grid-cols-2 gap-4">
+  <a href="/code/get_started" className="group p-6 border border-white/10 hover:border-primary/50 hover:bg-white/10 transition-all">
+  <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
+      <h3 className="text-lg font-semibold text-white">Symbiotic Code</h3>
+      <p className="text-sm text-white/80">Natively secure coding agent</p>
+    </div>
+    <p className="text-sm text-white/60">Build software securely from the ground up with AI-powered guardrails and embedded security tools.</p>
   </div>
-
-  <CardGroup cols={2}>
+  </a>
+  <a href="/flow/devs/intro/intro" className="group p-6 border border-white/10 hover:border-primary/50 hover:bg-white/10 transition-all">
+  <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
+      <h3 className="text-lg font-semibold text-white">Symbiotic Flow</h3>
+      <p className="text-sm text-white/80">Comprehensive vulnerability scanner</p>
+    </div>
+    <p className="text-sm text-white/60">Detect and remediate vulnerabilities from your IDE and CI/CD pipelines.</p>
+  </div>
+  </a>  
+</div>
+  {/* <CardGroup cols={2}>
     <Card 
-      title="Flow" 
+      title="Symbiotic Flow" 
       icon="search-code" 
       href="/flow/devs/intro/intro"
     >
-      Our comprehensive security scanning solution. Detect and remediate vulnerabilities directly in your IDE or CI/CD pipelines.
+      Our comprehensive vulnerability scanner. Detect and remediate vulnerabilities from your IDE and CI/CD pipelines.
     </Card>
     <Card 
-      title="Code" 
+      title="Symbiotic Code"
       icon="square-terminal" 
       href="/code/get_started"
     >
       Our natively secure coding agent. Build software securely from the ground up with AI-powered guardrails and embedded security tools.
     </Card>
-  </CardGroup>
+  </CardGroup> */}
 </div>
 
 <div className="max-w-5xl mx-auto px-6 py-16">
@@ -68,7 +79,7 @@ mode: "custom"
         Get Help
       </h3>
       <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-        If you have questions or need help, you can contact us using the dedicated Slack channel or email us at [support@symbioticsec.ai](mailto:support@symbioticsec.ai).
+        If you have questions or need help, you can contact us using the dedicated Slack channel or email us at <span className="font-semibold text-primary dark:text-primary-light">[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span>.
       </p>
 
       <div>
