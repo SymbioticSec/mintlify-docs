@@ -1,3 +1,16 @@
+/* Peix-Symbio custom font for the homepage title */
+@font-face {
+  font-family: "Peix-Symbio";
+  src: url("/fonts/Peix-Symbio.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.homepage-title {
+  font-family: "Peix-Symbio", sans-serif !important;
+}
+
 /* Remove active tab highlight on the homepage.
    data-page-mode="custom" is set on <html> only on the homepage,
    making it a safe ancestor scope for the nav tab override. */
