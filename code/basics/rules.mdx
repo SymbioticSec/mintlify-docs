@@ -3,19 +3,19 @@ title: "Rules"
 description: "Rules for Symbiotic Code"
 ---
 
-You can provide custom instructions to Symbiotic Code by creating an AGENTS.md file. 
-This is similar to Cursor’s rules. It contains instructions that will be included in the LLM’s context to customize its behavior for your specific project.
+You can provide **custom instructions to Symbiotic Code by creating an AGENTS.md file.** 
+This is similar to Cursor’s rules. It contains instructions that will be included in the LLM’s context to **customize its behavior for your specific project.**
 
 ## Initialize
-To create a new AGENTS.md file, you can run the `/init` command in opencode.
+To create a new `AGENTS.md` file, you can run the `/init` command in opencode.
 
 <Info>
 
-You should commit your project’s AGENTS.md file to Git.
+You should commit your project’s `AGENTS.md` file to Git.
 
 </Info>
 
-`/init` scans the important files in your repo, may ask a couple of targeted questions when the codebase cannot answer them, and then creates or updates AGENTS.md with concise project-specific guidance.
+**`/init` scans the important files in your repo**, may ask a couple of targeted questions when the codebase cannot answer them, and then creates or updates `AGENTS.md` with **concise project-specific guidance.**
 
 It focuses on the things future agent sessions are most likely to need:
 
@@ -25,7 +25,7 @@ It focuses on the things future agent sessions are most likely to need:
 - project-specific conventions, setup quirks, and operational gotchas
 - references to existing instruction sources like Cursor or Copilot rules
 
-If you already have an AGENTS.md, `/init` will improve it in place instead of blindly replacing it.
+**If you already have an `AGENTS.md` file, `/init` will improve it in place instead of blindly replacing it.**
 
 
 
@@ -33,7 +33,7 @@ If you already have an AGENTS.md, `/init` will improve it in place instead of bl
 Symbiotic Code also supports reading the AGENTS.md file from multiple locations. And this serves different purposes.
 
 ### Project
-Place an AGENTS.md in your project root for project-specific rules. These only apply when you are working in this directory or its sub-directories.
+Place an `AGENTS.md` in your project root for project-specific rules. These only apply when you are working in this directory or its sub-directories.
 
 ### Global
 You can also have global rules in a `~/.config/symbiotic/AGENTS.md` file. This gets applied across all Symbiotic Code sessions.
@@ -58,18 +58,18 @@ export OPENCODE_DISABLE_CLAUDE_CODE_SKILLS=1 # Disable only .claude/skills
 ## Precedence
 When Symbiotic Code starts, it looks for rule files in this order:
 
-- Local files by traversing up from the current directory (AGENTS.md, CLAUDE.md)
-- Global file at ~/.config/symbioticAGENTS.md
-- Claude Code file at ~/.claude/CLAUDE.md (unless disabled)
+- **Local files** by traversing up from the current directory (`AGENTS.md`, `CLAUDE.md`)
+- **Global file** at `~/.config/symbiotic/AGENTS.md`
+- **Claude Code file** at `~/.claude/CLAUDE.md` (unless disabled)
 
 The first matching file wins in each category. 
 
-For example, if you have both AGENTS.md and CLAUDE.md, only AGENTS.md is used. Similarly, `~/.config/symbioticAGENTS.md` takes precedence over `~/.claude/CLAUDE.md`.
+For example, if you have both `AGENTS.md` and `CLAUDE.md`, only `AGENTS.md` is used. Similarly, `~/.config/symbiotic/AGENTS.md` takes precedence over `~/.claude/CLAUDE.md`.
 
 ### Custom Instructions
 You can specify custom instruction files in your symbiotic.json or the global `~/.config/symbioticsymbiotic.json`. This allows you and your team to reuse existing rules rather than having to duplicate them to AGENTS.md.
 
-Example:
+**Example:**
 
 ```json symbiotic.json
 {
@@ -89,7 +89,7 @@ You can also use remote URLs to load instructions from the web.
 
 Remote instructions are fetched with a 5 second timeout.
 
-All instruction files are combined with your AGENTS.md files.
+All instruction files are combined with your `AGENTS.md` files.
 
 ## Referencing External Files
 While Symbiotic Code doesn’t automatically parse file references in AGENTS.md, you can achieve similar functionality in two ways:
@@ -134,10 +134,11 @@ Read the following file immediately as it's relevant to all workflows: @rules/ge
 
 This approach allows you to:
 
-Create modular, reusable rule files
-Share rules across projects via symlinks or git submodules
-Keep AGENTS.md concise while referencing detailed guidelines
-Ensure Symbiotic Code loads files only when needed for the specific task
-Tip
+- Create modular, reusable rule files
+- Share rules across projects via symlinks or git submodules
+- Keep AGENTS.md concise while referencing detailed guidelines
+- Ensure Symbiotic Code loads files only when needed for the specific task
 
-For monorepos or projects with shared standards, using symbiotic.json with glob patterns (like packages/*/AGENTS.md) is more maintainable than manual instructions.
+<Tip>
+For monorepos or projects with shared standards, using `symbiotic.json` with glob patterns (like `packages/*/AGENTS.md`) is more maintainable than manual instructions.
+</Tip>

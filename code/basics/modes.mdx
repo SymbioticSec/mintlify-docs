@@ -3,18 +3,20 @@ title: "Modes"
 description: "Modes for Symbiotic Code"
 ---
 
-Symbiotic Code has 3 modes:
-1. <b> Build </b>
+Symbiotic Code has **3 modes to interact with your codebase.** Use `tab` or `/agents` to switch between them :
+1. **Build**
     
     Build is the default mode with all tools enabled. This is the standard mode for development work where you need full access to file operations and system commands.
-2. <b> Plan </b>
+    <br />
+2. **Plan**:
 
     A restricted mode designed for planning and analysis. We use a permission system to give you more control and prevent unintended changes. By default, all of the following are set to ask:
     - file edits: All writes, patches, and edits
     - bash: All bash commands
     
     This agent is useful when you want the LLM to analyze code, suggest changes, or create plans without making any actual modifications to your codebase.
-3. <b> Shell </b>
+    <br />
+3. **Shell**
     
     A mode that gives you direct access to the shell. You can activate this mode using `!`.
 
