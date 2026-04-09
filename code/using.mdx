@@ -1,0 +1,211 @@
+---
+title: "Using Symbiotic Code"
+description: "Everything you need to be productive with Symbiotic Code"
+---
+
+Walk through the essential Symbiotic Code workflows.
+
+---
+
+## Your first prompt
+
+The quality of the agent's response depends directly on how clearly you communicate your intent. A few principles:
+
+- **Be specific about the goal**: say what you want to achieve, not just what to do
+- **Name the files or areas involved**: the agent searches your codebase, but pointing it in the right direction saves time and tokens
+- **Declare constraints upfront**: mention language versions, frameworks, or coding standards before they become a problem
+- **One task at a time**: break complex requests into focused steps rather than asking for everything at once
+
+<Card title="Don't" icon="x">
+  ```
+  Fix the bug in auth
+  ```
+  -> Too vague: no file, no context, no constraints.
+</Card>
+<Card title="Do" icon="check">
+  ```
+  In src/auth/login.ts, the login function 
+  returns 200 even on invalid credentials. 
+  Fix it to return 401 and add a test.
+  ```
+  -> Clear filepath, explicit problems, clear expected behavior.
+</Card>
+
+---
+
+## Modes
+
+Symbiotic Code has three modes. Switch between them with `Tab` or the `/agents` command.
+
+| Mode | What it does | When to use it |
+|---|---|---|
+| **Build** | Full access — files, shell, all tools | Default for development work |
+| **Plan** | Read-only analysis; asks before any write or shell command | Exploring a codebase or planning a feature or refactor |
+| **Shell** | Direct shell access | Quick terminal tasks; activate with `!` |
+
+<Tip>
+  Start in **Plan** mode when working in an unfamiliar codebase, and then switch to **Build** once you have a clear plan.
+</Tip>
+
+[Learn more about modes](/code/basics/modes)
+
+---
+
+## Command palette
+
+Press `Ctrl+P` or type `/` to open the command palette.
+
+| Command | What it does |
+|---|---|
+| `/new` | Start a fresh session |
+| `/agents` | Switch between modes |
+| `/models` | Change the active model |
+| `/mcp` | Enable or disable MCP servers |
+| `/skills` | Load a skill into the current session |
+| `/review` | Launch a subagent to review your code |
+| `/sessions` | Switch between saved sessions |
+
+[Full command reference](/code/basics/common_commands)
+
+---
+
+## Add a Skill
+
+Skills are reusable instruction sets that the agent loads on demand. You install one by creating a `SKILL.md` file in the right place.
+
+<Steps>
+  <Step title="Create the skill file">
+    Place your skill in one of these locations:
+
+    ```
+    ~/.agents/skills/<skill-name>/SKILL.md      ← available everywhere
+    .agents/skills/<skill-name>/SKILL.md        ← this project only
+    ```
+
+    Each `SKILL.md` starts with YAML frontmatter:
+
+    ```markdown
+    ---
+    name: git-release
+    description: Create consistent releases and changelogs
+    ---
+
+    ## What I do
+
+    - Draft release notes from merged PRs
+    - Propose a version bump
+    - Provide a copy-pasteable `gh release create` command
+    ```
+
+  </Step>
+  <Step title="Use it in a session">
+    Type `/skills` in the command palette to load available skills, or simply reference it in your prompt:
+
+    ```
+    Use the git-release skill to prepare the v2.1.0 release notes.
+    ```
+
+  </Step>
+</Steps>
+
+[Learn more about skills](/code/configurations/skills)
+
+---
+
+## Add an MCP server
+
+MCPs allow Symbiotic Code to connect to external data sources (e.g. local files, databases), tools (e.g. search engines, calculators) and workflows (e.g. specialized prompts).
+
+<Warning>
+  Each MCP server adds to the context window. Keep only what you actively use to avoid performance and security overhead.
+</Warning>
+
+<Steps>
+  <Step title="Add it to your config file">
+    Open (or create) `symbiotic.jsonc` at your project root or `~/.config/symbiotic/symbiotic.jsonc` for a global setup:
+
+    ```jsonc title="symbiotic.jsonc"
+    {
+      "$schema": "https://opencode.ai/config.json",
+      "mcp": {
+        "my-mcp-server": {
+          "type": "local",
+          "command": ["npx", "-y", "my-mcp-package"],
+          "enabled": true
+        }
+      }
+    }
+    ```
+
+  </Step>
+  <Step title="Restart Symbiotic Code">
+    Relaunch Symbiotic Code. Use `/mcp` to confirm the server is connected and enabled.
+  </Step>
+  <Step title="Reference it in your prompt">
+    Call out the MCP by its config name:
+
+    ```
+    Use my-mcp-server to fetch the latest schema and generate TypeScript types.
+    ```
+
+  </Step>
+</Steps>
+
+[Full MCP documentation](/code/configurations/mcp)
+
+---
+
+## Add a Plugin
+
+Plugins let you hook into Symbiotic Code's events and extend or modify its behavior. There are two ways to load them:
+
+**Option 1 — Local file**
+
+Drop a `.js` or `.ts` file into the plugin directory:
+
+```
+.symbiotic/plugins/         ← this project only
+~/.config/symbiotic/plugins/ ← available everywhere
+```
+
+Files in these directories are loaded automatically at startup.
+
+**Option 2 — npm package**
+
+Add the package name to your config file:
+
+```json title="symbiotic.json"
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@my-org/custom-plugin"]
+}
+```
+
+npm plugins are installed automatically via Bun on next launch.
+
+[Full plugin documentation](/code/configurations/plugins)
+
+---
+
+## Next steps
+
+<Columns cols={3}>
+  <Card title="Use Cases" icon="flask-conical" href="/code/use_cases">
+    See Symbiotic Code in action with real security-focused scenarios.
+  </Card>
+  <Card title="MCP Servers" icon="plug" href="/code/configurations/mcp">
+    Full reference for local and remote MCP configuration.
+  </Card>
+  <Card title="Skills" icon="graduation-cap" href="/code/configurations/skills">
+    Write and distribute reusable agent instruction sets.
+  </Card>
+  <Card title="Plugins" icon="puzzle" href="/code/configurations/plugins">
+    Extend Symbiotic Code with hooks and custom behavior.
+  </Card>
+  <Card title="Modes" icon="layers" href="/code/basics/modes">
+    Understand Build, Plan, and Shell modes in depth.
+  </Card>
+  <Card title="Models & Providers" icon="cpu" href="/code/basics/models_and_providers">
+    Configure which AI model and provider you use.
+  </Card>
+</Columns>

@@ -38,6 +38,7 @@
         "icon": "square-terminal",
         "pages": [
           "code/get_started",
+          "code/using",
           "code/use_cases",
           {
             "group": "Basics",
@@ -83,8 +84,8 @@
               {
                 "group": "Getting started",
                 "pages": [
-                  "flow/devs/intro/intro",
-                  "flow/devs/intro/quickstart"
+                  "flow/devs/intro/get_started",
+                  "flow/devs/intro/using"
                 ]
               },
               {
