@@ -7,7 +7,9 @@ Walk through the essential Symbiotic Code workflows.
 
 ---
 
-## Your first prompt
+## Best practices
+
+### How to prompt
 
 The quality of the agent's response depends directly on how clearly you communicate your intent. A few principles:
 
@@ -24,12 +26,24 @@ The quality of the agent's response depends directly on how clearly you communic
 </Card>
 <Card title="Do" icon="check">
   ```
-  In src/auth/login.ts, the login function 
+  In @src/auth/login.ts, the login function 
   returns 200 even on invalid credentials. 
   Fix it to return 401 and add a test.
   ```
   -> Clear filepath, explicit problems, clear expected behavior.
 </Card>
+
+### Provide rich content
+
+There are multiple ways to provide more context to your prompts and get better results:
+
+- Reference and include specific files from your project with `@` instead of describing where code is.
+- Paste URLs for documentation and API references.
+- Paste images directly. Copy/paste or drag and drop images into the prompt. This can be useful to show UI designs or error screenshots.
+
+<Warning>
+  Results may vary depending on which models you use.
+</Warning>
 
 ---
 
@@ -155,7 +169,7 @@ MCPs allow Symbiotic Code to connect to external data sources (e.g. local files,
 
 ---
 
-## Add a Plugin
+## Add a plugin
 
 Plugins let you hook into Symbiotic Code's events and extend or modify its behavior. There are two ways to load them:
 
