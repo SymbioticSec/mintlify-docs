@@ -41,6 +41,14 @@ export DISPLAY=:99.0
 
 Symbiotic Code will detect if you’re using Wayland and prefer wl-clipboard, otherwise it will try to find clipboard tools in order of: xclip and xsel.
 
+
+## Network connection blocked 
+
+If you're behind a corporate firewall or proxy, you may need to configure your network settings to allow Symbiotic Code to connect to our API. 
+You will need to add to your allowlist the following domains:
+- `api.symbioticsec.ai:443`
+- `llm-proxy.symbioticsec.ai:443`
+
 ---
 
 <div className="bg-gray-50 dark:bg-white/5 p-6 border border-gray-200 dark:border-white/10">
@@ -51,3 +59,5 @@ Symbiotic Code will detect if you’re using Wayland and prefer wl-clipboard, ot
     Contact us using the dedicated Slack channel or email us at <span>[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span>
   </p>
 </div>
+
+
