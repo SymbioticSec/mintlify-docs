@@ -61,14 +61,15 @@
             ]
           },
           {
-            "group": "Configurations",
+            "group": "Configuration",
             "pages": [
-              "code/configurations/mcp",
-              "code/configurations/skills",
-              "code/configurations/plugins",
-              "code/configurations/tool_permissions",
-              "code/configurations/lsp",
-              "code/configurations/acp"
+              "code/configuration/keybinds",
+              "code/configuration/mcp",
+              "code/configuration/skills",
+              "code/configuration/plugins",
+              "code/configuration/tool_permissions",
+              "code/configuration/lsp",
+              "code/configuration/acp"
             ]
           }
         ]
@@ -107,7 +108,7 @@
                 ]
               },
               {
-                "group": "Configurations",
+                "group": "Configuration",
                 "pages": [
                   "flow/devs/actions/configure_detection",
                   "flow/devs/actions/ignore",
