@@ -172,7 +172,7 @@ For IaC vulnerabilities, use --type infra.
 **Usage**:
 
 ```console
-$ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT]
+$ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT] [SCAN_IDEMPOTENCY_KEY]
 ```
 
 **Arguments**:
@@ -186,6 +186,7 @@ $ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `END_COL`: The ending column of the vulnerability.  [required]
 * `LANGUAGE`: Language of the code we want to remediate  [required]
 * `[FINGERPRINT]`: Fingerprint of the finding, used to track interactions with the AI.
+* `[SCAN_IDEMPOTENCY_KEY]`: Idempotency key of the scan, used to avoid doublon for a scan.
 
 **Options**:
 
@@ -195,6 +196,7 @@ $ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `--code-context TEXT`: Code snippet with context around the vulnerability.
 * `--project-context TEXT`: Context about the vulnerability in the project scope.
 * `--override-fp`: Enable streaming mode for live output processing
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE, VCS_REMEDIATION)  [default: CLI_STANDALONE]
 
 ### `airemediate generate_recommendation`
 
@@ -215,6 +217,7 @@ $ airemediate generate_recommendation [OPTIONS] [RECOMMENDATION_JSON_PARAMS]
 
 * `--file TEXT`: Path to a JSON file containing the vulnerability context.
 * `--stream`: Enable streaming mode for live output processing
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
 * `--help`: Show this message and exit.
 
 ### `airemediate fp_reason`
@@ -222,7 +225,7 @@ $ airemediate generate_recommendation [OPTIONS] [RECOMMENDATION_JSON_PARAMS]
 **Usage**:
 
 ```console
-$ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [FINGERPRINT]
+$ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_LINE START_COL END_COL LANGUAGE [ORIGIN]:[CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE] [FINGERPRINT] [SCAN_IDEMPOTENCY_KEY]
 ```
 
 **Arguments**:
@@ -235,7 +238,9 @@ $ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `START_COL`: The starting column of the vulnerability.  [required]
 * `END_COL`: The ending column of the vulnerability.  [required]
 * `LANGUAGE`: Language of the code we want to remediate  [required]
+* `[ORIGIN]:[CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, VCS_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
 * `[FINGERPRINT]`: Fingerprint of the finding, used to track interactions with the AI.
+* `[SCAN_IDEMPOTENCY_KEY]`: Idempotency key of the scan, used to avoid doublon for a scan
 
 **Options**:
 
@@ -263,6 +268,7 @@ $ airemediate remediation_mode_selection_post_fix [OPTIONS] [RECOMMENDATION_JSON
 **Options**:
 
 * `--file TEXT`: Path to a JSON file containing the vulnerability context.
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
 * `--help`: Show this message and exit.
 
 ## `ci`
