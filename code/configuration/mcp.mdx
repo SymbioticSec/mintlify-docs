@@ -17,7 +17,7 @@ You can define MCP servers in your [configuration file](/code/basics/configurati
 
 ```jsonc title="symbiotic.jsonc" {6}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
     "name-of-mcp-server": {
       // ...
@@ -38,7 +38,7 @@ Add local MCP servers by setting `type` to `"local"` within the MCP object.
 
 ```jsonc title="symbiotic.jsonc" {15}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
     "my-local-mcp-server": {
       "type": "local",
@@ -59,7 +59,7 @@ For example, here's how you can add the test [`@modelcontextprotocol/server-ever
 
 ```jsonc title="symbiotic.jsonc"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
     "mcp_everything": {
       "type": "local",
@@ -97,7 +97,7 @@ Add remote MCP servers by setting `type` to `"remote"`.
 
 ```json title="symbiotic.json"
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
     "my-remote-mcp": {
       "type": "remote",
