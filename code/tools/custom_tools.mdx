@@ -25,7 +25,7 @@ They can be defined:
 The easiest way to create tools is using the `tool()` helper which provides type-safety and validation.
 
 ```ts title=".symbiotic/tools/database.ts" {1}
-import { tool } from "@opencode-ai/plugin"
+import { tool } from "@symbioticsec/plugin"
 
 export default tool({
   description: "Query the project database",
@@ -48,7 +48,7 @@ The **filename** becomes the **tool name**. The above creates a `database` tool.
 You can also export multiple tools from a single file. Each export becomes **a separate tool** with the name **`<filename>_<exportname>`**:
 
 ```ts title=".symbiotic/tools/math.ts"
-import { tool } from "@opencode-ai/plugin"
+import { tool } from "@symbioticsec/plugin"
 
 export const add = tool({
   description: "Add two numbers",
@@ -84,7 +84,7 @@ Custom tools are keyed by tool name. If a custom tool uses the same name as a bu
 For example, this file replaces the built-in `bash` tool:
 
 ```ts title=".symbiotic/tools/bash.ts"
-import { tool } from "@opencode-ai/plugin"
+import { tool } from "@symbioticsec/plugin"
 
 export default tool({
   description: "Restricted bash wrapper",
@@ -135,7 +135,7 @@ export default {
 Tools receive context about the current session:
 
 ```ts title=".symbiotic/tools/project.ts" {8}
-import { tool } from "@opencode-ai/plugin"
+import { tool } from "@symbioticsec/plugin"
 
 export default tool({
   description: "Get project information",
@@ -171,7 +171,7 @@ print(a + b)
 Then create the tool definition that invokes it:
 
 ```ts title=".symbiotic/tools/python-add.ts" {10}
-import { tool } from "@opencode-ai/plugin"
+import { tool } from "@symbioticsec/plugin"
 import path from "path"
 
 export default tool({
