@@ -61,3 +61,19 @@ You will need to add to your allowlist the following domains:
 </div>
 
 
+## Use in a docker container
+
+To use Symbiotic Code in a docker container, you need to follow those steps:
+
+1. Download the script and dockerfile [here](assets/symbiotic_code_docker.zip)
+2. Unzip the file
+3. Launch Docker Desktop
+4. Make the script executable:
+```bash    
+chmod +x run-symbiotic.sh
+```
+5. Run the script:
+```bash
+./run-symbiotic.sh
+```
+6. You are now in the container and can run the symbiotic command to launch the coding agent.
