@@ -47,21 +47,22 @@ There are multiple ways to provide more context to your prompts and get better r
 
 ---
 
-## Modes
+## Agents
 
-Symbiotic Code has three modes. Switch between them with `Tab` or the `/agents` command.
+Symbiotic Code has 4 agents. Switch between them with `Tab` or the `/agents` command.
 
-| Mode | What it does | When to use it |
+| Agent | What it does | When to use it |
 |---|---|---|
 | **Build** | Full access — files, shell, all tools | Default for development work |
 | **Plan** | Read-only analysis; asks before any write or shell command | Exploring a codebase or planning a feature or refactor |
-| **Shell** | Direct shell access | Quick terminal tasks; activate with `!` |
+| **Ask** | Read-only agent for getting answers and explanations | Understanding code or learning about patterns |
+| **Debug** | Specialized agent for diagnosing and fixing bugs | Investigating unexpected behavior or tracking down errors |
 
 <Tip>
-  Start in **Plan** mode when working in an unfamiliar codebase, and then switch to **Build** once you have a clear plan.
+  Start in **Plan** agent when working in an unfamiliar codebase, and then switch to **Build** once you have a clear plan.
 </Tip>
 
-[Learn more about modes](/code/basics/modes)
+[Learn more about agents](/code/basics/agents)
 
 ---
 
@@ -72,7 +73,7 @@ Press `Ctrl+P` or type `/` to open the command palette.
 | Command | What it does |
 |---|---|
 | `/new` | Start a fresh session |
-| `/agents` | Switch between modes |
+| `/agents` | Switch between agents |
 | `/models` | Change the active model |
 | `/mcp` | Enable or disable MCP servers |
 | `/skills` | Load a skill into the current session |
@@ -216,8 +217,8 @@ npm plugins are installed automatically via Bun on next launch.
   <Card title="Plugins" icon="puzzle" href="/code/configuration/plugins">
     Extend Symbiotic Code with hooks and custom behavior.
   </Card>
-  <Card title="Modes" icon="layers" href="/code/basics/modes">
-    Understand Build, Plan, and Shell modes in depth.
+  <Card title="Agents" icon="layers" href="/code/basics/agents">
+    Understand Build, Plan, Ask, and Debug agents in depth.
   </Card>
   <Card title="Models & Providers" icon="cpu" href="/code/basics/models_and_providers">
     Configure which AI model and provider you use.

@@ -1,0 +1,56 @@
+---
+title: "Agents"
+description: "Use specialized agents for different development tasks"
+---
+
+Agents are the assistants you interact with directly and handle your main conversation. 
+
+Each agent has different permissions and tool access; for example, `Build` has all tools enabled while `Plan` is restricted.
+
+<Tip>
+Use `tab` or `/agents` to switch between agents.
+</Tip>
+
+Symbiotic Code comes with **4 agents,** and **a dedicated mode for running shell commands.** 
+
+
+### Build
+    
+    The default agent with **all tools enabled.** Use Build for standard development work where you need full access to file operations and system commands.
+    
+### Plan
+
+    A restricted agent designed for planning and analysis. **We use a permission system to give you more control and prevent unintended changes.** By default, all of the following are set to ask:
+    - **file edits**: All writes, patches, and edits
+    - **bash**: All bash commands
+    
+    This agent is useful when you want the LLM to analyze code, suggest changes, or create plans without making any actual modifications to your codebase.
+    
+### Ask
+
+    A read-only agent for **getting answers and explanations without any risk of modifying your codebase.** 
+    
+    Use Ask when you want to understand code before changing it, or when learning about patterns in your codebase.
+
+### Debug
+
+    A specialized agent for **diagnosing and fixing bugs** using an evidence-based methodology. Debug mode never fixes bugs based on code alone. It requires actual runtime evidence.
+    
+    The debug agent follows a systematic workflow:
+    1. Gather context (errors, stack traces, logs)
+    2. Form hypotheses about the cause
+    3. Add instrumentation to test all hypotheses
+    4. Reproduce and analyze logs
+    5. Fix only with log proof of the root cause
+
+    Use Debug when you're investigating unexpected behavior, tracking down errors, or need a methodical approach to complex bugs.
+
+### Shell mode
+
+Prefix your message with `!` to run it directly as a shell command without any AI processing.
+
+---
+
+### Custom agents
+
+You can create custom agents by adding them to your `~/.config/symbiotic/agents/` folder. See [custom agents](/code/tools/custom_agents) for more information.

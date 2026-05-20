@@ -44,7 +44,7 @@
             "group": "Basics",
             "pages": [
               "code/basics/models_and_providers",
-              "code/basics/modes",
+              "code/basics/agents",
               "code/basics/common_commands",
               "code/basics/rules",
               "code/basics/configuration_file",
