@@ -2,15 +2,15 @@
 title: "Troubleshooting"
 description: "Common issues and how to solve them"
 ---
+
 ## Common issues
 
 | Issue | Solution |
-|-------|----------|
+| --- | --- |
 | `command not found: symbiotic` | Ensure `~/.local/bin` is in your PATH and restart your terminal |
 | Authentication fails | Verify your token is valid in the portal and hasn't expired |
-| Permission denied | Run `chmod +x ~/.local/bin/symbiotic` | 
+| Permission denied | Run `chmod +x ~/.local/bin/symbiotic` |
 | I can't go to the next line | Try one of those keybindings `shift+return`, `ctrl+return`, `alt+return`, `ctrl+j` |
-
 
 ## Installation problem on Windows
 
@@ -19,6 +19,7 @@ If you have trouble installing Symbiotic Code on PowerShell, try to launch the i
 ## Linux specific issues
 
 ### Copy/paste not working on Linux
+
 Linux users need to have one of the following clipboard utilities installed for copy/paste functionality to work:
 
 #### X11 systems:
@@ -46,11 +47,10 @@ export DISPLAY=:99.0
 
 Symbiotic Code will detect if you’re using Wayland and prefer wl-clipboard, otherwise it will try to find clipboard tools in order of: xclip and xsel.
 
+## Network connection blocked
 
-## Network connection blocked 
+If you're behind a corporate firewall or proxy, you may need to configure your network settings to allow Symbiotic Code to connect to our API. You will need to add to your allowlist the following domains:
 
-If you're behind a corporate firewall or proxy, you may need to configure your network settings to allow Symbiotic Code to connect to our API. 
-You will need to add to your allowlist the following domains:
 - `api.symbioticsec.ai:443`
 - `llm-proxy.symbioticsec.ai:443`
 
@@ -60,25 +60,29 @@ You will need to add to your allowlist the following domains:
   <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
     Need help?
   </p>
+
   <p className="text-gray-600 dark:text-white/80 text-sm">
     Contact us using the dedicated Slack channel or email us at <span>[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span>
   </p>
 </div>
 
-
 ## Use in a docker container
 
 To use Symbiotic Code in a docker container, you need to follow those steps:
 
-1. Download the script and dockerfile [here](/assets/symbiotic_code_docker.zip)
+1. Download the script and dockerfile [here](https://github.com/SymbioticSec/mintlify-docs/raw/refs/heads/main/assets/symbiotic_code_docker.zip)
 2. Unzip the file
 3. Launch Docker Desktop
 4. Make the script executable:
-```bash    
+
+```bash
 chmod +x run-symbiotic.sh
 ```
+
 5. Run the script:
+
 ```bash
 ./run-symbiotic.sh
 ```
+
 6. You are now in the container and can run the symbiotic command to launch the coding agent.
