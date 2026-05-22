@@ -29,12 +29,12 @@ blocking:
 	vulnerabilities:
 		#ID of vulnerabilities that must block CI if detected
 		- SYM_PY_001
-		- SYM_JSTS_003# SYMBIOTIC SECURITY CONFIGURATION FILE
+		- SYM_JSTS_003
 ignored:
 	vulnerabilities:
 		#ID of vulnerabilities you want to ignore in the repository
 		- SYM_PY_001
-		- SYM_JSTS_003# SYMBIOTIC SECURITY CONFIGURATION FILE
+		- SYM_JSTS_003
 ```
 
 
@@ -72,8 +72,9 @@ blocking:
   # Explicit list of vulnerability IDs that are always treated as blocking.
   #vulnerabilities:
   #   - TF-0444
-  #   - TF-0081
-  #   - TF-0201
+  #   - SYM_PY_001
+  #   - SYM_JS_028
+  
 
 # ------------------------------------------------------------
 # SECTION: ignored
@@ -112,7 +113,10 @@ ignored:
   vulnerabilities:
   #   - TF-0010
   #   - TF-0213
-  #   - TF-0399
+  #   - TF-0399 
+  #   - SYM_GEN_027
+  #   - SYM_PY_004
+  #   - SYM_TS_010
 
 # =====================================================
 # END OF CONFIGURATION
