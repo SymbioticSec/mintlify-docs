@@ -86,3 +86,96 @@ chmod +x run-symbiotic.sh
 ```
 
 6. You are now in the container and can run the symbiotic command to launch the coding agent.
+
+## Health Check Script
+
+We provide a script to check if your system is ready for Symbiotic Code. To run the check, you can execute the following command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/SymbioticSec/mintlify-docs/refs/heads/main/assets/symbiotic-health-check.js | node
+```
+
+### What It Checks
+
+The script verifies:
+
+1. **Node.js Installation** - Ensures Node.js is installed (v14+ recommended)
+2. **npm Installation** - Verifies npm is available
+3. **Global Install Permissions** - Tests ability to install global npm packages
+4. **Execution Policy** (Windows only) - Checks PowerShell execution policy
+5. **Proxy Configuration** - Displays current proxy settings
+6. **npm Registry Access** - Tests connectivity to `registry.npmjs.org:443`
+7. **Required Endpoints** - Tests connectivity to:
+   - `api.symbioticsec.ai:443`
+   - `llm-proxy.symbioticsec.ai:443`
+
+### Common Issues and Solutions
+
+#### Permission Denied (EACCES)
+
+**Windows:**
+- Run Command Prompt or PowerShell as Administrator
+
+**macOS/Linux:**
+```bash
+# Option 1: Use sudo
+sudo npm install -g @symbioticsec/code
+
+# Option 2: Configure npm to use a user directory
+mkdir ~/.npm-global
+npm config set prefix "~/.npm-global"
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### Windows Execution Policy Restricted
+
+Run PowerShell as Administrator:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### Network Connectivity Issues
+
+If the script reports connection failures:
+
+1. **Corporate Firewall**: Contact your IT administrator to whitelist:
+   - `api.symbioticsec.ai:443`
+   - `llm-proxy.symbioticsec.ai:443`
+   - `registry.npmjs.org:443`
+
+2. **Proxy Configuration**: If behind a corporate proxy, configure npm:
+   ```bash
+   npm config set proxy http://proxy.company.com:8080
+   npm config set https-proxy http://proxy.company.com:8080
+   ```
+
+3. **VPN Required**: Some networks require VPN connection for external access
+
+#### npm Registry Blocked
+
+If npm registry is blocked:
+- Check proxy settings: `npm config get proxy`
+- Verify firewall allows access to `registry.npmjs.org:443`
+- Contact IT to whitelist npm registry
+
+### Installation After Health Check Passes
+
+Once all checks pass, install with:
+```bash
+npm install -g @symbioticsec/code
+```
+
+### Getting Help
+
+If issues persist after trying the solutions above:
+
+1. Save the health check output:
+   ```bash
+   node symbiotic-health-check.js > healthcheck-results.txt 2>&1
+   ```
+
+2. Contact us via Slack channel or at [support@symbioticsec.ai](mailto:[EMAIL_ADDRESS]) with:
+   - The health check results file
+   - Your operating system and version
+   - Your network environment (corporate, home, etc.)
