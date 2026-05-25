@@ -3,26 +3,53 @@ title: "Troubleshooting"
 description: "Common issues and how to solve them"
 ---
 
-## Common issues
+## Quick reference
 
 | Issue | Solution |
 | --- | --- |
 | `command not found: symbiotic` | Ensure `~/.local/bin` is in your PATH and restart your terminal |
 | Authentication fails | Verify your token is valid in the portal and hasn't expired |
 | Permission denied | Run `chmod +x ~/.local/bin/symbiotic` |
-| I can't go to the next line | Try one of those keybindings `shift+return`, `ctrl+return`, `alt+return`, `ctrl+j` |
+| Can't go to the next line | Use one of these keybindings: `shift+return`, `ctrl+return`, `alt+return`, or `ctrl+j` |
 
-## Installation problem on Windows
+---
 
-If you have trouble installing Symbiotic Code on PowerShell, try to launch the install command with Git Bash that you can install [here](https://gitforwindows.org/)
+## Installation issues
 
-## Linux specific issues
+### Windows
+
+If you have trouble installing Symbiotic Code on PowerShell, try launching the install command with Git Bash, which you can download [here](https://gitforwindows.org/).
+
+If the issue is related to PowerShell execution policy, run PowerShell as Administrator and execute:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### Permission denied (macOS/Linux)
+
+If you get a permission error when installing globally:
+
+```bash
+# Option 1: Use sudo
+sudo npm install -g @symbioticsec/code
+
+# Option 2: Configure npm to use a user directory
+mkdir ~/.npm-global
+npm config set prefix "~/.npm-global"
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+## Platform-specific issues
 
 ### Copy/paste not working on Linux
 
-Linux users need to have one of the following clipboard utilities installed for copy/paste functionality to work:
+Linux users need one of the following clipboard utilities installed for copy/paste to work.
 
-#### X11 systems:
+**X11 systems:**
 
 ```bash
 apt install -y xclip
@@ -30,13 +57,13 @@ apt install -y xclip
 apt install -y xsel
 ```
 
-#### Wayland systems:
+**Wayland systems:**
 
 ```bash
 apt install -y wl-clipboard
 ```
 
-#### Headless environments:
+**Headless environments:**
 
 ```bash
 apt install -y xvfb
@@ -45,32 +72,11 @@ Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 export DISPLAY=:99.0
 ```
 
-Symbiotic Code will detect if you’re using Wayland and prefer wl-clipboard, otherwise it will try to find clipboard tools in order of: xclip and xsel.
+Symbiotic Code will detect if you're using Wayland and prefer `wl-clipboard`, otherwise it will try `xclip` then `xsel`.
 
-## Network connection blocked
+### Using Symbiotic Code in a Docker container
 
-If you're behind a corporate firewall or proxy, you may need to configure your network settings to allow Symbiotic Code to connect to our API. You will need to add to your allowlist the following domains:
-
-- `api.symbioticsec.ai:443`
-- `llm-proxy.symbioticsec.ai:443`
-
----
-
-<div className="bg-gray-50 dark:bg-white/5 p-6 border border-gray-200 dark:border-white/10">
-  <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-    Need help?
-  </p>
-
-  <p className="text-gray-600 dark:text-white/80 text-sm">
-    Contact us using the dedicated Slack channel or email us at <span>[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span>
-  </p>
-</div>
-
-## Use in a docker container
-
-To use Symbiotic Code in a docker container, you need to follow those steps:
-
-1. Download the script and dockerfile [here](https://github.com/SymbioticSec/mintlify-docs/raw/refs/heads/main/assets/symbiotic_code_docker.zip)
+1. Download the script and Dockerfile [here](https://github.com/SymbioticSec/mintlify-docs/raw/refs/heads/main/assets/symbiotic_code_docker.zip)
 2. Unzip the file
 3. Launch Docker Desktop
 4. Make the script executable:
@@ -85,97 +91,72 @@ chmod +x run-symbiotic.sh
 ./run-symbiotic.sh
 ```
 
-6. You are now in the container and can run the symbiotic command to launch the coding agent.
+6. You are now inside the container and can run the `symbiotic` command to launch the coding agent.
 
-## Health Check Script
+---
 
-We provide a script to check if your system is ready for Symbiotic Code. To run the check, you can execute the following command:
+## Network and connectivity
+
+If you're behind a corporate firewall or proxy, you may need to allowlist the following domains for Symbiotic Code to connect to the API:
+
+- `api.symbioticsec.ai:443`
+- `llm-proxy.symbioticsec.ai:443`
+
+**Proxy configuration:** If behind a corporate proxy, configure npm:
+
+```bash
+npm config set proxy http://proxy.company.com:8080
+npm config set https-proxy http://proxy.company.com:8080
+```
+
+**npm registry blocked:** If the npm registry is inaccessible:
+
+- Check proxy settings: `npm config get proxy`
+- Verify your firewall allows access to `registry.npmjs.org:443`
+- Contact IT to whitelist the npm registry
+
+---
+
+## Health check script
+
+Run the following command to verify that your system is ready for Symbiotic Code:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/SymbioticSec/mintlify-docs/refs/heads/main/assets/symbiotic-health-check.js | node
 ```
 
-### What It Checks
+The script checks:
 
-The script verifies:
-
-1. **Node.js Installation** - Ensures Node.js is installed (v14+ recommended)
-2. **npm Installation** - Verifies npm is available
-3. **Global Install Permissions** - Tests ability to install global npm packages
-4. **Execution Policy** (Windows only) - Checks PowerShell execution policy
-5. **Proxy Configuration** - Displays current proxy settings
-6. **npm Registry Access** - Tests connectivity to `registry.npmjs.org:443`
-7. **Required Endpoints** - Tests connectivity to:
+1. **Node.js** — Ensures Node.js is installed (v14+ recommended)
+2. **npm** — Verifies npm is available
+3. **Global install permissions** — Tests ability to install global npm packages
+4. **Execution policy** (Windows only) — Checks PowerShell execution policy
+5. **Proxy configuration** — Displays current proxy settings
+6. **npm registry access** — Tests connectivity to `registry.npmjs.org:443`
+7. **Required endpoints** — Tests connectivity to:
    - `api.symbioticsec.ai:443`
    - `llm-proxy.symbioticsec.ai:443`
-
-### Common Issues and Solutions
-
-#### Permission Denied (EACCES)
-
-**Windows:**
-- Run Command Prompt or PowerShell as Administrator
-
-**macOS/Linux:**
-```bash
-# Option 1: Use sudo
-sudo npm install -g @symbioticsec/code
-
-# Option 2: Configure npm to use a user directory
-mkdir ~/.npm-global
-npm config set prefix "~/.npm-global"
-echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
-```
-
-#### Windows Execution Policy Restricted
-
-Run PowerShell as Administrator:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-#### Network Connectivity Issues
-
-If the script reports connection failures:
-
-1. **Corporate Firewall**: Contact your IT administrator to whitelist:
-   - `api.symbioticsec.ai:443`
-   - `llm-proxy.symbioticsec.ai:443`
-   - `registry.npmjs.org:443`
-
-2. **Proxy Configuration**: If behind a corporate proxy, configure npm:
-   ```bash
-   npm config set proxy http://proxy.company.com:8080
-   npm config set https-proxy http://proxy.company.com:8080
-   ```
-
-3. **VPN Required**: Some networks require VPN connection for external access
-
-#### npm Registry Blocked
-
-If npm registry is blocked:
-- Check proxy settings: `npm config get proxy`
-- Verify firewall allows access to `registry.npmjs.org:443`
-- Contact IT to whitelist npm registry
-
-### Installation After Health Check Passes
 
 Once all checks pass, install with:
+
 ```bash
 npm install -g @symbioticsec/code
 ```
 
-### Getting Help
+**If issues persist**, save the health check output and contact support:
 
-If issues persist after trying the solutions above:
+```bash
+node symbiotic-health-check.js > healthcheck-results.txt 2>&1
+```
 
-1. Save the health check output:
-   ```bash
-   node symbiotic-health-check.js > healthcheck-results.txt 2>&1
-   ```
+---
 
-2. Contact us via Slack channel or at [support@symbioticsec.ai](mailto:[EMAIL_ADDRESS]) with:
-   - The health check results file
-   - Your operating system and version
-   - Your network environment (corporate, home, etc.)
+<div className="bg-gray-50 dark:bg-white/5 p-6 border border-gray-200 dark:border-white/10">
+  <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+    Need help?
+  </p>
+
+  <p className="text-gray-600 dark:text-white/80 text-sm">
+    Contact us using the dedicated Slack channel or email us at <span>[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span> with your health check results, OS version, and network environment.
+  </p>
+</div>
