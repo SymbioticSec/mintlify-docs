@@ -1,0 +1,121 @@
+---
+title: "IDE Extension"
+description: "Use the IDE extension to get AI assistance directly in your editor"
+---
+
+The Symbiotic code IDE extension brings the power of Symbiotic Code to your preferred integrated development environment. It provides seamless AI assistance for coding tasks, including code generation, debugging, and refactoring, all within the familiar interface of your IDE.
+
+## Supported IDEs
+
+Symbiotic Code supports all IDEs based on VSCode like VSCode, VSCodium, Cursor, Windsurf, Kiro.
+
+## Key features
+
+### Interactive Agent Modes
+
+In the agent sidebar, you can select the most appropriate execution mode for your current task:
+
+- **Build Mode:** Full access to edit files, execute commands, and run tools in a secure environment. Best for active development.
+- **Plan Mode:** A read-only analysis agent that inspects codebases, answers architectural questions, and drafts plans. It will always ask for confirmation before making edits or running commands.
+- **Debug Mode:** A specialized agent focused on identifying, explaining, and resolving code errors, test failures, or runtime bugs.
+
+You can also create custom modes in **Settings > Custom Modes** by defining a unique name and writing a custom system prompt to tailor the agent's behavior to your team's specific guidelines or coding style.
+
+### Multi-Tiered Security Guardrails
+
+Symbiotic Code implements real-time guardrails to prevent vulnerabilities and data leakage. Select from three security levels in your IDE settings:
+
+| Security Level | Description | Recommended For |
+| :--- | :--- | :--- |
+| **Permissive** | Minimal guardrails with low-latency checks. | Writing documentation, exploration, and non-sensitive tasks. |
+| **Balanced** (Default) | Context-aware checks that automatically balance developer speed and safety. | Daily development, refactoring, and general engineering. |
+| **Strict** | Comprehensive, maximum-security audits on all inputs, outputs, and terminal actions. | Sensitive codebases, credential management, and high-audit environments. |
+
+### Flexible Models & Providers
+
+Configure which models power your development workflow:
+
+- **Symbiotic Tier Models:** Use curated models optimized for security and code generation. Configure variants depending on whether you need high speed or complex reasoning.
+- **Default & Mode-Specific Configs:** Navigate to **Settings > Models** to set your default assistant model or assign specific models to different modes (e.g., a lightweight model for Build, a reasoning model for Plan).
+- **External Providers:** Seamlessly connect to external AI services like **Anthropic**, **OpenRouter**, or local models running on **Ollama** by configuring your credentials in **Settings > Provider**.
+
+## Getting Started
+
+1. **Install the Extension** from your IDE marketplace (compatible with VS Code, VSCodium, Cursor, Windsurf, and Kiro).
+2. **Sign In & Authenticate** with your Symbiotic Security account to connect to the platform.
+
+## Settings
+
+Access the Settings panel in the IDE extension sidebar to customize your Symbiotic Code experience. Settings are organized into the following categories:
+
+### Models
+
+Configure which AI models power your development workflow:
+
+- **Default Model:** The primary model used for all conversations. Defaults to Claude Sonnet 5.
+- **Small Model:** A lightweight model optimized for quick tasks like title generation, commit message generation, and prompt enhancement. Automatically configured.
+- **Model per Mode:** Assign specific models to different agent modes:
+  - **Build:** Configure a model for active development (defaults to Default Model)
+  - **Plan:** Configure a model for analysis and planning (defaults to Default Model)
+  - **Debug:** Configure a model for debugging workflows (defaults to Default Model)
+  - **Ask:** Configure a model for read-only queries (defaults to Default Model)
+  - **Security-deep:** A specialized model for comprehensive security reviews using Claude Opus 4.7 with extended thinking
+
+### Providers
+
+Manage and configure your AI model providers:
+
+**Primary Provider:**
+- **Symbiotic:** The default managed provider using Symbiotic's curated models. Authenticated via the Symbiotic gateway.
+
+**Connected Providers:**
+- View all connected third-party providers (e.g., Ollama Cloud, OpenAI, GitHub Copilot)
+- Disconnect providers with a single click
+- Manage API credentials for each provider
+
+**Popular Providers:**
+- **Anthropic:** Direct access to Claude models, including Pro and Max variants
+- **Google:** Gemini models for fast, structured responses
+- **OpenRouter:** Access all supported models from one unified provider
+- **Vercel AI Gateway:** Unified access to AI models with smart routing
+
+Connect any provider by clicking **+ Connect** and entering your API credentials.
+
+### Agent Behaviour
+
+Customize how agents behave and operate with multiple configuration tabs:
+
+**Agents Tab:**
+View all available agents and their descriptions:
+- **ask:** Get answers and explanations without making changes to the codebase
+- **build:** The default agent with all tools enabled for full development access
+- **debug:** Diagnose and fix software issues with systematic debugging methodology
+- **explore:** Fast agent specialized for exploring codebases and finding files by patterns
+- **general:** General-purpose agent for researching complex questions and executing multi-step tasks
+- **plan:** Plan mode that disallows all edit tools
+- **security-deep:** High-effort security review using Opus 4.7 with max extended thinking (custom mode)
+- **triage:** Security engineer specialist for triaging static analysis findings
+
+Create new custom modes with **Create New Mode** or import existing agents.
+
+**MCP Servers, Rules, Workflows, Skills Tabs:**
+Configure additional agent behavior through Model Context Protocol servers, custom rules, workflow definitions, and skill configurations.
+
+### Auto-Approve
+
+Define how tools are allowed to run by setting permissions for automatic approval:
+
+**External Directory:**
+- **All paths (*):** Set to "Ask" by default to be prompted before accessing files outside the workspace
+
+**Bash:**
+- **All commands (*):** Set to "Ask" by default to be prompted before executing shell commands
+- **Exceptions:** Define specific commands with custom approval settings:
+  - `grep *` — Set to "Allow"
+  - `git push` — Set to "Ask"
+  - `rm *` — Set to "Ask"
+
+**Read:**
+- **All paths (*):** Set to "Allow" by default to permit file reading
+
+Add additional paths or commands with **+ Add path** or **+ Add command**.

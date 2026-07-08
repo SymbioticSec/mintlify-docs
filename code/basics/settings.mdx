@@ -1,0 +1,217 @@
+---
+title: "Settings"
+description: "Configure Symbiotic Code to match your workflow and security requirements"
+---
+
+Access the Settings panel in the IDE extension sidebar to customize your Symbiotic Code experience. Settings are organized into the following categories, accessible via tabs in the left sidebar.
+
+## Models
+
+Configure which AI models power your development workflow:
+
+### Default Model
+The primary model used for all conversations and general tasks. Defaults to Claude Sonnet 5. This is your baseline model for most interactions.
+
+### Small Model
+A lightweight, fast model optimized for quick tasks such as:
+- Title generation
+- Commit message generation
+- Prompt enhancement
+- Quick inline suggestions
+
+The small model is automatically configured for these tasks to maximize speed without sacrificing quality.
+
+### Model per Mode
+Assign specific models to different agent modes for optimized performance:
+
+| Mode | Purpose | Default |
+| :--- | :--- | :--- |
+| **Build** | Active development with full tool access | Default Model |
+| **Plan** | Analysis and planning (read-only) | Default Model |
+| **Debug** | Debugging and bug fixing | Default Model |
+| **Ask** | Read-only queries and explanations | Default Model |
+| **Security-deep** | Comprehensive security reviews with extended thinking | Claude Opus 4.7 |
+
+This allows you to use specialized models for specific tasks, optimizing both cost and performance.
+
+## Providers
+
+Manage and configure your AI model providers:
+
+### Symbiotic (Default)
+The default managed provider featuring Symbiotic's curated and optimized models. Authentication is handled through the Symbiotic gateway using your account credentials.
+
+### Connected Providers
+View all third-party providers you've connected to Symbiotic Code:
+- Each provider displays its type (e.g., "API KEY", "CUSTOM")
+- Disconnect any provider with the **Disconnect** button
+- Manage API credentials in **Settings > Provider**
+
+Examples of connected providers:
+- Ollama Cloud
+- OpenAI
+- GitHub Copilot
+
+### Popular Providers
+Pre-configured providers ready to connect:
+
+- **Anthropic:** Direct access to Claude models, including Pro and Max variants for advanced reasoning
+- **Google:** Gemini models optimized for fast, structured responses
+- **OpenRouter:** Access all supported models from one unified provider with consistent API
+- **Vercel AI Gateway:** Unified access to AI models with intelligent routing and load balancing
+
+Connect any provider by clicking **+ Connect** and entering your API credentials.
+
+## Agent Behaviour
+
+Customize how agents behave and operate with multiple configuration tabs:
+
+### Agents Tab
+View and manage all available agents:
+
+**Built-in Agents:**
+- **ask:** Get answers and explanations without making changes to the codebase (read-only)
+- **build:** The default agent with all tools enabled for full development access
+- **debug:** Diagnose and fix software issues with systematic debugging methodology
+- **explore:** Fast agent specialized for exploring codebases and finding files by patterns (subagent)
+- **general:** General-purpose agent for researching complex questions and executing multi-step tasks in parallel (subagent)
+- **plan:** Plan mode that disallows all edit tools and bash commands
+- **security-deep:** High-effort security review using Opus 4.7 with max extended thinking for multi-tenant isolation, auth flows, crypto, and OWASP Top 10 audits (custom mode)
+- **triage:** Security engineer specialist for triaging static analysis findings (subagent)
+
+**Actions:**
+- **Import:** Import custom agents from local files
+- **Create New Mode:** Define a new custom agent with a unique system prompt
+
+### MCP Servers Tab
+Configure Model Context Protocol servers to extend agent capabilities.
+
+### Rules Tab
+Define custom rules and constraints for agent behavior.
+
+### Workflows Tab
+Create and manage workflow definitions for common development tasks.
+
+### Skills Tab
+Organize and enable/disable available skills that enhance agent functionality.
+
+## Auto-Approve
+
+Define how tools are allowed to run by setting permissions for automatic approval. Most tools default to "Allow", with external directory access and bash commands set to "Ask" for safety.
+
+### External Directory
+Access files outside the workspace. Triggered when accessing files outside the current project directory.
+
+- **All paths (*):** Default is "Ask" — prompts before accessing external files
+- **+ Add path:** Add specific allowed or restricted paths
+
+### Bash
+Run terminal commands. Allows execution of shell commands (e.g., git status, npm install).
+
+- **All commands (*):** Default is "Ask" — prompts before executing bash commands
+- **Exceptions:** Define specific commands with custom approval settings:
+  - `grep *` — Set to "Allow" (search is safe by default)
+  - `git push` — Set to "Ask" (requires confirmation)
+  - `rm *` — Set to "Ask" (deletion requires confirmation)
+- **+ Add command:** Add additional command-specific rules
+
+### Read
+Read files. Allows the agent to read file contents matching the specified path.
+
+- **All paths (*):** Default is "Allow" — permits all file reading operations
+
+### Write
+Write files. Allows the agent to create and modify files (automatically managed by agent permissions).
+
+### Execute
+Execute external processes and integrations.
+
+### Network
+Make network requests and external API calls (managed by agent security level).
+
+## Browser
+
+Configure browser behavior and integration settings for web access within the IDE extension:
+- Enable/disable web browsing capabilities
+- Configure proxy settings if needed
+- Set browser timeout and retry policies
+
+## Checkpoints
+
+Define security checkpoints and validation steps:
+- Pre-execution security verification
+- Code review checkpoints before deployment
+- Audit logging for sensitive operations
+
+## Display
+
+Customize the visual appearance and UI behavior:
+- **Theme preferences:** Light mode, dark mode, or system default
+- **Font size and editor preferences:** Adjust text size and editor behavior
+- **Layout and sidebar customization:** Configure panel sizes and visibility
+- **Notification settings:** Control alert and notification verbosity
+
+## Autocomplete
+
+Configure code completion behavior:
+- **Enable/disable inline suggestions:** Turn AI-powered completions on or off
+- **Trigger settings:** Control when suggestions appear (on-demand or automatic)
+- **Completion speed preferences:** Balance between speed and accuracy
+- **Context window:** Set how much code context to use for suggestions
+
+## Context
+
+Manage the context provided to agents:
+- **Include/exclude files and folders:** Specify which files are available to agents
+- **Context size limits:** Control maximum context window
+- **Context prioritization:** Define which files are most important for context
+- **Repository indexing:** Enable/disable automatic code indexing
+
+## Guardrails
+
+Select your security guardrails level to balance developer velocity with security:
+
+| Level | Description | Use Case |
+| :--- | :--- | :--- |
+| **Permissive** | Minimal checks for maximum speed | Documentation, exploration, non-sensitive work |
+| **Balanced** | (Default) Context-aware security with reasonable speed | Daily development, refactoring, general engineering |
+| **Strict** | Maximum security with comprehensive audits | Sensitive codebases, credential management, high-audit environments |
+
+**Additional Options:**
+- **Customize guardrails:** Enable/disable specific security checks
+- **Security policies:** Define organization-specific security requirements
+- **Audit logging:** Enable detailed security event logging
+
+## Commit Message
+
+Configure automatic commit message generation:
+- **Enable/disable automatic generation:** Toggle AI-powered commit messages
+- **Message style preferences:** Choose between conventional commits, free-form, or custom formats
+- **Commit message templates:** Define templates for consistent messaging
+- **Length preferences:** Set minimum and maximum message length
+
+## Experimental
+
+Access early-access features and experimental capabilities that are under development:
+- New agent modes and behaviors
+- Beta security features
+- Experimental UI improvements
+- Pre-release model access
+
+Enable experimental features at your own discretion; they may change or be removed in future versions.
+
+## Language
+
+Set your preferred language for the IDE extension interface:
+- English (default)
+- Additional languages as supported
+
+## About Symbiotic Code
+
+View comprehensive information about your Symbiotic Code installation:
+- **Version number:** Current extension version
+- **Build information:** Build ID and date
+- **Account status:** Authentication status and account details
+- **Documentation links:** Quick access to help and documentation
+- **License information:** License status and terms
+- **Check for updates:** Manually check for new versions

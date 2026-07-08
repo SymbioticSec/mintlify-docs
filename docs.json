@@ -43,6 +43,7 @@
           {
             "group": "Basics",
             "pages": [
+              "code/basics/IDE_extension",
               "code/basics/models_and_providers",
               "code/basics/agents",
               "code/basics/common_commands",
@@ -57,7 +58,8 @@
               "code/tools/custom_commands",
               "code/tools/custom_agents",
               "code/tools/custom_tools",
-              "code/tools/security_tools"
+              "code/tools/security_tools",
+              "code/tools/containers"
             ]
           },
           {
@@ -70,6 +72,15 @@
               "code/configuration/tool_permissions",
               "code/configuration/lsp",
               "code/configuration/acp"
+            ]
+          },
+          {
+            "group": "Admin features",
+            "pages": [
+                  "flow/admins/guardrails",
+                  "flow/admins/monitored_repositories",
+                  "flow/admins/ai_inventory",
+                  "flow/admins/agent_security"
             ]
           }
         ]
@@ -135,7 +146,9 @@
                 "pages": [
                   "flow/admins/user_management",
                   "flow/admins/webhooks",
-                  "flow/admins/guardrails"
+                  "flow/admins/guardrails",
+                  "flow/admins/monitored_repositories",
+                  "flow/admins/ai_inventory"
                 ]
               },
               {

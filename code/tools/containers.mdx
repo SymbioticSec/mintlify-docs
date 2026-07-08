@@ -1,0 +1,73 @@
+---
+title: "Agents container"
+description: "Launch Symbiotic Code in secure, isolated Docker Sandboxes"
+---
+
+Symbiotic Code integrates with **Docker Sandboxes (sbx)** to provide a highly secure, isolated environment for running AI agents. By executing inside a lightweight microVM container, the agent can run tests, execute bash commands, and modify code without any risk of affecting your host system or accessing sensitive local credentials.
+
+## Why use Agent Sandboxing?
+
+When AI agents run directly on a host machine, they have access to the user's workspace, SSH keys, shell history, environment variables, and local network. By default, Symbiotic Code prompts you for tool permissions, but with the Agents container enabled:
+
+- **Isolated Runtime:** The agent runs inside a disposable microVM with its own Linux kernel, separate filesystem, and isolated network.
+- **Zero Host Risk:** Destructive commands or unexpected behaviors are completely contained within the sandbox.
+- **Safe Auto-Execution:** You can confidently run the agent with less restrictive permissions, allowing it to work faster and more autonomously.
+
+---
+
+## Requirements
+
+Before enabling sandbox mode, ensure your system meets the following prerequisites:
+
+1. **Docker Desktop:** Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (v4.32+ recommended) and verify it is running.
+2. **Docker Account:** A free or paid Docker Hub account is required for sandboxing features.
+3. **sbx CLI:** The standalone Docker sandbox CLI will be automaticlaly installed on your machine.
+  
+---
+
+## Setup & Activation
+
+Agent sandboxing can be configured at two levels:
+
+- **Organization Level:** Administrators can enforce sandboxing across all developer seats in the organization settings.
+- **Local Level:** Developers can toggle and configure sandbox settings locally using the command `/org-policy`.
+
+<Warning>
+**First-time Startup:** The first time you launch Symbiotic Code with sandboxing enabled, it may take a few minutes to download the sandbox image and initialize the environment. You will be prompted to run `docker sbx login` in your terminal to authenticate with your Docker account.
+</Warning>
+
+---
+
+## Security Parameters
+
+You can customize the sandbox's behavior to balance security and usability. These parameters can be set via the `/org-policy` command or enforced globally in the organization settings.
+
+### Network Policies
+Control what outbound connections the agent can make from inside the container:
+
+| Policy | Description |
+| :--- | :--- |
+| `allow-all` | Outgoing network access is allowed by default, except for domains specified in the blocklist. |
+| `balanced` | *(Recommended)* Only essential domains (e.g. package registries, API endpoints) are allowed by default. |
+| `deny-all` | All outgoing network access is blocked, except for domains specified in the allowlist. |
+
+Admins can define organization-wide **allowlists** and **denylists** (blocklists) to restrict domain access (e.g., preventing data exfiltration to unauthorized endpoints).
+
+### Command Guardrails
+Prevent the execution of destructive or unsafe commands inside the sandbox.
+
+- **Destructive Command Blocking:** When enabled, Symbiotic Code automatically blocks dangerous commands (such as `rm -rf /` or system configuration changes) before they are run.
+- **Custom Blocklist:** Define custom CLI patterns or commands that the agent should never execute.
+
+### Clone Mode
+Clone Mode provides an additional layer of safety for your source code.
+
+- **How it works:** Instead of mounting your active host directory directly into the sandbox filesystem, Symbiotic Code creates a private Git clone of your repository inside the microVM.
+- **Isolation:** The agent performs its work, runs tests, and makes commits entirely inside this clone. Your local host files remain completely untouched.
+- **Reviewing work:** The sandbox exposes its internal clone as a Git remote on your host machine. You can fetch and inspect the agent's changes (e.g., using `git fetch` and `git diff`) before merging them.
+
+---
+
+## Technical Details
+
+For more details on how the underlying sandboxing technology operates, refer to the [Official Docker Sandboxes Documentation](https://docs.docker.com/ai/sandboxes/).

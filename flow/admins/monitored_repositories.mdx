@@ -1,0 +1,41 @@
+---
+title: "Monitored repositories"
+description: "Select and manage which repositories are monitored for vulnerabilities, guardrails, and AI inventory"
+---
+
+## Overview
+
+The Monitored repositories page allows you to control which repositories are actively monitored by Symbiotic Code. Your selections here determine:
+
+- Which repositories appear in the **Repositories** page
+- Which repositories **Vulnerabilities** you will see
+- Which repositories you can create **Guardrails** on
+- Which repositories are indexed in the **AI Inventory**
+
+## Add and manage monitored repositories
+
+1. Go to the [Monitored repositories](https://app.symbioticsec.ai/settings/repositories) page in Settings
+
+2. You will see a list of all repositories slug authorized
+
+3. In the New input you can add new repositories slug to monitor
+
+<Info>
+When you connect either to Github or Gitlab, repositories slug are automatically added to the monitored list.
+</Info>
+
+
+
+## Impact on features
+
+### Repositories page
+Only monitored repositories will be listed and their status will be tracked in real-time.
+
+### Vulnerabilities
+Vulnerability scans run on all repositories, but you will see in your portal only the vulnerabilities of the monitored repositories.
+
+### Guardrails
+You can create guardrails only for the monitored repositories.
+
+### AI Inventory
+You will see assets and usage only for monitored repositories. When changing the list of monitored repositories, it may take up to 15 minutes for the AI inventory viex to take it into account. 

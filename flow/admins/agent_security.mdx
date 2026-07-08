@@ -1,0 +1,125 @@
+---
+title: "Agent Security"
+description: "Configure prompt scanning policies and sandbox constraints for Symbiotic Code agents to prevent data exfiltration and enforce security controls"
+---
+
+<Info>
+  Prompt scanning and agent sandboxing are configured under **Settings > Agents security**. These features work together to create a defense-in-depth approach to agent security.
+</Info>
+
+## Overview
+
+Prompt scanning and sandboxing are complementary security features that protect your organization from security risks introduced by AI agents:
+
+- **Prompt Scanning**: Automatically detects and handles sensitive data patterns (credentials, PII, secrets) in user inputs and agent outputs before they're processed
+- **Agent Sandboxing**: Isolates agent execution environments with strict network, file system, and command-level restrictions
+
+For each configuration, you can enable or disable it and lock it or not. A locked configuration will be enforced to all users and cannot be overridden.
+
+## Agent Sandboxing
+
+Agent sandboxing restricts what Symbiotic Code agents can do when executing tasks, creating isolated execution environments using docker SBX.
+
+### Sandbox Environment
+
+When enabled, agents run inside Docker SBX containers with strict isolation:
+
+**Configuration**: **Settings > Agents security > Agents sandbox > Run agents in a sandbox**
+
+- Agents execute inside containerized environments
+- Host filesystem access is blocked (except via explicit allow-lists)
+- Network access is restricted unless explicitly allowed
+- Shell command execution is limited to approved operations
+
+### Fallback Behavior
+
+**Configuration**: **Settings > Agents security > Agents sandbox > Fallback to host**
+
+When the sandbox is unavailable:
+- **Enabled**: Agents continue running on the host system
+- **Disabled**: Agents fail safely and request sandbox restoration
+
+<Warning>
+  Enabling fallback to host reduces security isolation. Enable only if sandbox availability is critical for your workflows.
+</Warning>
+
+### Worktree Isolation
+
+**Configuration**: **Settings > Agents security > Agents sandbox > Worktree isolation**
+
+When enabled:
+- Agents work within an isolated Git worktree
+- Host working directory and files are protected
+- Changes are confined to the sandboxed environment
+
+### Command Restrictions
+
+Limit the types of shell commands agents can execute.
+
+**Configuration**: **Settings > Agents security > Agents sandbox > Block destructive shell commands**
+
+When enabled, agents cannot execute `rm -rf` and mass deletion commands
+
+You can also define custom commands to block.
+
+### Network Controls
+
+Manage network access for agents executing code or making HTTP requests.
+
+**Access Mode**: Choose between **Balanced**, **Restrictive**, and **Open** network policies.
+
+#### Exceptions
+
+Define which hosts and networks agents can reach:
+
+| Type | Examples | Purpose |
+|------|----------|---------|
+| **Blocked Hosts** | `evil.com`, `malicious.org` | Prevent connections to known malicious sites |
+| **Blocked CIDRs** | `192.168.1.0/24`, `10.0.0.0/8` | Block private/internal network ranges |
+| **Allowed Hosts** | `api.github.com`, `registry.npmjs.org` | Whitelist trusted external services |
+| **Allowed CIDRs** | `172.16.0.0/12`, `203.0.113.0/24` | Permit specific IP ranges for integrations |
+
+**Important**: Agents can still make requests using built-in tools (e.g., WebFetch) regardless of these settings. Network exceptions control general code execution behavior.
+
+## Prompt Scanner
+
+The prompt scanner analyzes user prompts and tool outputs for sensitive data patterns and applies your configured policy actions.
+
+### How It Works
+
+When enabled, the prompt scanner:
+1. Scans all user prompts before agents process them
+2. Scans agent outputs and tool results in real-time
+3. Detects patterns matching your configured categories
+4. Applies actions based on your policy (warn, redact, or block)
+
+### Configuration
+
+Access prompt scanner settings under **Settings > Agents security > Prompt scanner**.
+
+#### Sensitive Data Categories
+
+Configure which types of sensitive data to monitor:
+
+- **Credentials**: Passwords, GitHub tokens, API keys
+- **Cloud Keys**: AWS access keys, GCP service account keys, Azure secrets
+- **Secrets**: Private keys, encryption keys, environment variable values
+- **PII**: Email addresses, phone numbers, home addresses, social security numbers
+- **Payment Cards**: Credit/debit card numbers
+
+#### Policy Actions
+
+Choose how the scanner responds to detected sensitive data:
+
+| Action | Behavior | Use Case |
+|--------|----------|----------|
+| **Warn** | Alerts the user but allows the prompt to proceed | Development/testing environments |
+| **Redact** | Removes or masks the sensitive data before processing | Production - prevents data leakage while allowing workflows |
+| **Block** | Rejects the prompt/output entirely | High-security environments requiring strict controls |
+
+### Best Practices
+
+- Enable **Block secrets** by default for production environments
+- Use **Redact** for PII to balance security with functionality
+- Configure **Block credentials** to prevent accidental token exposure
+- Review and adjust settings based on false positive rates
