@@ -1,0 +1,85 @@
+---
+title: "Security Modes"
+description: "Configure security modes for Symbiotic Code"
+---
+
+Symbiotic Code can automatically check the code it writes for security issues. Security Modes let you control how thorough that checking is, so you can balance speed and safety depending on what you're working on.
+
+There are three modes: **Permissive**, **Balanced** (default), and **Strict**.
+
+## How to switch modes
+
+| Method | How |
+|---|---|
+| CLI flag | `--security-mode permissive\|balanced\|strict` |
+| Keybind (TUI) | `Ctrl+S` cycles through the three modes mid-session |
+| Agent config | Set `security_mode` on a specific agent definition to give it a fixed default |
+| Per-session | Mode can be changed at any point mid-conversation and applies from that turn forward |
+
+If an invalid or missing value is ever encountered, the system falls back to **`balanced`**.
+
+---
+
+## Permissive — fast iteration, security opt-in
+
+**Best for:** prototyping, throwaway scripts, demos, or early exploration where you just want to move fast.
+
+- The agent still writes reasonably secure code by default (input validation, no hardcoded secrets, etc.), but it won't stop to run security checks or scans on its own.
+- Security reviews only happen if you explicitly ask for one (e.g., "can you check this for vulnerabilities?").
+- Nothing will interrupt your flow to run extra checks.
+
+> **Keep in mind:** Since checks aren't automatic, issues could slip through unless you ask for a review before shipping.
+
+---
+
+## Balanced — recommended default
+
+**Best for:** everyday development. This is the mode you'll use most of the time.
+
+- The agent thinks about security while planning your feature, not just after the fact.
+- After meaningful code changes, it automatically runs a security review — but skips it for things like documentation updates or purely cosmetic changes, so you're not slowed down unnecessarily.
+- If something serious is found (critical/high severity) in code it just wrote, it fixes it right away.
+- For less urgent findings, or issues in code it didn't just write, it will ask you what you'd like to do before making changes.
+
+> **Trade-off:** Good balance of safety and speed for typical feature work; trivial changes aren't slowed down by scanning.
+
+---
+
+## Strict — maximum protection, every change checked
+
+**Best for:** sensitive projects — authentication, payments, personal data, infrastructure, or anything under compliance requirements.
+
+- Security design tasks are planned upfront, before any code is written.
+- Every file change, no matter how small, triggers a full security review.
+- Critical, high, and medium severity issues are fixed immediately and re-checked to confirm resolution.
+- Low-severity issues are flagged and you're asked whether you want them addressed.
+- Switching to Strict mode mid-session will retroactively review and remediate findings from earlier in the conversation.
+
+> **Keep in mind:** This is the most thorough option — expect more security-related steps and occasional questions as you work.
+
+---
+
+## Quick comparison
+
+| Behavior | Permissive | Balanced (default) | Strict |
+|---|---|---|---|
+| Security-design planning tasks | Not added | Explicit todo tasks | Mandatory, before all implementation tasks |
+| `securitycheck` | Opt-in only | Only for security-relevant changes | Every feature implementation |
+| `securityscan` | Opt-in only | After feature implementations (skips docs/cosmetic) | After **every** file edit |
+| Guardrail compliance check | Skipped unless requested | Checked for security-relevant files | Always checked |
+| Auto-forced extra turn if unscanned edits exist | No | Yes | Yes |
+| Critical/high findings in new code | Reported only if you ask | Auto-fixed | Auto-fixed, blocks progress |
+| Medium findings in new code | Not surfaced automatically | Asks user | Auto-fixed |
+| Low findings in new code | Not surfaced automatically | Asks user | Asks user |
+| Pre-existing (untouched) code findings | Not surfaced automatically | Asks user, never auto-fixes | Asks user, never auto-fixes |
+| Relative speed | Fastest | Moderate | Slowest |
+
+## Which mode should I use?
+
+| Situation | Recommended mode |
+|---|---|
+| Quick experiment, demo, or scratch code | Permissive |
+| Normal day-to-day feature work | Balanced (default) |
+| Auth, payments, personal data, infrastructure, compliance-sensitive work | Strict |
+
+**Tip:** If you start something in Permissive mode and decide to ship it, switch to Balanced or Strict and ask for a full review before merging — this ensures nothing gets missed just because you were moving fast earlier.
