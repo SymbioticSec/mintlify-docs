@@ -73,7 +73,9 @@ $ generate-guardrails [OPTIONS] [PATH]
 * `--deep`: Use a more capable (slower) model
 * `--skip-sast`: Skip the SAST heuristic (faster, less precise)
 * `--clear-cache`: Clear cached package classifications before running
-* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE, VCS_REMEDIATION)  [default: CLI_STANDALONE]
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|VCS_GUARDRAILS|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE, VCS_REMEDIATION)  [default: CLI_STANDALONE]
+* `--upload`: Upload the generated guardrails document to the backend
+* `--name TEXT`: Optional name for the guardrails document when uploading to the backend
 * `--help`: Show this message and exit.
 
 ## `install`
@@ -219,7 +221,7 @@ $ airemediate remediate [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 * `--code-context TEXT`: Code snippet with context around the vulnerability.
 * `--project-context TEXT`: Context about the vulnerability in the project scope.
 * `--override-fp`: Enable streaming mode for live output processing
-* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE, VCS_REMEDIATION)  [default: CLI_STANDALONE]
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|VCS_GUARDRAILS|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE, VCS_REMEDIATION)  [default: CLI_STANDALONE]
 
 ### `airemediate generate_recommendation`
 
@@ -240,7 +242,7 @@ $ airemediate generate_recommendation [OPTIONS] [RECOMMENDATION_JSON_PARAMS]
 
 * `--file TEXT`: Path to a JSON file containing the vulnerability context.
 * `--stream`: Enable streaming mode for live output processing
-* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|VCS_GUARDRAILS|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
 * `--help`: Show this message and exit.
 
 ### `airemediate fp_reason`
@@ -266,7 +268,7 @@ $ airemediate fp_reason [OPTIONS] PROJECT_DIR RULE_ID FILE_PATH START_LINE END_L
 
 **Options**:
 
-* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, VCS_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|VCS_GUARDRAILS|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, VCS_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
 * `--stream`: Enable streaming mode for live output processing
 * `--vuln-doc TEXT`: Vulnerability documentation
 * `--code-context TEXT`: Code snippet with context around the vulnerability.
@@ -291,7 +293,7 @@ $ airemediate remediation_mode_selection_post_fix [OPTIONS] [RECOMMENDATION_JSON
 **Options**:
 
 * `--file TEXT`: Path to a JSON file containing the vulnerability context.
-* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
+* `--origin [CLI_STANDALONE|VCS_REMEDIATION|VCS_CHAT|VCS_GUARDRAILS|IDE_REMEDIATION|IDE_CHAT|SYMBIOTIC_CODE_USER|SYMBIOTIC_CODE_AGENT|PORTAL|AGENTIC_CLI_STANDALONE|IDE_DEEP_REMEDIATION|SATELLITE]`: [Optional] Origin of the request (e.g. IDE_REMEDIATION, CLI_STANDALONE)  [default: CLI_STANDALONE]
 * `--help`: Show this message and exit.
 
 ## `ci`
