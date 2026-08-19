@@ -12,7 +12,8 @@ There are three modes: **Permissive**, **Balanced** (default), and **Strict**.
 | Method | How |
 |---|---|
 | CLI flag | `--security-mode permissive\|balanced\|strict` |
-| Keybind (TUI) | `Ctrl+S` cycles through the three modes mid-session |
+| Keybind (TUI) | The configurable `security_mode_cycle` keybind (default: `Ctrl+S`) cycles through the three modes mid-session |
+| TUI command | Run `/security-mode` to choose a mode |
 | Agent config | Set `security_mode` on a specific agent definition to give it a fixed default |
 | Per-session | Mode can be changed at any point mid-conversation and applies from that turn forward |
 
@@ -53,7 +54,7 @@ If an invalid or missing value is ever encountered, the system falls back to **`
 - Every file change, no matter how small, triggers a full security review.
 - Critical, high, and medium severity issues are fixed immediately and re-checked to confirm resolution.
 - Low-severity issues are flagged and you're asked whether you want them addressed.
-- Switching to Strict mode mid-session will retroactively review and remediate findings from earlier in the conversation.
+- Switching to Strict mode mid-session also applies the stricter workflow to security findings from earlier turns in the current session.
 
 > **Keep in mind:** This is the most thorough option — expect more security-related steps and occasional questions as you work.
 

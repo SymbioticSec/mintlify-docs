@@ -15,10 +15,16 @@ Symbiotic Code is a security-first coding agent that runs in your terminal. To u
 ## Installation
 ### CLI install
 
-Install Symbiotic Code using the following command:
+Install Symbiotic Code with your preferred package manager:
 
 ```bash 
 npm install -g @symbioticsec/code
+```
+
+You can also use `pnpm install -g @symbioticsec/code`, `yarn global add @symbioticsec/code`, or `bun install -g @symbioticsec/code`. The installer is available for curl-based installations:
+
+```bash
+curl -fsSL https://github.com/SymbioticSec/symcode/releases/latest/download/install.sh | bash
 ```
 
 <Accordion title="Error during installation ?">
@@ -58,3 +64,5 @@ Paste the token in the dialog and press `Enter`
 
 Your token is **securely stored** and used for all subsequent operations.
 </Steps>
+
+Symbiotic Code detects whether it was installed with npm, pnpm, yarn, Bun, or the installer and uses the same method when checking for and applying updates.

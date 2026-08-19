@@ -3,7 +3,9 @@ title: "AI Guardrails"
 description: "Secure AI generated code using guardrails tailored for your organization and repositories"
 ---
 
-AI Guardrails generate Markdown instructions that coding agents can use when generating code. You can create rules for your whole organization, for a selected set of repositories, or combine both scopes.
+AI Guardrails generate Markdown instructions that coding agents can use when generating code. You can create rules for your whole organization or for a selected set of monitored repositories. Organization and repository configurations are managed separately and are applied together by Symbiotic Code when both are available.
+
+Only organization members with the required guardrail permissions can create, update, or delete configurations. In the portal, organization guardrails are available to organization administrators and owners.
 
 ## Create organization guardrails
 
@@ -14,7 +16,7 @@ Organization guardrails apply your organization's security and development conte
     Open [AI Guardrails](https://app.symbioticsec.ai/guardrails) and select **Create organization AI guardrails**.
   </Step>
   <Step>
-    Upload up to five internal policy or requirements files, if needed. Files must be `.md`, `.txt`, or `.pdf` files. This step is optional.
+    Upload up to five internal policy or requirements files, if needed. Each file can be up to 50 MB and must be a `.md`, `.txt`, or `.pdf` file. This step is optional.
   </Step>
   <Step>
     Answer the security questions to provide context about your organization. Questions are optional, but completing the relevant questions produces more tailored rules.
@@ -22,17 +24,17 @@ Organization guardrails apply your organization's security and development conte
   <Step>
     Add any additional code or infrastructure policies in **Custom policies**, then click **Generate guardrails**.
     <Info>
-      Generation is processed in the background and typically takes about a minute. You can leave the page while it runs, but closing the generation dialog stops the process.
+      The portal uploads and analyzes selected files before submitting the configuration. File-content generation runs asynchronously, so the generated `AGENTS.md` content may appear after the configuration is created.
     </Info>
   </Step>
   <Step>
-    Review the generated `AGENTS.md` in the preview panel. You can switch to **Write** mode to edit content you supplied, while generated rules remain read-only from the preview.
+    Review the generated `AGENTS.md` in the preview panel. You can edit and save the custom document content from the preview; generated file content is regenerated when the questionnaire answers or custom document content changes.
   </Step>
 </Steps>
 
 ## Create repository guardrails
 
-Repository guardrails apply to one or more monitored repositories. A repository can belong to only one active repository guardrail configuration. When creating a configuration for multiple repositories, select repositories that share the same security and development context.
+Repository guardrails apply to one or more monitored repositories. A repository can belong to only one active repository guardrail configuration, and repositories that already have an active configuration cannot be selected again. When creating a configuration for multiple repositories, select repositories that share the same security and development context.
 
 <Steps>
   <Step>
@@ -57,7 +59,7 @@ Repository guardrails apply to one or more monitored repositories. A repository 
 
 ## Deploy and use guardrails
 
-The generated file is named `AGENTS.md`. From the preview panel, use **Copy** to copy the complete Markdown file or **Download** to download it locally. Commit the file to the repository so it can be shared with the team.
+The generated file is named `AGENTS.md`. From the preview panel, use **Copy** to copy the complete Markdown file or **Download** to download it locally.
 
 Place the file where your coding agent expects its instructions:
 
@@ -66,7 +68,8 @@ Place the file where your coding agent expects its instructions:
 - **GitHub Copilot:** use the instruction location supported by your Copilot setup, such as `.github/instructions`.
 
 <Info>
-  AI Guardrails are synced and applied with [Symbiotic Code](https://docs.symbioticsec.ai/). The generated file is a snapshot: update or regenerate the configuration when your organization's policies or repository context changes.
+  [Symbiotic Code](https://docs.symbioticsec.ai/) automatically fetches active organization guardrails and repository guardrails when a project starts and refreshes them periodically. Repository matching uses the project's Git remote URL. Locally generated repository guardrails take precedence over the remotely fetched repository configuration.
 
 </Info>
 
+For other coding agents, copy or download the generated `AGENTS.md` and commit it to the repository so the team can share the same instructions. The generated file is a snapshot: update or regenerate the configuration when your organization's policies or repository context changes.

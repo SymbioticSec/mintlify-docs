@@ -3,7 +3,7 @@ title: "IDE Extension"
 description: "Use the IDE extension to get AI assistance directly in your editor"
 ---
 
-The Symbiotic code IDE extension brings the power of Symbiotic Code to your preferred integrated development environment. It provides seamless AI assistance for coding tasks, including code generation, debugging, and refactoring, all within the familiar interface of your IDE.
+The Symbiotic Code IDE extension brings the terminal coding agent into VS Code-based editors. It provides AI assistance for code generation, debugging, refactoring, and repository exploration. The CLI and IDE extension share the same configuration, agents, permissions, and security modes.
 
 ## Supported IDEs
 
@@ -21,15 +21,17 @@ In the agent sidebar, you can select the most appropriate execution mode for you
 
 You can also create custom modes in **Settings > Custom Modes** by defining a unique name and writing a custom system prompt to tailor the agent's behavior to your team's specific guidelines or coding style.
 
-### Multi-Tiered Security Guardrails
+### Security modes and guardrails
 
-Symbiotic Code implements real-time guardrails to prevent vulnerabilities and data leakage. Select from three security levels in your IDE settings:
+Security modes control how much security workflow runs during a session:
 
 | Security Level | Description | Recommended For |
 | :--- | :--- | :--- |
 | **Permissive** | Minimal guardrails with low-latency checks. | Writing documentation, exploration, and non-sensitive tasks. |
 | **Balanced** (Default) | Context-aware checks that automatically balance developer speed and safety. | Daily development, refactoring, and general engineering. |
 | **Strict** | Comprehensive, maximum-security audits on all inputs, outputs, and terminal actions. | Sensitive codebases, credential management, and high-audit environments. |
+
+Organization and repository guardrails are separate Markdown instructions. Symbiotic Code fetches active guardrails from the backend on startup and refreshes them periodically. See [AI Guardrails](/flow/admins/guardrails).
 
 ### Flexible Models & Providers
 
@@ -41,8 +43,9 @@ Configure which models power your development workflow:
 
 ## Getting Started
 
-1. **Install the Extension** from your IDE marketplace (compatible with VS Code, VSCodium, Cursor, Windsurf, and Kiro).
-2. **Sign In & Authenticate** with your Symbiotic Security account to connect to the platform.
+1. **Install Symbiotic Code** with npm, pnpm, yarn, Bun, or the installer. The same CLI can run in an IDE terminal.
+2. **Install the IDE extension** from the VSIX supplied by your Symbiotic administrator or portal, if your team uses the editor integration.
+3. **Sign In & Authenticate** with your Symbiotic Security account to connect to the platform.
 
 ## Settings
 
@@ -52,14 +55,13 @@ Access the Settings panel in the IDE extension sidebar to customize your Symbiot
 
 Configure which AI models power your development workflow:
 
-- **Default Model:** The primary model used for all conversations. Defaults to Claude Sonnet 5.
+- **Default Model:** The primary model used for conversations. The available default depends on the configured provider.
 - **Small Model:** A lightweight model optimized for quick tasks like title generation, commit message generation, and prompt enhancement. Automatically configured.
 - **Model per Mode:** Assign specific models to different agent modes:
   - **Build:** Configure a model for active development (defaults to Default Model)
   - **Plan:** Configure a model for analysis and planning (defaults to Default Model)
   - **Debug:** Configure a model for debugging workflows (defaults to Default Model)
   - **Ask:** Configure a model for read-only queries (defaults to Default Model)
-  - **Security-deep:** A specialized model for comprehensive security reviews using Claude Opus 4.7 with extended thinking
 
 ### Providers
 
@@ -93,7 +95,6 @@ View all available agents and their descriptions:
 - **explore:** Fast agent specialized for exploring codebases and finding files by patterns
 - **general:** General-purpose agent for researching complex questions and executing multi-step tasks
 - **plan:** Plan mode that disallows all edit tools
-- **security-deep:** High-effort security review using Opus 4.7 with max extended thinking (custom mode)
 - **triage:** Security engineer specialist for triaging static analysis findings
 
 Create new custom modes with **Create New Mode** or import existing agents.
@@ -103,19 +104,19 @@ Configure additional agent behavior through Model Context Protocol servers, cust
 
 ### Auto-Approve
 
-Define how tools are allowed to run by setting permissions for automatic approval:
+Define how tools are allowed to run with `permission` rules. Permissions resolve to `allow`, `ask`, or `deny` and can match tool inputs with patterns:
 
 **External Directory:**
 - **All paths (*):** Set to "Ask" by default to be prompted before accessing files outside the workspace
 
 **Bash:**
-- **All commands (*):** Set to "Ask" by default to be prompted before executing shell commands
+- **Bash:** Configure command patterns such as `git *`, `npm *`, or `rm *` explicitly.
 - **Exceptions:** Define specific commands with custom approval settings:
   - `grep *` — Set to "Allow"
   - `git push` — Set to "Ask"
   - `rm *` — Set to "Ask"
 
 **Read:**
-- **All paths (*):** Set to "Allow" by default to permit file reading
+- **Environment files:** `*.env` and `*.env.*` require confirmation by default; `*.env.example` is allowed.
 
 Add additional paths or commands with **+ Add path** or **+ Add command**.

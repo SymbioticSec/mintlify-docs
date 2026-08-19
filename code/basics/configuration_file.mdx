@@ -20,9 +20,9 @@ Configuration files are **merged together**, not replaced.
 - `.symbiotic` directories - agents, commands, plugins
 - Inline config (`SYMBIOTIC_CONFIG_CONTENT` env var) - runtime overrides
 - Managed config files (`/Library/Application Support/symbiotic/symbiotic.json` on macOS) - admin-controlled
-- macOS managed preferences (`.mobileconfig` via MDM) - highest priority, not user-overridable
+- Managed config files - highest priority and not user-overridable
 
-This means **project configs can override global defaults**, and **global configs can override remote organizational defaults**. Managed settings override everything.
+This means **project configs can override global defaults**, and **global configs can override remote organizational defaults**. Account-level organization configuration is also loaded for the active account, and managed settings override everything.
 
 ### Managed settings
 Organizations can **enforce configuration that users cannot override**. Managed settings are loaded at the highest priority tier.
@@ -42,7 +42,7 @@ These directories require admin/root access to write, so users cannot modify the
 ## Configuration 
 
 ### Tools
-You can manage the tools an LLM can use through the tools option.
+You can manage the tools an LLM can use through the legacy `tools` option, but new configurations should use `permission`.
 
 ```json symbiotic.json
 {
@@ -221,7 +221,7 @@ You can configure code formatters through the formatter option.
 
 
 ### Permissions
-By default, **Symbiotic Code allows all operations without requiring explicit approval**. You can change this using the `permission` option.
+The base agent starts from permissive defaults, with safety exceptions for external directories, environment-file reads, and selected control actions. You can change this using the `permission` option.
 
 For example, to ensure that the edit and bash tools require user approval:
 

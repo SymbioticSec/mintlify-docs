@@ -12,10 +12,11 @@ Configs are deep-merged. **Later sources win.**
 
 | # | Source | Notes |
 | --- | --- | --- |
-| 1 | `symbiotic.json` | Searched upward from project root |
-| 2 | `.symbiotic/symbiotic.json` | Searched upward from project root |
-| 3 | `SYMBIOTIC_CONFIG` env var | Path to a config file — replaces 1 & 2 |
-| 4 | `SYMBIOTIC_PERMISSION` env var | File path or inline JSON — always wins |
+| 1 | Project and global config files | `symbiotic.json`/`symbiotic.jsonc`, plus `.symbiotic` directories discovered for the project |
+| 2 | `SYMBIOTIC_CONFIG` env var | Custom config file path |
+| 3 | `SYMBIOTIC_CONFIG_CONTENT` env var | Inline JSON/JSONC config content |
+| 4 | Managed config | System administrator-controlled config, loaded at highest config priority |
+| 5 | `SYMBIOTIC_PERMISSION` env var | Inline JSON permission overrides, parsed as JSON |
 
 ---
 
@@ -25,8 +26,9 @@ Configs are deep-merged. **Later sources win.**
 {
   "permission": {
     "bash":  <rule>,
-    "write": <rule>,
-    "edit":  <rule>
+    "edit":  <rule>,
+    "read":  <rule>,
+    "external_directory": <rule>
   }
 }
 ```
@@ -34,7 +36,7 @@ Configs are deep-merged. **Later sources win.**
 A `<rule>` is either:
 
 - A **string**: `"allow"`, `"ask"`, or `"deny"` -> applies to all inputs
-- A **pattern map**: `{ "<pattern>": "<rule>", ... }` -> matched by specificity
+- A **pattern map**: `{ "<pattern>": "<rule>", ... }` -> evaluated in merged rule order; the last matching rule wins
 
 ### Pattern matching
 
@@ -43,7 +45,7 @@ A `<rule>` is either:
 | `*` | anything (including spaces for commands, excluding `/` for paths) | both |
 | `**` | anything including `/` | paths only |
 
-The **most specific pattern wins** (longest literal prefix before the first `*`).
+Rules are evaluated by pattern match, with the **last matching rule winning**. Put broad rules first and more specific overrides after them.
 
 
 ## Examples
@@ -172,7 +174,7 @@ When multiple sources define rules for the same tool, pattern maps are merged (l
 
 ## "Allow always" persistence
 
-When you choose **Allow always** at a permission prompt, the approval is saved to `.symbiotic/symbiotic.json` automatically and takes effect immediately — no restart needed.
+When you choose **Allow always** at a permission prompt, the approval is saved to the global Symbiotic configuration and takes effect immediately — no restart needed.
 
 ### How patterns are stored
 
@@ -191,7 +193,7 @@ For **write/edit**, the exact file path is stored.
 
 ### Shell operator security
 
-Commands containing `&&`, `||`, `;`, or `|` **always prompt** — they are never auto-allowed by config and never persisted. This prevents a stored pattern like `"git commit *"` from matching `git commit -m "ok" && rm -rf /`.
+Shell-operator handling is enforced by the Bash tool layer. Do not rely on a permission pattern alone to make compound commands safe; review commands containing `&&`, `||`, `;`, or `|` carefully.
 
 ---
 
