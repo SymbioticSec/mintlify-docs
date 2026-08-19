@@ -1,139 +1,143 @@
 ---
 title: "Webhooks"
-description: "Set-up webhooks and connect Symbiotic to your ecosystem"
+description: "Set up webhooks and connect Symbiotic to your ecosystem"
 ---
 
-## Configure a  webhook
+## Configure a webhook
 
-To add a webhook, you will be asked :
+To create a webhook, provide:
 
-- the endpoint URL
-- which event you want to send
+- an HTTPS endpoint URL
+- one or more events to send
 
-Once created, we will give you the signature key that you could use to verify webhook’s authenticity.
+Webhook URLs must not include query parameters and must resolve to a public address. HTTP, non-HTTPS schemes, private IP addresses, localhost, cloud metadata endpoints, and shell metacharacters are rejected.
+
+After creation, Symbiotic returns a signing secret. Store it securely: it is used to verify that requests came from Symbiotic. You can manage webhooks from the [Webhook settings](https://app.symbioticsec.ai/settings/webhook).
 
 <Warning>
-  Webhooks are shared across all users of an organization.
+  Webhooks are shared across all users in an organization. Treat the signing secret as a credential and do not expose it in client-side code or logs.
 </Warning>
+
+## Available events
+
+You can subscribe to the following events:
+
+- `vulnerability.created`
+- `vulnerability.remediated`
+- `vulnerability.ignored`
+- `vulnerability.unignored`
+- `training.completed`
 
 ## Webhook format
 
-Our webhooks payload are in a JSON format and follow the same structure :
+Webhook requests use JSON and have a common envelope:
 
-→ `event` : the event name
+| Field | Type | Description |
+| --- | --- | --- |
+| `event` | string | The event name. |
+| `timestamp` | integer | Unix timestamp for when the event was recorded. |
+| `data` | object | Event-specific data. |
 
-→ `timestamp` : timestamp of when the webhook was sent
+For vulnerability events, `data` includes the vulnerability identifiers and timestamps below, as well as nested `rule`, `finding`, and `remote_issue` objects.
 
-→ `data` : an object containing properties to describe the event
+### Vulnerability created
 
-### Vulnerability Created
-
-<CodeGroup>
-
-```json Description
-"data":{
-      "pubkey": public key of the vulnerability - **string**
-      "creator": email of the user that detected the vulnerability - **string**
-      "rule_id": scanner_id of the rule - **string**
-      "resource_path": path of the resource affected - **string**
-      "created_at": vulnerability detection date - **timestamp**
-      }
-```
-
-
-```json Example
+```json
 {
-   "event":"vulnerability.created",
-   "timestamp":1728463677,
-   "data":{
-      "pubkey":"0ef8ac7e-1b9d-48d9-82eb-2f2355ba2b31",
-      "creator":"alexis.colonna@symbioticsec.ai",
-      "rule_id":"AVD-AWS-0088",
-      "resource_path":"aws_s3_bucket.financials",
-      "created_at":1728463677
-   }
+  "event": "vulnerability.created",
+  "timestamp": 1728463677,
+  "data": {
+    "pubkey": "0ef8ac7e-1b9d-48d9-82eb-2f2355ba2b31",
+    "rule_id": "AVD-AWS-0088",
+    "file_path": "infra/storage.tf",
+    "vulnerability_id": "8a5f9d7e-0a59-4d7a-bc9b-4f28a7b89c1a",
+    "created_at": 1728463677,
+    "rule": {
+      "pubkey": "3b7b2d18-4d0f-4e89-9c5d-3f9a7d2b6e11",
+      "identifier": "AVD-AWS-0088",
+      "version": "v1",
+      "title": "S3 bucket allows public access",
+      "description": "The S3 bucket is configured to allow public access.",
+      "resolution_advice": "Restrict bucket access to authorized principals.",
+      "impact": "Public access may expose sensitive data.",
+      "severity": "2",
+      "language": "terraform",
+      "languages": ["terraform"],
+      "active": true,
+      "static_remediation": ""
+    },
+    "finding": {
+      "id": 12345,
+      "fingerprint": "sha256:example-fingerprint",
+      "anchor_text": "acl = \"public-read\"",
+      "content_snippet": "resource \"aws_s3_bucket\" \"assets\" {",
+      "is_historical": false,
+      "created_at": "2024-10-09T12:47:57Z",
+      "updated_at": "2024-10-09T12:47:57Z"
+    },
+    "remote_issue": {
+      "pubkey": "0ef8ac7e-1b9d-48d9-82eb-2f2355ba2b31",
+      "status": "active",
+      "branch": "main",
+      "file_path": "infra/storage.tf",
+      "line_start": 24,
+      "line_end": 24,
+      "author": "developer@example.com",
+      "created_at": "2024-10-09T12:47:57Z",
+      "updated_at": "2024-10-09T12:47:57Z"
+    }
+  }
 }
 ```
 
-</CodeGroup>
+### Vulnerability remediated
 
-### Vulnerability Remediated
+The `data` object uses the same structure as `vulnerability.created`, with `remediated_at` instead of `created_at`.
 
-<CodeGroup>
+### Vulnerability ignored and unignored
 
-```json Description
-"data":{
-      "pubkey": public key of the vulnerability - **string**
-      "creator": email of the user that detected the vulnerability - **string**
-      "rule_id": scanner_id of the rule - **string**
-      "resource_path": path of the resource affected - **string**
-      "remediated_at": vulnerability remediation date - **timestamp**
-      }
-```
+The `data` object uses the same vulnerability structure, with `ignored_at` for `vulnerability.ignored` and `unignored_at` for `vulnerability.unignored`.
 
+### Training completed
 
-```json Example
-{
-   "event":"vulnerability.remediated",
-   "timestamp":1728463676,
-   "data":{
-      "pubkey":"91ef872c-3402-43e9-b8a8-d5cead98c5c9",
-      "creator":"abir.khalladi@symbioticsec.ai",
-      "rule_id":"AVD-AWS-0132",
-      "resource_path":"aws_s3_bucket.operations",
-      "remediated_at":1728463676
-   }
-}
-```
+The `data` object contains:
 
-</CodeGroup>
-
-### Training Completed
-
-<CodeGroup>
-
-```json Description
-"data":{
-      "started_at": when the user has started the training - **timestamp**
-      "completed_at": when the user has completed the training - **timestamp**
-      "user": email address of the user - **string**
-      "training": name of the training - **string**
-      "score": score of the user - **int**
-   }
-```
-
-
-```json Example
-{
-   "event":"training.completed",
-   "timestamp":1728467227,
-   "data":{
-      "started_at":1728466979,
-      "completed_at":1728467227,
-      "user":"alexis.colonna@symbioticsec.ai",
-      "training":"Unencrypted S3 bucket",
-      "score":110
-   }
-}
-```
-
-</CodeGroup>
+| Field | Type | Description |
+| --- | --- | --- |
+| `created_at` | integer | Unix timestamp for when the training record was created. |
+| `updated_at` | integer | Unix timestamp for the latest update. |
+| `user_id` | UUID | ID of the user who completed the training. |
+| `user_email` | string | Email address of the user. |
+| `user_first_name` | string | First name of the user. |
+| `user_last_name` | string | Last name of the user. |
+| `track_training_id` | UUID | ID of the training record. |
+| `type` | string | Training type. |
+| `state` | string | Training state. |
+| `state_description` | string | Description of the training state. |
+| `rule_title` | string | Title of the associated rule. |
+| `rule_identifier` | string | Identifier of the associated rule. |
+| `rule_severity` | string | Severity of the associated rule. |
 
 ## Verify webhooks
 
-You can verify the authenticity of a Symbiotic webhook you receive using the signature key [available in your Symbiotic account](https://app.symbioticsec.ai/settings/webhook) and the header `symbioticsec_signature`
+Symbiotic sends the signature in the `X-SymbioticSec-Signature` header. Verify it with the signing secret shown in your [Webhook settings](https://app.symbioticsec.ai/settings/webhook).
 
-Signature is calculated using the following code on our side :
+The signature is an HMAC-SHA256 digest. Symbiotic signs the JSON payload after sorting object keys and serializing with compact separators. Parse the request body as JSON, reproduce that canonical serialization, and compare the expected signature using a constant-time comparison.
 
 ```python
 import hashlib
 import hmac
 import json
 
-def generate_signature(signing_secret: str, payload: dict) -> str:
-    return hmac.new(
+
+def verify_signature(signing_secret: str, payload: dict, received_signature: str) -> bool:
+    expected_signature = hmac.new(
         bytes.fromhex(signing_secret),
         json.dumps(payload, sort_keys=True, separators=(",", ":")).encode(),
         hashlib.sha256,
     ).hexdigest()
+
+    return hmac.compare_digest(expected_signature, received_signature)
 ```
+
+Reject the request when the header is missing or the signature does not match. Keep the signing secret private and use HTTPS for your receiving endpoint.

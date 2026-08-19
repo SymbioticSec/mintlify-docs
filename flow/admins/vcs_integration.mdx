@@ -1,50 +1,78 @@
 ---
-title: "Discover PR Integration"
-description: "Detect, review and remediate directly in your PR"
+title: "VCS integration"
+description: "Detect, review, and remediate vulnerabilities directly in pull requests"
 ---
 
-## In PR Detection
+## Pull request detection
 
-Our Github integration allows you to automaticlaly scan PRs after each push.
+Symbiotic automatically scans supported pull requests after they are opened and
+after new commits are pushed. Draft pull requests are skipped until they are
+ready for review. The scan compares the pull request with its target branch and
+reports vulnerabilities introduced or remediated by the change.
 
-### Summary
+Scans run for both code and infrastructure files when applicable. A pull
+request scan is also refreshed when the pull request is reopened or marked
+ready for review.
 
-On opening a PR you will see a Security Summary comment that lists all issues introduced and/or remediated by this PR.
+### Security summary
+
+When the scans complete, Symbiotic creates or updates a **Symbiotic Security
+scan results** comment on the pull request. The comment lists vulnerabilities
+introduced and remediated by the pull request.
 
 ![Security Summary](/flow/admins/images/security_summary.png)
 
-In this summary you will find a table of vulnerabilities with the following information:
+For each introduced vulnerability, the summary includes:
 
-- Severity
-- ID of the rule
-- Name of the rule
-- Filepath
-- Line
+- A display ID and severity
+- The rule ID and vulnerability title
+- The file path
+- The affected line or line range
 
 <Info>
-  You can click on the rule id to open our vulnerability database or on the line to see the snippet of code that triggered the rule.
+  Select the rule ID to open the vulnerability database. Select the file and line to open the relevant location in the pull request diff.
 </Info>
 
 ![Summary Table](/flow/admins/images/summary_table.png)
 
-### Review
+The summary can also include remediated vulnerabilities. If there are more
+findings than the comment displays, use the IDE extension to view the complete
+results.
 
-If you want to know more about a specific issue you can launch a review using the command `/symbot review <vuln-id>` posted as a PR comment. It will create a review comment on the code snippet that triggered the issue with the following information:
+### Review a vulnerability
 
-- Rule explanation
-- Potential impact
-- Tailored remediation suggestion
+To review an introduced vulnerability, post `/symbot review <vuln-id>` as a
+comment in the main pull request conversation. Replace `<vuln-id>` with the
+display ID from the security summary. Symbiotic posts an inline review comment
+on the affected code with:
+
+- The rule and vulnerability explanation
+- The potential impact
+- A remediation suggestion or diff, when available
 
 ![Review Comment](/flow/admins/images/review_comment.png)
 
-### Chat
+### Chat and suppression
 
-If you have any questions, you can ask directly our model by answering in the comment and tagging `/symbot`.
+To ask a follow-up question, reply to a Symbiotic review comment with
+`/symbot` followed by your question. You can also reply with one of these
+commands:
+
+- `/symbot ignore` to request a suppression comment
+- `/symbot false positive` to report that the finding is a false positive
 
 ![Chat Comment](/flow/admins/images/chat_comment.png)
 
-## In PR Activation
+<Info>
+  `/symbot review <vuln-id>` is supported in the main pull request conversation. Follow-up, ignore, and false-positive commands must be posted as replies to a Symbiotic review comment.
+</Info>
 
-Our Github integration allows you to push the usage of our extension using an automatic comment. On a regular basis, we will remind developers that havent scan the branch thay are working in their IDE that they can use our extension to detect issues earlier.
+## Pull request activation
+
+The VCS integration can show a warning comment on monitored repositories to
+encourage developers to scan their branch with the Symbiotic IDE extension
+before opening a pull request. Administrators can enable or disable warning
+comments for each repository in the repository settings. New repositories use
+the organization's default setting.
 
 ![Activation Comment](/flow/admins/images/activation_comment.png)

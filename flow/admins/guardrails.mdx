@@ -3,71 +3,70 @@ title: "AI Guardrails"
 description: "Secure AI generated code using guardrails tailored for your organization and repositories"
 ---
 
-<Info>
-  You can access guardrails [here](https://app.symbioticsec.ai/guardrails). This feature is still beta and activation of this feature must be required to have access.
-</Info>
-
-![Repository Guardrails Pn](/images/repository_guardrails.png)
+AI Guardrails generate Markdown instructions that coding agents can use when generating code. You can create rules for your whole organization, for a selected set of repositories, or combine both scopes.
 
 ## Create organization guardrails
 
-To help models generate secure code, you can create organization guardrails to add the security context of your organization.
+Organization guardrails apply your organization's security and development context across projects. You can optionally provide internal policy and requirements files in Markdown, text, or PDF format, answer the security questionnaire, and add custom policies.
 
 <Steps>
   <Step>
-    Go to the AI Guardrails page and click on New in the Organization guardrails section.
+    Open [AI Guardrails](https://app.symbioticsec.ai/guardrails) and select **Create organization AI guardrails**.
   </Step>
   <Step>
-    Fill the form to explain the context of your organization. All questions are optional but recommended.
+    Upload up to five internal policy or requirements files, if needed. Files must be `.md`, `.txt`, or `.pdf` files. This step is optional.
+  </Step>
+  <Step>
+    Answer the security questions to provide context about your organization. Questions are optional, but completing the relevant questions produces more tailored rules.
+  </Step>
+  <Step>
+    Add any additional code or infrastructure policies in **Custom policies**, then click **Generate guardrails**.
     <Info>
-      If you used the other options, guardrails generation can take some time as our AI is processing your answers to generate tailored rules. 
+      Generation is processed in the background and typically takes about a minute. You can leave the page while it runs, but closing the generation dialog stops the process.
     </Info>
   </Step>
   <Step>
-    Rules will appear on the right panel. There you have multiple possibilities : 
-    - Change the format of the file based on IDE used by developpers (NB: many IDEs like Cursor now support the [agents.md](http://agents.md) standard) 
-    - Download the rules file that you can upload locally in your IDE or in your VCS to be shared with everyone. 
-    - Copy rules to paste it in an already exiting rules file.
+    Review the generated `AGENTS.md` in the preview panel. You can switch to **Write** mode to edit content you supplied, while generated rules remain read-only from the preview.
   </Step>
 </Steps>
 
 ## Create repository guardrails
 
-To help models generate secure code, you can create repository guardrails to add security context specific to one or multiple repositories.
+Repository guardrails apply to one or more monitored repositories. A repository can belong to only one active repository guardrail configuration. When creating a configuration for multiple repositories, select repositories that share the same security and development context.
 
 <Steps>
   <Step>
-    Go to the AI Guardrails page and click on New in the Repository guardrails section.
+    Open [AI Guardrails](https://app.symbioticsec.ai/guardrails) and select **Create repository AI guardrails**.
   </Step>
   <Step>
-    Select your Github organization and repositories you want to apply guardrails to. 
-    We suggest selecting together only repositories that share the same context. 
+    Select the monitored repositories to which the rules should apply. If no repositories are available, configure repository monitoring in **Settings → Repositories** first.
   </Step>
   <Step>
-    Fill the form to explain the context of the repository. All questions are optional but recommended. Select if you want to include organization guardrails or not and click on generate rules. 
+    Answer the security questions and add any repository-specific code or infrastructure policies. Questions and custom policies are optional.
+  </Step>
+  <Step>
+    Choose whether to include the organization's guardrails, then click **Generate guardrails**.
     <Info>
-      If you used the other options, guardrails generation can take some time as our AI is processing your answers to generate tailored rules. 
+      Including organization guardrails combines organization-level instructions with the repository-specific rules.
     </Info>
   </Step>
   <Step>
-    Rules will appear on the right panel. There you have multiple possibilities : 
-    - Change the format of the file based on IDE used by developpers (NB: many IDEs like Cursor now support the [agents.md](http://agents.md) standard) 
-    - Download the rules file that you can upload locally in your IDE or in your VCS to be shared with everyone. 
-    - Copy rules to paste it in an already exiting rules file.
+    Review the generated `AGENTS.md` in the preview panel. You can rename, edit, save, or delete the configuration from the repository guardrail view.
   </Step>
 </Steps>
 
-## Usage
+## Deploy and use guardrails
 
-To be used by models and coding agents, guardrails file must be placed in the repository in specific folder based on the agent : 
-- Github Copilot: .github/instructions
-- Claude: the root of the repository
-- Agents.md: anywhere in the repository
+The generated file is named `AGENTS.md`. From the preview panel, use **Copy** to copy the complete Markdown file or **Download** to download it locally. Commit the file to the repository so it can be shared with the team.
+
+Place the file where your coding agent expects its instructions:
+
+- **Agents that support `AGENTS.md`:** place it anywhere supported by the agent; the repository root is the recommended location.
+- **Claude Code:** place it at the repository root.
+- **GitHub Copilot:** use the instruction location supported by your Copilot setup, such as `.github/instructions`.
 
 <Info>
-If you have the extension installed, guardrails will be automatically added to your repository when you open it in the IDE.
-This ensures that all developers working on the repository have access to the same security context.
+  AI Guardrails are synced and applied with [Symbiotic Code](https://docs.symbioticsec.ai/). The generated file is a snapshot: update or regenerate the configuration when your organization's policies or repository context changes.
 
 </Info>
-
 
