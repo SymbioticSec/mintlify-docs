@@ -74,26 +74,13 @@
               "code/configuration/lsp",
               "code/configuration/acp"
             ]
-          },
-          {
-            "group": "Admin features",
-            "pages": [
-                  "flow/admins/guardrails",
-                  "flow/admins/monitored_repositories",
-                  "flow/admins/ai_inventory",
-                  "flow/admins/agent_security"
-            ]
           }
         ]
       },
       {
         "tab": "Flow",
         "icon": "search-code",
-        "dropdowns": [
-          {
-            "dropdown": "Devs",
-            "icon": "binary",
-            "groups": [
+        "groups": [
               {
                 "group": "Getting started",
                 "pages": [
@@ -124,7 +111,8 @@
                 "pages": [
                   "flow/devs/actions/configure_detection",
                   "flow/devs/actions/ignore",
-                  "flow/devs/actions/false_positive"
+                  "flow/devs/actions/false_positive",
+                  "flow/admins/setup_CI_integration"
                 ]
               },
               {
@@ -137,29 +125,36 @@
                 ]
               }
             ]
+      },
+      {
+        "tab": "Organization",
+        "icon": "building",
+        "pages": [
+          {
+            "group": "Access & identity",
+            "pages": [
+              "flow/admins/user_management"
+            ]
           },
           {
-            "dropdown": "Admins",
-            "icon": "user-cog",
-            "groups": [
-              {
-                "group": "Admin features",
-                "pages": [
-                  "flow/admins/user_management",
-                  "flow/admins/webhooks",
-                  "flow/admins/guardrails",
-                  "flow/admins/monitored_repositories",
-                  "flow/admins/ai_inventory"
-                ]
-              },
-              {
-                "group": "PR & CI",
-                "pages": [
-                  "flow/admins/vcs_integration",
-                  "flow/admins/github_integration",
-                  "flow/admins/setup_CI_integration"
-                ]
-              }
+            "group": "AI governance",
+            "pages": [
+              "flow/admins/guardrails",
+              "flow/admins/agent_security"
+            ]
+          },
+          {
+            "group": "Visibility",
+            "pages": [
+              "flow/admins/monitored_repositories",
+              "flow/admins/ai_inventory"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "flow/admins/webhooks",
+              "flow/admins/github_integration"
             ]
           }
         ]
