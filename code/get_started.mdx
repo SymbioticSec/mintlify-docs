@@ -43,9 +43,27 @@ To launch Symbiotic Code, use the `symbiotic` command in your terminal:
 symbiotic
 ```
 
-### IDE extension install
+### VSCode IDE extension install
 [Download](https://app.symbioticsec.ai/symbiotic-code.vsix) our extension and install it in all VSCode based IDEs.
 
+### Jetbrains IDE support
+
+You can use Symbiotic Code Agent in your Jetbrains IDE thanks to ACP. 
+In the AI Chat window, click on the three dots then on **Add Custom Agent**.
+Then in the agent-servers block, add the following configuration : 
+
+```json
+  "Symbiotic": {
+        "default_config_options": {
+          "model": "symbiotic/claude-sonnet-5"
+        },
+        "type": "custom",
+        "command": "symbiotic",
+        "args": [
+          "acp",
+        ]
+      }
+```
 
 ## Authentication
 
