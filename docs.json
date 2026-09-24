@@ -8,7 +8,7 @@
     "dark": "#C45D97"
   },
   "fonts": {
-    "family": "Instrument Sans"
+    "family": "Inter"
   },
   "favicon": "images/favicon_symbiotic.png",
   "icons": {
@@ -38,6 +38,7 @@
         "icon": "square-terminal",
         "pages": [
           "code/get_started",
+          "code/migrating",
           "code/using",
           "code/use_cases",
           {
@@ -127,7 +128,7 @@
             ]
       },
       {
-        "tab": "Organization",
+        "tab": "Admin",
         "icon": "building",
         "pages": [
           {

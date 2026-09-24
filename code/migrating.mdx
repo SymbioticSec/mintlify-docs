@@ -1,0 +1,191 @@
+---
+title: "Migrating to Symbiotic Code"
+description: "Move from Claude Code, Codex, or GitHub Copilot Chat to Symbiotic Code"
+---
+
+Already using Claude Code, Codex, GitHub Copilot Chat, or another terminal coding assistant? You can get started with Symbiotic Code in just a few minutes. Your existing instructions, commands, and integrations can come with you.
+
+---
+
+## 1. Install Symbiotic Code
+
+You can install Symbiotic Code in 2 ways: **VS Code extension** or **CLI**. You can use both at the same time.
+
+### VS Code extension
+
+[Download the `.vsix` extension](https://app.symbioticsec.ai/symbioticsec.vsix) and install it in VS Code or another VS Code-based IDE.
+
+### CLI
+
+Install the CLI globally with npm:
+
+```bash
+npm i -g @symbioticsec/code
+```
+
+Then launch Symbiotic Code with:
+
+```bash
+symbiotic
+```
+
+---
+
+## 2. Create your account
+
+You need a Symbiotic Security account to use Symbiotic Code. [Create an account](https://app.symbioticsec.ai/register) or [log in](https://app.symbioticsec.ai/login) through the Symbiotic Portal.
+
+| | Free plan | Paid plans |
+|---|---|---|
+| Members | Up to 8 | No limit |
+| Included models | One limited free model | Optimized frontier models |
+| Bring your own key | Use additional models from other providers with API keys | Use local models or specific models not offered with your plan with API keys |
+
+## 3. Connect to a model
+
+### Use the built-in models
+
+Depending on your plan, Symbiotic Code comes with optimized support for the most popular frontier models. The **Auto** model uses smart routing to select the right model for each request while helping manage costs. Use `/models` to switch models.
+
+### Use your own provider
+
+To use an existing Claude, OpenAI, or Gemini subscription, or a local or custom model:
+
+1. Run `/connect` and select your provider.
+2. Enter your provider API key.
+3. Use `/models` to list and switch between available models.
+
+See [Models and providers](/code/basics/models_and_providers) for supported providers and custom configuration.
+
+---
+
+## 4. Project memory / instructions
+
+Symbiotic Code automatically picks up instruction files from your existing tooling:
+
+| File | Tool it came from |
+|---|---|
+| `AGENTS.md` | Any coding agent |
+| `CLAUDE.md` | Claude Code |
+| `.cursorrules` | Cursor |
+| `.github/copilot-instructions.md` | GitHub Copilot |
+
+For new projects, place instructions in `AGENTS.md` at your repo root, or in `.symbiotic/agents/build.md` for agent-specific prompts.
+
+---
+
+## 5. MCP servers
+
+MCP servers are configured in `symbiotic.json` under `mcp`. For example, to use a local MCP server:
+
+```json
+{
+  "mcp": {
+    "my-server": {
+      "type": "local",
+      "command": ["npx", "-y", "my-mcp-server"]
+    }
+  }
+}
+```
+
+Remote MCP servers with OAuth are also supported:
+
+```json
+{
+  "mcp": {
+    "remote-server": {
+      "type": "remote",
+      "url": "https://mcp.example.com"
+    }
+  }
+}
+```
+
+See [MCP servers](/code/configuration/mcp) for details.
+
+### Migrate your existing MCP config automatically
+
+Paste this prompt into your coding agent to scan your machine and migrate all existing MCP server configs to Symbiotic Code:
+
+<Prompt description="Migrate MCP server configs from other tools to Symbiotic Code">
+I want to migrate my MCP server configurations to Symbiotic Code.
+
+Please do the following:
+
+1. Find all existing MCP configurations on this machine. Check the standard locations:
+   - Claude Code: ~/.claude.json (mcpServers key)
+   - Claude Desktop: ~/Library/Application Support/Claude/claude_desktop_config.json (macOS) or %APPDATA%\Claude\claude_desktop_config.json (Windows)
+   - Codex: ~/.codex/config.json (mcpServers key)
+   - GitHub Copilot (VS Code): .vscode/mcp.json in any workspace, or VS Code user settings
+   - Cursor: ~/.cursor/mcp.json or .cursor/mcp.json in any workspace
+   - Windsurf: ~/.codeium/windsurf/mcp_config.json
+
+2. Show me every MCP server entry you find, grouped by source.
+
+3. For each server, write the equivalent entry in Symbiotic Code's MCP config format and add it to symbiotic.json under the "mcp" key (create the file if it doesn't exist, merge if it does). Each entry should have a "type" field set to "local" and a "command" array with the command and its arguments.
+
+4. Do not overwrite any existing entries in symbiotic.json — only add new ones.
+
+5. Report what was migrated, what was skipped (e.g. duplicates), and flag any entries that use environment variables or secrets so I can verify them manually.
+</Prompt>
+
+
+---
+
+## 6. Custom commands and agents
+
+Move your existing workflows into Symbiotic Code without changing their format:
+
+- **Commands:** Copy Claude Code commands from `.claude/commands/` to `.symbiotic/commands/`. See [Custom commands](/code/tools/custom_commands).
+- **Agents:** Store project-specific agents in `.symbiotic/agents/`. See [Custom agents](/code/tools/custom_agents).
+
+For commands or agents shared across projects, use `~/.config/symbiotic/commands/` or `~/.config/symbiotic/agents/`.
+
+### Migrate your existing commands and agents automatically
+
+<Prompt description="Migrate custom commands and agents from other tools to Symbiotic Code">
+I want to migrate my custom commands and agents to Symbiotic Code.
+
+Please do the following:
+
+1. Find all existing custom commands and agents on this machine. Check the standard locations:
+   - Claude Code commands: .claude/commands/ in the current project, or ~/.claude/commands/ globally
+   - Claude Code agents: .claude/agents/ in the current project, or ~/.claude/agents/ globally
+   - Cursor rules: .cursorrules or .cursor/rules/ in the current project
+   - Codex agents: .codex/agents/ in the current project
+   - Any other .md or .txt files used as system prompts or instructions for coding agents
+
+2. Show me every file you find, grouped by source tool.
+
+3. Copy each file to the equivalent Symbiotic Code location:
+   - Project-level commands go to .symbiotic/commands/
+   - Project-level agents go to .symbiotic/agents/
+   - Global commands go to ~/.config/symbiotic/commands/
+   - Global agents go to ~/.config/symbiotic/agents/
+   Keep the original filenames. Create directories if they do not exist.
+
+4. Do not overwrite any existing files in the Symbiotic Code directories — only add new ones.
+
+5. Report what was migrated, what was skipped (e.g. duplicates), and flag any files that reference tool-specific syntax or commands that may need manual review.
+</Prompt>
+
+---
+
+## 7. Security modes
+
+Symbiotic Code adds a security mode that Claude Code and OpenCode don't have. Toggle it with `Ctrl+S` while running, or set a default per-agent in config:
+
+```json
+{
+  "agent": {
+    "build": {
+      "security_mode": "balanced"
+    }
+  }
+}
+```
+
+Options: `permissive` (fastest, fewest confirmations), `balanced` (default), `strict` (most confirmations).
+
+See [Security Modes](/code/configuration/security_modes) for details.

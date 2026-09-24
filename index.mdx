@@ -6,7 +6,7 @@ mode: "custom"
 <div className="relative overflow-hidden px-6 py-24 sm:py-16 lg:px-8 max-w-7xl mx-auto">
   
   <div className="mx-auto max-w-4xl text-center">
-    <h1 className="homepage-title text-5xl tracking-tighter text-gray-900 dark:text-white sm:text-7xl">
+    <h1 className="homepage-title text-4xl tracking-tighter text-gray-900 dark:text-white sm:text-6xl">
       Symbiotic Security <br className="hidden sm:block" />
       <span className="text-primary dark:text-primary-light">Documentation</span>
     </h1>
@@ -16,17 +16,17 @@ mode: "custom"
   </div>
 </div>
   
-<div className="mx-auto max-w-4xl pb-20 px-6 border-b border-gray-200 dark:border-white/10">
+<div className="mx-auto max-w-4xl pb-20 px-6 border-b border-gray-200 dark:border-white/10 flex flex-col gap-20">
 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
   <a href="/code/get_started" className="group p-6 border border-gray-200 dark:border-white/20 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
   <div className="flex flex-row gap-4">
     <img src="/images/icons/symbiotic-code.svg" alt="Symbiotic Code" className="w-8 h-8 shrink-0 mt-1" data-theme-icon="true" />
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-0">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Code</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Symbiotic Code</h3>
         <p className="text-md text-gray-800 dark:text-white/80">Natively secure coding agent</p>
       </div>
-      <p className="text-sm text-gray-600 dark:text-white/60 mt-1">Build software securely from the ground up with AI-powered guardrails and embedded security tools.</p>
+      <p className="text-sm text-gray-600 dark:text-white/60 mt-1">Build software securely from the ground up with embedded security tools.</p>
     </div>
   </div>
   </a>
@@ -35,7 +35,7 @@ mode: "custom"
     <img src="/images/icons/symbiotic-flow.svg" alt="Symbiotic Flow" className="w-8 h-8 shrink-0 mt-1" data-theme-icon="true" />
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-0">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Flow</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Symbiotic Flow</h3>
         <p className="text-md text-gray-800 dark:text-white/80">Comprehensive vulnerability scanner</p>
       </div>
       <p className="text-sm text-gray-600 dark:text-white/60 mt-1">Detect and remediate vulnerabilities from your IDE and CI/CD pipelines.</p>
@@ -43,7 +43,31 @@ mode: "custom"
   </div>
   </a>  
 </div>
+
+<div className="mx-full max-w-4xl">
+  <h3 className="text-md font-semibold tracking-tight text-gray-900 dark:text-white mb-2">
+    Quick guides
+  </h3>
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+      <a href="/code/get_started" className="group p-4 border border-gray-200 dark:border-white/20 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
+        <Icon icon="rocket" size={18} />
+        <h4 className="text-md font-semibold text-gray-900 dark:text-white mt-2">Get started</h4>
+        <p className="text-sm text-gray-600 dark:text-white/60 mt-0.5">Install and authenticate</p>
+      </a>
+      <a href="/code/migrating" className="group p-4 border border-gray-200 dark:border-white/20 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
+        <Icon icon="arrow-right-left" size={18} />
+        <h4 className="text-md font-semibold text-gray-900 dark:text-white mt-2">Migrating</h4>
+        <p className="text-sm text-gray-600 dark:text-white/60 mt-0.5">Switch from another agent</p>
+      </a>
+      <a href="/code/configuration/security_modes" className="group p-4 border border-gray-200 dark:border-white/20 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-white/10 transition-all">
+        <Icon icon="shield-check" size={18} />
+        <h4 className="text-md font-semibold text-gray-900 dark:text-white mt-2">Security modes</h4>
+        <p className="text-sm text-gray-600 dark:text-white/60 mt-0.5">Tune speed and safety</p>
+      </a>
+    </div>
+  </div>
 </div>
+
 
 <div className="max-w-4xl mx-auto px-6 py-20">
   <div className="grid grid-cols-1 md:grid-cols-1 gap-16 items-start">
