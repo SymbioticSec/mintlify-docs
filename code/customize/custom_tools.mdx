@@ -19,10 +19,12 @@ They can be defined:
 - Locally by placing them in the `.symbiotic/tools/` directory of your project.
 - Or globally, by placing them in `~/.config/symbiotic/tools/`.
 
+Only `.ts` and `.js` files placed directly in these folders are loaded (subfolders are not scanned). The singular folder name `tool/` also works.
+
 
 ### Structure
 
-The easiest way to create tools is using the `tool()` helper which provides type-safety and validation.
+The easiest way to create tools is using the `tool()` helper from the `@symbioticsec/plugin` package, which provides type-safety and validation.
 
 ```ts title=".symbiotic/tools/database.ts" {1}
 import { tool } from "@symbioticsec/plugin"
@@ -41,6 +43,14 @@ export default tool({
 
 The **filename** becomes the **tool name**. The above creates a `database` tool.
 
+`execute` must return a **string**: it is the result sent back to the model. Long results are truncated (2,000 lines or 50 KB) and the full output is saved to a file the agent can read.
+
+
+#### Dependencies
+
+You don't need to install `@symbioticsec/plugin` yourself: at startup, Symbiotic Code creates a `package.json` in the config folder (`.symbiotic/` or `~/.config/symbiotic/`) with `@symbioticsec/plugin` as a dependency and installs it with Bun. It also adds a `.gitignore` for these generated files.
+
+To use other npm packages in your tools, add them to the `dependencies` of that same `package.json`. Package install scripts are not run.
 
 
 #### Multiple tools per file
@@ -57,7 +67,7 @@ export const add = tool({
     b: tool.schema.number().describe("Second number"),
   },
   async execute(args) {
-    return args.a + args.b
+    return String(args.a + args.b)
   },
 })
 
@@ -68,12 +78,16 @@ export const multiply = tool({
     b: tool.schema.number().describe("Second number"),
   },
   async execute(args) {
-    return args.a * args.b
+    return String(args.a * args.b)
   },
 })
 ```
 
 This creates two tools: `math_add` and `math_multiply`.
+
+<Warning>
+Every export of a tool file is loaded as a tool. Don't export helper functions or constants from these files: move them to a separate file outside the `tools/` folder.
+</Warning>
 
 
 
@@ -98,7 +112,7 @@ export default tool({
 ```
 
 <Info>
-Prefer unique names unless you intentionally want to replace a built-in tool. If you want to disable a built in tool but not override it, use permissions.
+Prefer unique names unless you intentionally want to replace a built-in tool. If you want to disable a built-in tool but not override it, use [tool permissions](/code/security/tool_permissions).
 </Info>
 
 
@@ -113,7 +127,7 @@ args: {
 }
 ```
 
-You can also import [Zod](https://zod.dev) directly and return a plain object:
+You can also import [Zod](https://zod.dev) directly and export a plain object:
 
 ```ts {6}
 import { z } from "zod"
@@ -148,8 +162,56 @@ export default tool({
 })
 ```
 
-Use `context.directory` for the session working directory.
-Use `context.worktree` for the git worktree root.
+| Property | Description |
+| --- | --- |
+| `directory` | The session working directory |
+| `worktree` | The git worktree root |
+| `agent` | Name of the agent calling the tool |
+| `sessionID`, `messageID` | Identifiers of the current session and message |
+| `abort` | An `AbortSignal` triggered when the user interrupts the session |
+| `ask(...)` | Request a permission from the user, see below |
+
+
+### Permissions
+
+Custom tools follow [tool permissions](/code/security/tool_permissions) using their tool name as the permission key. Setting a tool to `"deny"` (globally or for an [agent](/code/customize/custom_agents)) removes it from the tools sent to the model:
+
+```json symbiotic.json
+{
+  "permission": {
+    "database": "deny"
+  }
+}
+```
+
+`"ask"` doesn't prompt the user automatically: a custom tool runs without confirmation unless it calls `context.ask()` itself. The call resolves when the action is allowed (by a rule or by the user) and throws when it is denied:
+
+```ts title=".symbiotic/tools/deploy.ts"
+import { tool } from "@symbioticsec/plugin"
+
+export default tool({
+  description: "Deploy the application to an environment",
+  args: {
+    env: tool.schema.enum(["staging", "production"]),
+  },
+  async execute(args, context) {
+    await context.ask({
+      permission: "deploy",
+      patterns: [args.env],
+      always: [args.env],
+      metadata: { env: args.env },
+    })
+    // Deployment logic here
+    return `Deployed to ${args.env}`
+  },
+})
+```
+
+With this tool, `"deploy": { "*": "ask", "staging": "allow" }` deploys to staging without asking and asks before deploying to production. `always` lists the patterns saved when the user chooses to always allow the request.
+
+<Warning>
+Custom tools run on your machine with your user's privileges, outside the [agents container](/code/security/containers). Only add tools from sources you trust, and validate arguments before passing them to shell commands or queries.
+</Warning>
 
 
 ## Examples
@@ -188,4 +250,8 @@ export default tool({
 })
 ```
 
-Here we are using the [`Bun.$`](https://bun.com/docs/runtime/shell) utility to run the Python script.
+Here we are using the [`Bun.$`](https://bun.com/docs/runtime/shell) utility to run the Python script. Interpolated values are escaped by `Bun.$`, so arguments can't inject extra shell commands.
+
+## Tools from plugins
+
+[Plugins](/code/customize/plugins) can also provide tools with their `tool` hook, using the same `tool()` helper. Plugin tools are named after their key in the `tool` object, without a file name prefix.

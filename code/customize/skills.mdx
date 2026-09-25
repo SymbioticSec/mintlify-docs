@@ -1,0 +1,163 @@
+---
+title: "Skills"
+description: "Add skills to your agents"
+---
+
+[Agent skills](https://skills.sh/) let Symbiotic Code discover reusable instructions from your repo or home directory.
+Skills are loaded on-demand via the native `skill` tool—agents see available skills and can load the full content when needed.
+
+You can also browse and invoke skills yourself: run `/skills` in the TUI to pick one, or type `/<skill-name>` directly, like a [custom command](/code/customize/custom_commands).
+
+---
+
+## Place files
+
+Create one folder per skill and put a `SKILL.md` inside it.
+Symbiotic Code searches these locations:
+
+- Project config: `.symbiotic/skills/<name>/SKILL.md` (or `.symbiotic/skill/`)
+- Global config: `~/.config/symbiotic/skills/<name>/SKILL.md` (or `~/.config/symbiotic/skill/`)
+- Project Claude-compatible: `.claude/skills/<name>/SKILL.md`
+- Global Claude-compatible: `~/.claude/skills/<name>/SKILL.md`
+- Project agent-compatible: `.agents/skills/<name>/SKILL.md`
+- Global agent-compatible: `~/.agents/skills/<name>/SKILL.md`
+
+Skill folders can be nested: any `SKILL.md` below a `skills/` directory is picked up.
+
+---
+
+## Understand discovery
+
+For project-local paths, Symbiotic Code walks up from your current working directory until it reaches the git worktree.
+It loads any matching `skills/**/SKILL.md` in `.symbiotic/` and any matching `.claude/skills/**/SKILL.md` or `.agents/skills/**/SKILL.md` along the way.
+
+Global definitions are also loaded from `~/.config/symbiotic/skills/**/SKILL.md`, `~/.claude/skills/**/SKILL.md`, and `~/.agents/skills/**/SKILL.md`.
+
+If two skills share the same `name`, the one loaded last wins and a warning is logged.
+
+### Disable Claude/agent-compatible skills
+
+Set one of these environment variables to `true` or `1` to skip the `.claude/` and `.agents/` locations (project and global):
+
+- `SYMBIOTIC_DISABLE_EXTERNAL_SKILLS`
+- `SYMBIOTIC_DISABLE_CLAUDE_CODE_SKILLS`
+- `SYMBIOTIC_DISABLE_CLAUDE_CODE` (also disables other Claude Code compatibility features)
+
+Skills in `.symbiotic/` and `~/.config/symbiotic/` are always loaded.
+
+---
+
+## Load skills from other places
+
+Use the `skills` option in your [config file](/code/basics/configuration_file) to add more sources:
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "skills": {
+    "paths": ["~/my-skills", "./team-skills"],
+    "urls": ["https://example.com/.well-known/skills/"]
+  }
+}
+```
+
+- `paths`: extra directories scanned for `**/SKILL.md`. Paths can be absolute, start with `~/`, or be relative to your working directory. Missing directories are skipped with a warning.
+- `urls`: remote skill indexes. Symbiotic Code fetches `index.json` from each URL, downloads the listed files of every skill that includes a `SKILL.md`, and caches them in `~/.cache/symbiotic/skills/`. Files already in the cache aren't downloaded again.
+
+The `index.json` format is:
+
+```json index.json
+{
+  "skills": [
+    { "name": "git-release", "files": ["SKILL.md", "scripts/release.sh"] }
+  ]
+}
+```
+
+Each file is downloaded from `<url>/<skill-name>/<file>`.
+
+---
+
+## Security scanning
+
+Every skill is scanned by the Symbiotic security scanner before it can be used. If the scan reports findings above informational severity, or the scan can't complete, the skill is **blocked**. Scan verdicts are cached, so skills aren't rescanned on every start.
+
+Your organization can also allow or deny specific skills from the Symbiotic Portal. Blocked skills:
+
+- are hidden from the agent and can't be loaded with the `skill` tool
+- are shown as **Blocked** in the `/skills` dialog
+- aren't available as `/<skill-name>` commands
+
+---
+
+## Control access with permissions
+
+Skills follow [tool permissions](/code/security/tool_permissions) with the `skill` key. Patterns match the skill name:
+
+```json symbiotic.json
+{
+  "permission": {
+    "skill": {
+      "*": "allow",
+      "internal-*": "ask",
+      "experimental-*": "deny"
+    }
+  }
+}
+```
+
+Skills denied with `"deny"` are hidden from the agent. Setting `"skill": "deny"` removes the `skill` tool entirely. You can also set this per [agent](/code/customize/custom_agents).
+
+---
+
+## Write frontmatter
+
+Each `SKILL.md` must start with YAML frontmatter containing:
+
+- `name` (required): the name used to invoke the skill
+- `description` (required): shown to the agent so it can decide when to load the skill
+
+A `SKILL.md` without both fields is ignored. Other frontmatter fields (for example `license`, `compatibility`, or `metadata`) are allowed but not used by Symbiotic Code. Everything after the frontmatter is the skill content given to the agent.
+
+---
+
+## Name and describe your skill
+
+Names and descriptions aren't strictly validated, but for compatibility with other tools we recommend that `name`:
+
+- Is 1–64 characters
+- Is lowercase alphanumeric with single hyphen separators, for example `git-release`
+- Matches the directory name that contains `SKILL.md`
+
+Keep `description` short (under 1024 characters) and specific enough for the agent to choose correctly.
+
+---
+
+## Example
+
+Create `.symbiotic/skills/git-release/SKILL.md` like this:
+
+```markdown
+---
+name: git-release
+description: Create consistent releases and changelogs
+license: MIT
+compatibility: symbiotic code
+metadata:
+  audience: maintainers
+  workflow: github
+---
+
+## What I do
+
+- Draft release notes from merged PRs
+- Propose a version bump
+- Provide a copy-pasteable `gh release create` command
+
+## When to use me
+
+Use this when you are preparing a tagged release.
+Ask clarifying questions if the target versioning scheme is unclear.
+```
+
+When the agent loads a skill, it also receives the skill's base directory and a sample of the other files in it, so a skill can reference bundled scripts or templates with relative paths.

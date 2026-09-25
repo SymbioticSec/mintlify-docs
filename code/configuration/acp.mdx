@@ -15,9 +15,11 @@ ACP is an open protocol that standardizes communication between code editors and
 
 ## Configure
 
-To use Symbiotic Code via ACP, configure your editor to run the `symbioticacp` command.
+To use Symbiotic Code via ACP, configure your editor to run the `symbiotic acp` command.
 
-The command starts Symbiotic Code as an ACP-compatible subprocess that communicates with your editor over JSON-RPC via stdio.
+The command starts Symbiotic Code as an ACP-compatible subprocess that communicates with your editor over JSON-RPC via stdio. The project directory is provided by your editor when it opens a session.
+
+If you aren't logged in, the editor offers a **Login with symbiotic** option, which runs `symbiotic auth login`.
 
 Below are examples for popular editors that support ACP.
 
@@ -142,15 +144,20 @@ If you need to pass environment variables (like `OPENCODE_API_KEY`), refer to [C
 
 ## Support
 
-Symbiotic Code works the same via ACP as it does in the terminal. All features are supported:
-
-<Info>
-Some built-in slash commands like `/undo` and `/redo` are currently unsupported.
-</Info>
+Symbiotic Code works the same via ACP as it does in the terminal. The following features are supported:
 
 - Built-in tools (file operations, terminal commands, etc.)
-- Custom tools and slash commands
-- MCP servers configured in your Symbiotic Code config
+- Custom tools and slash commands, including skills, MCP prompts, and `/compact`
+- MCP servers configured in your Symbiotic Code config, plus MCP servers sent by your editor
 - Project-specific rules from `AGENTS.md`
 - Custom formatters and linters
-- Agents and permissions system
+- Agents and permissions system: primary agents appear as session modes, and permission prompts are shown by your editor with **Allow once**, **Always allow**, and **Reject** options
+- Model and variant selection, and loading, resuming, and forking previous sessions
+
+<Info>
+Slash commands that only exist in the TUI, like `/undo`, `/redo`, and `/security-mode`, are not available. Sessions use the agent's configured `security_mode`, or **Balanced** by default.
+</Info>
+
+<Note>
+The `question` tool is disabled by default in ACP. Set `SYMBIOTIC_ENABLE_QUESTION_TOOL=1` in the command's environment if your editor supports interactive question prompts.
+</Note>

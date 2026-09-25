@@ -3,7 +3,7 @@ title: "LSP"
 description: "Help the LLM understand your codebase with Language Server Protocol (LSP)"
 ---
 
-Symbiotic Code integrates with your [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) (LSP) to help the LLM interact with your codebase. It uses diagnostics to provide feedback to the LLM.
+Symbiotic Code integrates with your [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) (LSP) to help the LLM interact with your codebase. It uses diagnostics to provide feedback to the LLM: after the agent edits or writes a file, any errors reported by the language server are added to the tool result so the agent can fix them.
 
 ---
 
@@ -11,47 +11,54 @@ Symbiotic Code integrates with your [Language Server Protocol](https://microsoft
 
 Symbiotic Code comes with several built-in LSP servers for popular languages:
 
-| LSP Server         | Extensions                                                          | Requirements                                                 |
-| ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------ |
-| astro              | .astro                                                              | Auto-installs for Astro projects                             |
-| bash               | .sh, .bash, .zsh, .ksh                                              | Auto-installs bash-language-server                           |
-| clangd             | .c, .cpp, .cc, .cxx, .c++, .h, .hpp, .hh, .hxx, .h++                | Auto-installs for C/C++ projects                             |
-| csharp             | .cs                                                                 | `.NET SDK` installed                                         |
-| clojure-lsp        | .clj, .cljs, .cljc, .edn                                            | `clojure-lsp` command available                              |
-| dart               | .dart                                                               | `dart` command available                                     |
-| deno               | .ts, .tsx, .js, .jsx, .mjs                                          | `deno` command available (auto-detects deno.json/deno.jsonc) |
-| elixir-ls          | .ex, .exs                                                           | `elixir` command available                                   |
-| eslint             | .ts, .tsx, .js, .jsx, .mjs, .cjs, .mts, .cts, .vue                  | `eslint` dependency in project                               |
-| fsharp             | .fs, .fsi, .fsx, .fsscript                                          | `.NET SDK` installed                                         |
-| gleam              | .gleam                                                              | `gleam` command available                                    |
-| gopls              | .go                                                                 | `go` command available                                       |
-| hls                | .hs, .lhs                                                           | `haskell-language-server-wrapper` command available          |
-| jdtls              | .java                                                               | `Java SDK (version 21+)` installed                           |
-| julials            | .jl                                                                 | `julia` and `LanguageServer.jl` installed                    |
-| kotlin-ls          | .kt, .kts                                                           | Auto-installs for Kotlin projects                            |
-| lua-ls             | .lua                                                                | Auto-installs for Lua projects                               |
-| nixd               | .nix                                                                | `nixd` command available                                     |
-| ocaml-lsp          | .ml, .mli                                                           | `ocamllsp` command available                                 |
-| oxlint             | .ts, .tsx, .js, .jsx, .mjs, .cjs, .mts, .cts, .vue, .astro, .svelte | `oxlint` dependency in project                               |
-| php intelephense   | .php                                                                | Auto-installs for PHP projects                               |
-| prisma             | .prisma                                                             | `prisma` command available                                   |
-| pyright            | .py, .pyi                                                           | `pyright` dependency installed                               |
-| ruby-lsp (rubocop) | .rb, .rake, .gemspec, .ru                                           | `ruby` and `gem` commands available                          |
-| rust               | .rs                                                                 | `rust-analyzer` command available                            |
-| sourcekit-lsp      | .swift, .objc, .objcpp                                              | `swift` installed (`xcode` on macOS)                         |
-| svelte             | .svelte                                                             | Auto-installs for Svelte projects                            |
-| terraform          | .tf, .tfvars                                                        | Auto-installs from GitHub releases                           |
-| tinymist           | .typ, .typc                                                         | Auto-installs from GitHub releases                           |
-| typescript         | .ts, .tsx, .js, .jsx, .mjs, .cjs, .mts, .cts                        | `typescript` dependency in project                           |
-| vue                | .vue                                                                | Auto-installs for Vue projects                               |
-| yaml-ls            | .yaml, .yml                                                         | Auto-installs Red Hat yaml-language-server                   |
-| zls                | .zig, .zon                                                          | `zig` command available                                      |
+| LSP Server              | Extensions                                                          | Requirements                                                 |
+| ----------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| astro                   | .astro                                                              | `typescript` dependency in project; auto-installs `@astrojs/language-server` |
+| bash                    | .sh, .bash, .zsh, .ksh                                              | Auto-installs `bash-language-server`                         |
+| biome                   | .ts, .tsx, .js, .jsx, .mjs, .cjs, .mts, .cts, .json, .jsonc, .vue, .astro, .svelte, .css, .graphql, .gql, .html | `biome` installed in the project or on your `PATH` |
+| clangd                  | .c, .cpp, .cc, .cxx, .c++, .h, .hpp, .hh, .hxx, .h++                | Auto-downloads from GitHub releases                          |
+| clojure-lsp             | .clj, .cljs, .cljc, .edn                                            | `clojure-lsp` command available                              |
+| csharp                  | .cs                                                                 | `.NET SDK` installed; auto-installs `csharp-ls`              |
+| dart                    | .dart                                                               | `dart` command available                                     |
+| deno                    | .ts, .tsx, .js, .jsx, .mjs                                          | `deno` command available and a `deno.json`/`deno.jsonc` file |
+| dockerfile              | .dockerfile                                                         | Auto-installs `dockerfile-language-server-nodejs`            |
+| elixir-ls               | .ex, .exs                                                           | `elixir` command available; auto-downloads elixir-ls         |
+| eslint                  | .ts, .tsx, .js, .jsx, .mjs, .cjs, .mts, .cts, .vue                  | `eslint` dependency in project                               |
+| fsharp                  | .fs, .fsi, .fsx, .fsscript                                          | `.NET SDK` installed; auto-installs `fsautocomplete`         |
+| gleam                   | .gleam                                                              | `gleam` command available                                    |
+| gopls                   | .go                                                                 | `go` command available; auto-installs `gopls`                |
+| haskell-language-server | .hs, .lhs                                                           | `haskell-language-server-wrapper` command available          |
+| jdtls                   | .java                                                               | `Java SDK (version 21+)` installed; auto-downloads JDTLS     |
+| julials                 | .jl                                                                 | `julia` and `LanguageServer.jl` installed                    |
+| kotlin-ls               | .kt, .kts                                                           | Auto-downloads from GitHub releases                          |
+| lua-ls                  | .lua                                                                | Auto-downloads from GitHub releases                          |
+| nixd                    | .nix                                                                | `nixd` command available                                     |
+| ocaml-lsp               | .ml, .mli                                                           | `ocamllsp` command available                                 |
+| oxlint                  | .ts, .tsx, .js, .jsx, .mjs, .cjs, .mts, .cts, .vue, .astro, .svelte | `oxlint` dependency in project                               |
+| php intelephense        | .php                                                                | Auto-installs `intelephense`                                 |
+| prisma                  | .prisma                                                             | `prisma` command available                                   |
+| pyright                 | .py, .pyi                                                           | Auto-installs `pyright`                                      |
+| ruby-lsp (rubocop)      | .rb, .rake, .gemspec, .ru                                           | `ruby` and `gem` commands available; auto-installs `rubocop` |
+| rust                    | .rs                                                                 | `rust-analyzer` command available                            |
+| sourcekit-lsp           | .swift, .objc                                                       | `swift` installed (`xcode` on macOS)                         |
+| svelte                  | .svelte                                                             | Auto-installs `svelte-language-server`                       |
+| terraform               | .tf, .tfvars                                                        | Auto-downloads from HashiCorp releases                       |
+| texlab                  | .tex, .bib                                                          | Auto-downloads from GitHub releases                          |
+| tinymist                | .typ, .typc                                                         | Auto-downloads from GitHub releases                          |
+| typescript              | .ts, .tsx, .js, .jsx, .mjs, .cjs, .mts, .cts                        | `typescript` dependency in project                           |
+| vue                     | .vue                                                                | Auto-installs `@vue/language-server`                         |
+| yaml-ls                 | .yaml, .yml                                                         | Auto-installs Red Hat `yaml-language-server`                 |
+| zls                     | .zig, .zon                                                          | `zig` command available; auto-downloads zls                  |
 
-LSP servers are automatically enabled when one of the above file extensions are detected and the requirements are met.
+LSP servers are automatically enabled when one of the above file extensions are detected and the requirements are met. Auto-installed servers are stored in `~/.local/share/symbiotic/bin/`.
 
 <Tip>
-You can disable automatic LSP server downloads by setting the `SYMBIOTIC_DISABLE_LSP_DOWNLOAD` environment variable to `true`.
+You can disable automatic LSP server downloads by setting the `SYMBIOTIC_DISABLE_LSP_DOWNLOAD` environment variable to `true`. Servers that are already installed or available on your `PATH` still work.
 </Tip>
+
+<Note>
+To use [ty](https://github.com/astral-sh/ty) instead of pyright for Python, set `SYMBIOTIC_EXPERIMENTAL_LSP_TY=true`. `ty` must be on your `PATH` or in your project's virtual environment.
+</Note>
 
 ---
 
@@ -60,7 +67,14 @@ You can disable automatic LSP server downloads by setting the `SYMBIOTIC_DISABLE
 When Symbiotic Code opens a file, it:
 
 1. Checks the file extension against all enabled LSP servers.
-2. Starts the appropriate LSP server if not already running.
+2. Finds the project root for each matching server (for example the nearest lockfile, `go.mod`, or `Cargo.toml`).
+3. Starts the appropriate LSP server for that root if not already running.
+
+If a server fails to start, it isn't retried for that root until Symbiotic Code restarts.
+
+### LSP tool (experimental)
+
+Set `SYMBIOTIC_EXPERIMENTAL_LSP_TOOL=true` (or `SYMBIOTIC_EXPERIMENTAL=true`) to give the agent an `lsp` tool for code navigation: go to definition, find references, hover, document and workspace symbols, go to implementation, and call hierarchy. It's controlled by the `lsp` [permission](/code/security/tool_permissions).
 
 ---
 
@@ -80,10 +94,14 @@ Each LSP server supports the following:
 | Property         | Type     | Description                                       |
 | ---------------- | -------- | ------------------------------------------------- |
 | `disabled`       | boolean  | Set this to `true` to disable the LSP server      |
-| `command`        | string[] | The command to start the LSP server               |
-| `extensions`     | string[] | File extensions this LSP server should handle     |
+| `command`        | string[] | The command to start the LSP server. Required unless `disabled` is `true` |
+| `extensions`     | string[] | File extensions this LSP server should handle. Required for custom servers |
 | `env`            | object   | Environment variables to set when starting server |
 | `initialization` | object   | Initialization options to send to the LSP server  |
+
+<Warning>
+Configuring a built-in server replaces how it is started: your `command` is used instead of the built-in detection and auto-install, and built-in initialization options are not sent. The server keeps its built-in extensions and root detection unless you override `extensions`.
+</Warning>
 
 Let's look at some examples.
 
@@ -93,11 +111,12 @@ Let's look at some examples.
 
 Use the `env` property to set environment variables when starting the LSP server:
 
-```json title="symbiotic.json" {5-7}
+```json title="symbiotic.json" {6-8}
 {
   "$schema": "https://config.symbioticsec.ai/config.json",
   "lsp": {
     "rust": {
+      "command": ["rust-analyzer"],
       "env": {
         "RUST_LOG": "debug"
       }
@@ -112,14 +131,15 @@ Use the `env` property to set environment variables when starting the LSP server
 
 Use the `initialization` property to pass initialization options to the LSP server. These are server-specific settings sent during the LSP `initialize` request:
 
-```json title="symbiotic.json" {5-9}
+```json title="symbiotic.json" {6-10}
 {
   "$schema": "https://config.symbioticsec.ai/config.json",
   "lsp": {
-    "typescript": {
+    "pyright": {
+      "command": ["pyright-langserver", "--stdio"],
       "initialization": {
-        "preferences": {
-          "importModuleSpecifierPreference": "relative"
+        "python": {
+          "pythonPath": ".venv/bin/python"
         }
       }
     }
@@ -174,3 +194,5 @@ You can add custom LSP servers by specifying the command and file extensions:
   }
 }
 ```
+
+Custom servers are started in your current working directory.

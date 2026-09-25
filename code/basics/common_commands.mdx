@@ -3,18 +3,98 @@ title: "Common commands"
 description: "Common commands for Symbiotic Code"
 ---
 
-Use `/` or `Ctrl+P` to access the command palette and execute various actions.
+## Slash commands
 
-- `/init` Initialize the project by creating or updating the agents.md file.
-- `/agents` Switch between agents (build, plan, ask, debug)
-- `/connect` Connect to a provider
-- `/exit` Quit the application
-- `/help` Show the help dialog
-- `/mcp` Select MCPs servers to use
-- `/models` Choose wich model you're using
-- `/new` Create a new session
-- `/review` Launch a subagent to review your code
-- `/sessions` Switch between sessions
-- `/skills` Load your skills
-- `/status` See the status of LSP servers, Formatters and plugins
-- `/themes` Switch between themes
+Type `/` in the prompt to autocomplete slash commands, or press `Ctrl+P` to open the command palette. Most commands also have a [keybind](/code/configuration/keybinds); `Ctrl+X` is the leader key (e.g. `Ctrl+X` then `N` for a new session). See [Terminal UI](/code/basics/TUI) for prompt features, navigation, and themes.
+
+### Session
+
+| Command | Description | Keybind |
+|---|---|---|
+| `/new` (alias `/clear`) | Create a new session | `Ctrl+X N` |
+| `/sessions` (aliases `/resume`, `/continue`) | Switch between sessions | `Ctrl+X L` |
+| `/rename` | Rename the current session | `Ctrl+R` |
+| `/timeline` | Jump to a message in the session | `Ctrl+X G` |
+| `/fork` | Fork the session from a message | |
+| `/compact` (alias `/summarize`) | Summarize the session to free up context | `Ctrl+X C` |
+| `/undo` | Undo the last message and revert its file changes | `Ctrl+X U` |
+| `/redo` | Redo an undone message | `Ctrl+X R` |
+| `/copy` | Copy the session transcript to the clipboard | |
+| `/export` | Export the session transcript to a Markdown file | `Ctrl+X X` |
+| `/subagents` | View the subagents running in the session | `Ctrl+O` |
+| `/timestamps` | Show or hide message timestamps | |
+| `/thinking` | Show or hide thinking blocks | |
+| `/editor` | Compose your prompt in your external editor (`$VISUAL` / `$EDITOR`) | `Ctrl+X E` |
+
+### Agents, models, and tools
+
+| Command | Description | Keybind |
+|---|---|---|
+| `/agents` | Switch between agents (build, plan, ask, debug, and custom agents) | `Ctrl+X A`, `Tab` to cycle |
+| `/models` | Choose which model you're using | `Ctrl+X M` |
+| `/connect` | Connect to a provider | |
+| `/security-mode` | Choose the [security mode](/code/security/security_modes) (permissive, balanced, strict) | `Ctrl+S` to cycle |
+| `/mcps` | Enable or disable MCP servers | |
+| `/skills` | Pick a skill to invoke | |
+
+### Project and security
+
+| Command | Description |
+|---|---|
+| `/init` | Create or update the `AGENTS.md` file for the project |
+| `/review` | Review changes in a subtask: uncommitted changes by default, or a commit, branch, or PR |
+| `/local-review` | Review the current branch against its base branch |
+| `/local-review-uncommitted` | Review uncommitted changes |
+| `/scan-codebase` | Scan the project (or a path) for vulnerabilities. See [Security tools](/code/security/security_tools) |
+| `/owasp-security-review` | Run an OWASP Top 10 review of the project, a path, a commit, a branch, or a PR in the background |
+| `/generate-guardrails` | Generate security guardrails for the project |
+| `/diff` | Open the diff viewer for your git changes |
+
+### Application
+
+| Command | Description | Keybind |
+|---|---|---|
+| `/status` | See the status of MCP servers, LSP servers, formatters, and plugins | `Ctrl+X S` |
+| `/themes` | Switch between themes | `Ctrl+X T` |
+| `/help` | Show the help dialog | |
+| `/exit` (aliases `/quit`, `/q`) | Quit the application | `Ctrl+X Q`, or `Ctrl+C` / `Ctrl+D` on an empty prompt |
+
+Your [custom commands](/code/customize/custom_commands), MCP prompts, and [skills](/code/customize/skills) are also available as slash commands.
+
+## CLI commands
+
+Running `symbiotic` starts the terminal UI. It accepts an optional project path and these options:
+
+| Option | Description |
+|---|---|
+| `-m, --model` | Model to use, as `provider/model` |
+| `--agent` | Agent to use |
+| `-c, --continue` | Continue the last session |
+| `-s, --session` | Continue a specific session by ID |
+| `--fork` | Fork the session when continuing (with `--continue` or `--session`) |
+| `--prompt` | Prompt to start with |
+
+Other commands:
+
+| Command | Description |
+|---|---|
+| `symbiotic run [message..]` | Run a prompt non-interactively and print the result. Supports `--model`, `--agent`, `--continue`, `--session`, `--file`, `--format json`, `--security-mode`, `--variant`, and `--attach` |
+| `symbiotic providers` (alias `auth`) | Manage provider credentials: `list`, `login`, `logout` |
+| `symbiotic models [provider]` | List available models (`--verbose` for details, `--refresh` to update the cache) |
+| `symbiotic agent` | Manage agents: `create`, `list` |
+| `symbiotic mcp` | Manage MCP servers: `add`, `list`, `auth`, `logout`, `debug`. See [MCP](/code/configuration/mcp) |
+| `symbiotic plugin <module>` | Install a plugin and add it to your config (`-g` for global) |
+| `symbiotic session` | Manage sessions: `list`, `delete` |
+| `symbiotic export [sessionID]` / `symbiotic import <file>` | Export a session as JSON, or import one |
+| `symbiotic stats` | Show token usage and cost statistics |
+| `symbiotic pr <number>` | Check out a GitHub PR branch (requires `gh`), then start Symbiotic Code |
+| `symbiotic serve` | Start a headless server |
+| `symbiotic web` | Start a server and open the web interface |
+| `symbiotic attach <url>` | Attach the terminal UI to a running server. See [Terminal UI](/code/basics/TUI#attach-to-a-running-server) |
+| `symbiotic acp` | Start an [ACP](/code/configuration/acp) server for editor integrations |
+| `symbiotic upgrade [target]` | Upgrade to the latest or a specific version |
+| `symbiotic uninstall` | Uninstall Symbiotic Code and remove related files (`--keep-config`, `--keep-data`, `--dry-run`) |
+| `symbiotic debug` | Troubleshooting tools, e.g. `symbiotic debug config` (resolved configuration) and `symbiotic debug paths` |
+| `symbiotic db` | Open the local database, or run a query |
+
+Run `symbiotic --help` or `symbiotic <command> --help` for all options. Global options include `--print-logs` and `--log-level`.

@@ -3,120 +3,104 @@ title: "IDE Extension"
 description: "Use the IDE extension to get AI assistance directly in your editor"
 ---
 
-The Symbiotic Code IDE extension brings the terminal coding agent into VS Code-based editors. It provides AI assistance for code generation, debugging, refactoring, and repository exploration. The CLI and IDE extension share the same configuration, agents, permissions, and security modes.
+The Symbiotic Code IDE extension brings the coding agent into VS Code-based editors. It provides AI assistance for code generation, debugging, refactoring, and repository exploration. The extension runs the same Symbiotic Code engine as the CLI, so both share the same configuration files (`~/.config/symbiotic/`, `symbiotic.json`, `.symbiotic/`), agents, permissions, and security modes.
 
 ## Supported IDEs
 
-Symbiotic Code supports all IDEs based on VSCode like VSCode, VSCodium, Cursor, Windsurf, Kiro.
-
-## Key features
-
-### Interactive Agent Modes
-
-In the agent sidebar, you can select the most appropriate execution mode for your current task:
-
-- **Build Mode:** Full access to edit files, execute commands, and run tools in a secure environment. Best for active development.
-- **Plan Mode:** A read-only analysis agent that inspects codebases, answers architectural questions, and drafts plans. It will always ask for confirmation before making edits or running commands.
-- **Debug Mode:** A specialized agent focused on identifying, explaining, and resolving code errors, test failures, or runtime bugs.
-
-You can also create custom modes in **Settings > Custom Modes** by defining a unique name and writing a custom system prompt to tailor the agent's behavior to your team's specific guidelines or coding style.
-
-### Security modes and guardrails
-
-Security modes control how much security workflow runs during a session:
-
-| Security Level | Description | Recommended For |
-| :--- | :--- | :--- |
-| **Permissive** | Minimal guardrails with low-latency checks. | Writing documentation, exploration, and non-sensitive tasks. |
-| **Balanced** (Default) | Context-aware checks that automatically balance developer speed and safety. | Daily development, refactoring, and general engineering. |
-| **Strict** | Comprehensive, maximum-security audits on all inputs, outputs, and terminal actions. | Sensitive codebases, credential management, and high-audit environments. |
-
-Organization and repository guardrails are separate Markdown instructions. Symbiotic Code fetches active guardrails from the backend on startup and refreshes them periodically. See [AI Guardrails](/flow/admins/guardrails).
-
-### Flexible Models & Providers
-
-Configure which models power your development workflow:
-
-- **Symbiotic Tier Models:** Use curated models optimized for security and code generation. Configure variants depending on whether you need high speed or complex reasoning.
-- **Default & Mode-Specific Configs:** Navigate to **Settings > Models** to set your default assistant model or assign specific models to different modes (e.g., a lightweight model for Build, a reasoning model for Plan).
-- **External Providers:** Seamlessly connect to external AI services like **Anthropic**, **OpenRouter**, or local models running on **Ollama** by configuring your credentials in **Settings > Provider**.
+Symbiotic Code supports IDEs based on VS Code, such as VS Code, VSCodium, Cursor, Windsurf, and Kiro.
 
 ## Getting Started
 
-1. **Install Symbiotic Code** with npm, pnpm, yarn, Bun, or the installer. The same CLI can run in an IDE terminal.
-2. **Install the IDE extension** from the VSIX supplied by your Symbiotic administrator or portal, if your team uses the editor integration.
-3. **Sign In & Authenticate** with your Symbiotic Security account to connect to the platform.
+1. **Install the extension**: [download the VSIX](https://app.symbioticsec.ai/symbiotic-code.vsix) and install it in your IDE (**Extensions** view → **...** → **Install from VSIX...**). The extension downloads the Symbiotic Code engine it needs on first start; you don't need to install the CLI separately.
+2. **Sign in** with your Symbiotic Security account from the Symbiotic Code sidebar (or run **Symbiotic Code: Sign In** from the command palette).
+3. **Start coding** from the Symbiotic Code view in the activity bar.
+
+## Key features
+
+### Agent modes
+
+In the chat input, you can select the most appropriate agent for your current task:
+
+- **Build:** The default agent. Edits files, runs commands, and uses tools according to your permissions. Best for active development.
+- **Plan:** A planning agent that analyzes the codebase and drafts plans. File edits are denied (except plan files) and it is instructed not to make changes.
+- **Ask:** A read-only agent that answers questions and explains code without modifying anything.
+- **Debug:** A specialized agent that diagnoses and fixes bugs using runtime evidence.
+
+See [Agents](/code/basics/agents) for details. You can also create your own modes in **Settings > Agent Behaviour > Agents** with **Create New Mode** (name, description, and system prompt), or **Import** an existing agent definition.
+
+### Security modes and guardrails
+
+The security mode selector in the chat input controls how much security workflow runs during a session:
+
+| Security Level | Description | Recommended For |
+| :--- | :--- | :--- |
+| **Permissive** | Security tools only run when you ask for them. | Writing documentation, exploration, and non-sensitive tasks. |
+| **Balanced** (Default) | Scans after feature implementations; fixes critical/high issues in new code and asks about the rest. | Daily development, refactoring, and general engineering. |
+| **Strict** | Scans after every file edit, runs the OWASP checkpoint on every feature, and fixes critical/high/medium issues. | Sensitive codebases, credential management, and high-audit environments. |
+
+See [Security modes](/code/security/security_modes) for details.
+
+Organization and repository guardrails are separate Markdown instructions. Symbiotic Code fetches active guardrails from the backend on startup and refreshes them every 5 minutes. **Settings > Guardrails** shows which guardrails are active and lets you refresh or clear them. See [AI Guardrails](/flow/admins/guardrails).
+
+### Editor integration
+
+- **Code actions:** Select code and right-click to **Explain Code**, **Fix Code**, **Improve Code**, or **Add to Context** (`Ctrl+K Ctrl+A` / `Cmd+K Cmd+A`).
+- **Terminal actions:** Right-click in the terminal to add its content to the context or ask the agent to fix or explain a command.
+- **Commit messages:** Use **Generate Commit Message** from the Source Control view.
+- **Agent Manager** (`Ctrl+Shift+M` / `Cmd+Shift+M`): run and switch between multiple sessions, including in separate git worktrees.
+- **Toggle auto-approve** (`Ctrl+Alt+A` / `Cmd+Alt+A`): while enabled, permission requests are approved automatically (once each).
 
 ## Settings
 
-Access the Settings panel in the IDE extension sidebar to customize your Symbiotic Code experience. Settings are organized into the following categories:
+Open **Settings** from the gear icon in the Symbiotic Code sidebar. Changes made in the Settings panel are saved to your global configuration file (`~/.config/symbiotic/symbiotic.jsonc` or `symbiotic.json`). Use the **Local Config** and **Global Config** buttons to open the project or global configuration file directly.
+
+The main categories are described below. Other tabs cover Browser automation, Checkpoints, Display, Autocomplete, Context, Guardrails, Commit Message, Experimental features, and Language.
 
 ### Models
 
 Configure which AI models power your development workflow:
 
-- **Default Model:** The primary model used for conversations. The available default depends on the configured provider.
-- **Small Model:** A lightweight model optimized for quick tasks like title generation, commit message generation, and prompt enhancement. Automatically configured.
-- **Model per Mode:** Assign specific models to different agent modes:
-  - **Build:** Configure a model for active development (defaults to Default Model)
-  - **Plan:** Configure a model for analysis and planning (defaults to Default Model)
-  - **Debug:** Configure a model for debugging workflows (defaults to Default Model)
-  - **Ask:** Configure a model for read-only queries (defaults to Default Model)
+- **Default Model:** The primary model used for conversations (`model` in the configuration file).
+- **Small Model:** A lightweight model for title generation, commit message generation, prompt enhancement, and other quick tasks (`small_model`). When not set, a small model from the same provider is picked automatically.
+- **Model per Mode:** Assign a specific model to each agent mode (Build, Plan, Ask, Debug, and your custom modes). When not set, the Default Model is used.
 
 ### Providers
 
 Manage and configure your AI model providers:
 
-**Primary Provider:**
-- **Symbiotic:** The default managed provider using Symbiotic's curated models. Authenticated via the Symbiotic gateway.
+- **Symbiotic:** The default managed provider using Symbiotic's curated models, authenticated through the Symbiotic gateway. Sign in or out from here.
+- **Connected providers:** View connected third-party providers (including those detected from environment variables), edit custom providers, and disconnect them.
+- **Popular providers:** Anthropic, GitHub Copilot, OpenAI, Google, OpenRouter, and Vercel AI Gateway. Click **Connect** and enter your credentials. Use **View all** for the full provider list.
+- **Custom provider:** Add any OpenAI-compatible provider by base URL, for example a local model server such as Ollama.
 
-**Connected Providers:**
-- View all connected third-party providers (e.g., Ollama Cloud, OpenAI, GitHub Copilot)
-- Disconnect providers with a single click
-- Manage API credentials for each provider
-
-**Popular Providers:**
-- **Anthropic:** Direct access to Claude models, including Pro and Max variants
-- **Google:** Gemini models for fast, structured responses
-- **OpenRouter:** Access all supported models from one unified provider
-- **Vercel AI Gateway:** Unified access to AI models with smart routing
-
-Connect any provider by clicking **+ Connect** and entering your API credentials.
+See [Models and providers](/code/basics/models_and_providers).
 
 ### Agent Behaviour
 
-Customize how agents behave and operate with multiple configuration tabs:
+Customize how agents behave with multiple tabs:
 
-**Agents Tab:**
-View all available agents and their descriptions:
+**Agents:** Choose the **Default Agent** and view all available agents and subagents:
 - **ask:** Get answers and explanations without making changes to the codebase
-- **build:** The default agent with all tools enabled for full development access
+- **build:** The default agent. Executes tools based on configured permissions
 - **debug:** Diagnose and fix software issues with systematic debugging methodology
-- **explore:** Fast agent specialized for exploring codebases and finding files by patterns
-- **general:** General-purpose agent for researching complex questions and executing multi-step tasks
+- **explore:** Fast subagent specialized for exploring codebases and finding files by patterns
+- **general:** General-purpose subagent for researching complex questions and executing multi-step tasks
+- **owasp-security-review:** Subagent that reviews code against the OWASP Top 10 and reports findings
 - **plan:** Plan mode that disallows all edit tools
-- **triage:** Security engineer specialist for triaging static analysis findings
+- **triage:** Security engineer subagent for triaging static analysis findings
 
-Create new custom modes with **Create New Mode** or import existing agents.
+Select an agent to override its model, add a custom prompt, set temperature, top P, or max steps, or mark it as hidden or disabled. Use **Create New Mode** or **Import** to add your own.
 
-**MCP Servers, Rules, Workflows, Skills Tabs:**
-Configure additional agent behavior through Model Context Protocol servers, custom rules, workflow definitions, and skill configurations.
+**MCP Servers, Rules, Workflows, Skills:** Manage [MCP servers](/code/configuration/mcp), [rules](/code/basics/rules) and additional instruction files, workflows (your [custom commands](/code/customize/custom_commands)), and [skills](/code/customize/skills) including extra skill folder paths and URLs.
 
 ### Auto-Approve
 
-Define how tools are allowed to run with `permission` rules. Permissions resolve to `allow`, `ask`, or `deny` and can match tool inputs with patterns:
+Define whether each tool runs automatically with `permission` rules. Each tool can be set to **Allow**, **Ask**, or **Deny**, and some tools accept pattern-based exceptions. See [Tool permissions](/code/security/tool_permissions).
 
-**External Directory:**
-- **All paths (*):** Set to "Ask" by default to be prompted before accessing files outside the workspace
+- **External Directory:** Accessing files outside the workspace is set to **Ask** by default.
+- **Bash:** Set a default for all commands (`*`), then add exceptions with patterns such as `git *`, `npm *`, or `rm *` (for example, allow `grep *` but ask for `git push`).
+- **Read:** `*.env` and `*.env.*` files require confirmation by default; `*.env.example` is allowed.
+- **Edit:** Set a default for file edits, with path exceptions.
+- **Other tools:** Glob, Grep, List, Task (subagents), Skill, LSP, todo, web search, web fetch, and doom loop detection (set to **Ask** by default).
 
-**Bash:**
-- **Bash:** Configure command patterns such as `git *`, `npm *`, or `rm *` explicitly.
-- **Exceptions:** Define specific commands with custom approval settings:
-  - `grep *` — Set to "Allow"
-  - `git push` — Set to "Ask"
-  - `rm *` — Set to "Ask"
-
-**Read:**
-- **Environment files:** `*.env` and `*.env.*` require confirmation by default; `*.env.example` is allowed.
-
-Add additional paths or commands with **+ Add path** or **+ Add command**.
+Add exceptions with **Add path** or **Add command**.

@@ -1,0 +1,281 @@
+---
+title: "Tool permissions"
+description: "Control how tools interact with your system"
+---
+Symbiotic Code supports a layered permission configuration that controls whether the AI can run bash commands, edit files, read files, or use any other tool without prompting you every time.
+
+---
+
+## Defaults
+
+With no configuration, most tools are **allowed** without prompting. The exceptions are:
+
+| Permission | Default |
+| --- | --- |
+| `read` | `ask` for `*.env` and `*.env.*` files (`*.env.example` is allowed) |
+| `external_directory` | `ask` when a tool touches a path outside the project (skill directories and the tool-output directory are allowed) |
+| `doom_loop` | `ask` when the same tool is called with identical input 3 times in a row |
+| `question` | Allowed for the `build`, `plan`, `debug`, and `ask` agents; denied for other agents |
+
+Built-in agents add their own restrictions on top, for example the `plan` agent denies edits and the `ask` agent only allows read-only tools. See [Agents](/code/basics/agents).
+
+<Info>
+In non-interactive mode (`symbiotic run`), any permission that resolves to `ask` is automatically rejected.
+</Info>
+
+---
+
+## Load order
+
+Configs are deep-merged. **Later sources win.**
+
+| # | Source | Notes |
+| --- | --- | --- |
+| 1 | Remote config | Organization defaults from `.well-known/symbiotic` |
+| 2 | Global config | `~/.config/symbiotic/symbiotic.json`/`symbiotic.jsonc` |
+| 3 | `SYMBIOTIC_CONFIG` env var | Custom config file path |
+| 4 | Project config | `symbiotic.json`/`symbiotic.jsonc`, from your git root down to your working directory |
+| 5 | `.symbiotic` directories | `.symbiotic/symbiotic.json`/`symbiotic.jsonc` |
+| 6 | `SYMBIOTIC_CONFIG_CONTENT` env var | Inline JSON/JSONC config content |
+| 7 | Organization account config | Loaded for the active account's organization |
+| 8 | Managed config | System administrator-controlled config |
+| 9 | `SYMBIOTIC_PERMISSION` env var | Inline JSON permission object, merged into `permission` last |
+
+Per-agent `permission` rules (in `agent.<name>.permission` or in the agent's markdown frontmatter) are applied after the global `permission` rules, so they win for that agent. See [Custom agents](/code/customize/custom_agents).
+
+---
+
+## Config schema
+
+```json symbiotic.json
+{
+  "permission": {
+    "bash": "ask",
+    "edit": { "*": "allow", "*.lock": "deny" },
+    "read": "allow"
+  }
+}
+```
+
+A rule is either:
+
+- A **string**: `"allow"`, `"ask"`, or `"deny"`, which applies to all inputs
+- A **pattern map**: `{ "<pattern>": "allow" | "ask" | "deny", ... }`, evaluated in order; the **last matching pattern wins**
+
+You can also set `"permission": "ask"` (or `allow`/`deny`) to apply one action to every tool.
+
+### Permission keys
+
+| Key | Pattern is matched against |
+| --- | --- |
+| `bash` | Each command, for example `git status` |
+| `edit` | File path relative to the project root. Covers the `edit`, `write`, `multiedit`, and `apply_patch` tools |
+| `read` | Absolute file path |
+| `glob`, `grep` | The search pattern |
+| `list` | The directory path |
+| `external_directory` | The directory outside the project, for example `/tmp/*` |
+| `task` | The subagent name |
+| `skill` | The skill name |
+| `webfetch` | The URL |
+| `websearch`, `codesearch` | The query |
+| `lsp` | Always `*` (only used when the experimental LSP tool is enabled) |
+| `todowrite`, `todoread`, `question`, `doom_loop` | Use a string action |
+
+Any other tool name is also accepted as a key, including [custom tools](/code/customize/custom_tools) and [MCP](/code/configuration/mcp) tools (for example `github_create_issue`). Keys support wildcards too, for example `"github_*": "deny"` or `"*": "ask"`.
+
+<Note>
+There is no separate `write` permission: file writes use the `edit` key. The legacy `tools` option (`"tools": { "bash": false }`) is still accepted and converted to `deny`/`allow` rules; `write`, `patch`, and `multiedit` map to `edit`.
+</Note>
+
+### Pattern matching
+
+| Wildcard | Matches |
+| --- | --- |
+| `*` | Any sequence of characters, including spaces and `/` |
+| `?` | Exactly one character |
+
+- A pattern ending in ` *` also matches the command without arguments: `ls *` matches both `ls` and `ls -la`.
+- Path patterns starting with `~/` or `$HOME/` are expanded to your home directory.
+
+Rules are evaluated in order, with the **last matching rule winning**. Put broad rules first and more specific overrides after them. If no rule matches, the action is `ask`.
+
+### Removed tools
+
+If the last rule for a tool is `"*": "deny"` (or the string `"deny"`), the tool is removed from the list of tools sent to the model, so the agent doesn't try to use it.
+
+---
+
+## Examples
+
+### 1. Deny all bash, ask for edits, auto-allow `src/`
+
+`.symbiotic/symbiotic.json`:
+
+```json
+{
+  "permission": {
+    "bash": "deny",
+    "edit": {
+      "*": "ask",
+      "src/*": "allow",
+      "*.env": "deny"
+    }
+  }
+}
+```
+
+**What happens:**
+
+| Action | Result |
+| --- | --- |
+| `bash` | Tool removed, the agent can't run commands |
+| edit `src/core/tools/bash.ts` | Auto-allowed (matches `src/*`) |
+| edit `.env` | Denied immediately (matches `*.env`) |
+| edit `README.md` | Prompts you (matches `*`) |
+
+---
+
+### 2. Allow safe git commands, deny destructive ones
+
+```json
+{
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "git *": "allow",
+      "git commit *": "deny",
+      "git push *": "deny",
+      "grep *": "allow",
+      "ls *": "allow"
+    }
+  }
+}
+```
+
+**What happens:**
+
+| Command | Last matching pattern | Result |
+| --- | --- | --- |
+| `git status` | `git *` | Auto-allowed |
+| `git log --oneline` | `git *` | Auto-allowed |
+| `git commit -m "foo"` | `git commit *` | Denied |
+| `git push origin main` | `git push *` | Denied |
+| `grep -r "TODO" src/` | `grep *` | Auto-allowed |
+| `npm install` | `*` | Prompts you |
+
+<Warning>
+Order matters. If `"git *": "allow"` were placed after `"git commit *": "deny"`, it would match last and allow `git commit`.
+</Warning>
+
+Compound commands (`&&`, `||`, `;`, `|`) are split into individual commands and each one is checked. The command is denied if any part is denied, and only runs without a prompt if every part is allowed.
+
+---
+
+### 3. Trust the whole project, allow everything
+
+```json
+{
+  "permission": {
+    "bash": "allow",
+    "edit": "allow",
+    "external_directory": "allow"
+  }
+}
+```
+
+No prompts, including for files outside the project. Useful for trusted personal projects.
+
+---
+
+### 4. Lock down everything, full review mode
+
+```json
+{
+  "permission": {
+    "bash": "ask",
+    "edit": "ask",
+    "webfetch": "ask"
+  }
+}
+```
+
+Every command, file change, and web request requires your approval.
+
+---
+
+## Deep merge behavior
+
+When multiple sources define rules for the same tool, pattern maps are merged (a key redefined later keeps its original position but takes the new action; new keys are added at the end), and string rules replace entirely.
+
+**Example:** `symbiotic.json` defines bash rules, `.symbiotic/symbiotic.json` adds more specific ones:
+
+`symbiotic.json`:
+
+```json
+{ "permission": { "bash": { "*": "ask", "ls *": "allow" } } }
+```
+
+`.symbiotic/symbiotic.json`:
+
+```json
+{ "permission": { "bash": { "git push *": "deny" } } }
+```
+
+**Effective config:**
+
+```json
+{ "permission": { "bash": { "*": "ask", "ls *": "allow", "git push *": "deny" } } }
+```
+
+---
+
+## "Allow always"
+
+When you choose **Allow always** at a permission prompt in the TUI, the approval applies to the current project **until Symbiotic Code is restarted**. Other pending requests covered by the approval are resolved automatically. To make an approval permanent, add the rule to your config.
+
+In the [IDE extension](/code/basics/IDE_extension), approved and denied patterns are saved to your global config file in `~/.config/symbiotic/`.
+
+### Which patterns are approved
+
+For **bash commands**, the approved pattern is the command's "human-understandable" prefix followed by ` *`:
+
+| Command | Approved pattern |
+| --- | --- |
+| `git commit -m "feat: add x"` | `git commit *` |
+| `bun run dev` | `bun run dev *` |
+| `docker build -t app .` | `docker build *` |
+| `ls -la` | `ls *` |
+| `rm -rf dist/` | `rm *` |
+| `curl https://api.example.com` | `curl *` |
+
+<Warning>
+Approving `rm -rf dist/` always allows **every** `rm` command. Choose **Allow once** for destructive commands.
+</Warning>
+
+For most other tools (including `edit`, `read`, and `webfetch`), **Allow always** approves the tool for all inputs. For `external_directory`, it approves the requested directory. For `skill`, it approves that skill.
+
+---
+
+## Config changes
+
+Config files are read when Symbiotic Code starts. Restart it after editing `symbiotic.json` or `.symbiotic/symbiotic.json` for permission changes to take effect.
+
+---
+
+## File locations
+
+```
+your-project/
+├── symbiotic.json              # project-level config (committed)
+└── .symbiotic/
+    └── symbiotic.json          # additional project overrides
+~/.config/symbiotic/
+└── symbiotic.json              # global config
+```
+<Tip>
+**Recommendations**
+
+- Commit `symbiotic.json` with team-wide defaults
+- Use your global config for personal preferences
+- Use `SYMBIOTIC_PERMISSION` for one-off overrides, for example `SYMBIOTIC_PERMISSION='{"bash":"deny"}' symbiotic`
+</Tip>

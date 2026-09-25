@@ -1,0 +1,399 @@
+---
+title: "Terminal UI"
+description: "Use Symbiotic Code in your terminal: layout, prompt, permissions, navigation, and themes"
+---
+
+Running `symbiotic` opens the terminal UI (TUI). It runs the same engine as the [IDE extension](/code/basics/IDE_extension), so both share the same [configuration files](/code/basics/configuration_file), agents, permissions, and security modes.
+
+## Launch
+
+```bash
+symbiotic                  # start in the current directory
+symbiotic path/to/project  # start in another directory
+symbiotic -c               # continue the last session
+symbiotic -s <session-id>  # open a specific session
+```
+
+| Option | Description |
+|---|---|
+| `-m, --model` | Model to use, as `provider/model` |
+| `--agent` | Agent to start with |
+| `-c, --continue` | Continue the most recent session |
+| `-s, --session` | Open a session by ID |
+| `--fork` | Fork the session instead of continuing it (requires `--continue` or `--session`) |
+| `--prompt` | Prompt to submit as soon as the TUI is ready |
+| `--port`, `--hostname` | Start a local HTTP server that other clients can [attach](#attach-to-a-running-server) to (hostname defaults to `127.0.0.1`) |
+
+If you pipe text into `symbiotic`, it is added in front of `--prompt`:
+
+```bash
+git diff | symbiotic --prompt "Review this diff"
+```
+
+On first launch, Symbiotic Code asks you to sign in with your Symbiotic Security account in the browser. See [Authentication](/code/get_started#authentication).
+
+When you quit from a session, the TUI prints the command to resume it (`symbiotic -s <id>`).
+
+---
+
+## Layout
+
+### Home screen
+
+Before your first message you see the home screen: the logo, a short explanation of the security modes, the prompt, and tips (hide them with `Ctrl+X H`). The bottom bar shows the current directory and git branch, the number of connected MCP servers, and the version.
+
+### Session screen
+
+Once you send a message, the session screen shows the conversation, the prompt, and a sidebar.
+
+**Sidebar.** Shown automatically when the terminal is wider than 120 columns. Toggle it with `Ctrl+X B`; on narrow terminals it opens as an overlay. It contains:
+
+| Section | What it shows |
+|---|---|
+| **Context** | Tokens used, percentage of the model's context window, and cost (cost is hidden for Symbiotic models) |
+| **MCP** | Each MCP server and its status: connected, failed, disabled, or needs authentication |
+| **LSP** | Active [language servers](/code/configuration/lsp) |
+| **Todo** | The agent's current task list, while items are pending |
+| **Guardrails** | Whether organization and repository [guardrails](/flow/admins/guardrails) are active |
+| **Security** | Security scans and checkpoints run in the session, and the issues they found |
+| **Modified Files** | Files changed in the session, with lines added and removed |
+
+**Header.** When the sidebar is hidden, a header shows the session title, context usage, and cost instead. Hide it with **Hide header** in the command palette.
+
+**Prompt box.** The prompt box shows the current state of the session:
+
+- Above the input: the active agent, the [security mode](/code/security/security_modes) (`● Strict`, `◐ Balanced`, `○ Permissive`), and the `tab` / `ctrl+s` hints.
+- Below the input: the model, its provider, and the selected variant.
+- While the agent works: a spinner, retry messages, and the `esc interrupt` hint.
+
+The border color follows the active agent's color.
+
+---
+
+## Write a prompt
+
+| Action | How |
+|---|---|
+| Send | `Enter` |
+| New line | `Shift+Enter`, `Ctrl+J`, `Alt+Enter`, or `Ctrl+Enter` |
+| Previous / next prompt | `Up` at the start of the input / `Down` at the end |
+| Clear the input | `Ctrl+C` |
+| Write in your editor | `/editor` or `Ctrl+X E`: opens `$VISUAL` or `$EDITOR`; the text is loaded back into the prompt when you close the file |
+| Stop the agent | Press `Esc` twice |
+
+<Tip>
+If `Shift+Enter` sends the message instead of adding a new line, your terminal isn't sending the modifier. Use `Ctrl+J`, or see [Keybinds](/code/configuration/keybinds) to configure your terminal.
+</Tip>
+
+### Mention files, agents, and resources with `@`
+
+Type `@` to open autocomplete. It lists:
+
+- **Subagents**, such as `@explore` or `@general`, to delegate a task directly
+- **Files and directories** in the project. Press `Tab` on a directory to browse into it. Add a line range with `#`, for example `@src/auth/login.ts#10-40`
+- **MCP resources** from your connected [MCP servers](/code/configuration/mcp)
+
+Use `Up`/`Down` to move through suggestions, `Enter` or `Tab` to select, and `Esc` to close.
+
+### Run commands with `/`
+
+Type `/` at the start of the input to autocomplete built-in commands, your [custom commands](/code/customize/custom_commands), and MCP prompts (marked `:mcp`). [Skills](/code/customize/skills) don't appear in this list, but you can still run one by typing `/<skill-name>` in full, or pick one with `/skills`.
+
+See [Common commands](/code/basics/common_commands) for the full list.
+
+### Run shell commands with `!`
+
+Type `!` at the start of the input to switch to shell mode. The prompt label changes to **Shell**. Press `Enter` to run the command directly, without going through the model. The output is added to the conversation, so the agent can see it in later messages. Long output is collapsed to 10 lines; click it to expand.
+
+Press `Esc`, or `Backspace` on an empty input, to leave shell mode.
+
+### Attach images and paste text
+
+- **Images:** paste an image from the clipboard with `Ctrl+V`, or drag and drop an image file onto the terminal. It appears as `[Image 1]` in the prompt.
+- **Long text:** pasting 3 or more lines (or more than 150 characters) shows a placeholder such as `[Pasted ~42 lines]`. The full text is sent with the message. To paste text as is, set `experimental.disable_paste_summary` to `true` in your [configuration file](/code/basics/configuration_file).
+
+### Stash a prompt
+
+To set aside a prompt you're writing, open the command palette (`Ctrl+P`) and select **Stash prompt**. Use **Stash pop** to restore the last one, or **Stash list** to pick one (press `Ctrl+D` twice to delete an entry). Up to 50 prompts are kept.
+
+---
+
+## Switch agent, model, and security mode
+
+| Action | Keybind | Command |
+|---|---|---|
+| Cycle primary agents (Build, Plan, Ask, Debug, and your custom agents) | `Tab` / `Shift+Tab` | `/agents` |
+| Cycle recently used models | `F2` / `Shift+F2` | `/models` |
+| Cycle model variants (for example reasoning effort) | `Ctrl+T` | |
+| Cycle security mode (permissive → balanced → strict) | `Ctrl+S` | `/security-mode` |
+
+The model you pick is remembered per agent, and the variant per model. If an agent defines its own `security_mode`, it applies while that agent is active.
+
+In the model list, press `Ctrl+F` to mark a model as a favorite and `Ctrl+A` to connect a provider.
+
+See [Agents](/code/basics/agents), [Models and providers](/code/basics/models_and_providers), and [Security modes](/code/security/security_modes).
+
+---
+
+## Permissions and questions
+
+When the agent needs approval for a tool call (based on your [tool permissions](/code/security/tool_permissions)), the prompt is replaced by a **Permission required** panel. File edits show the diff.
+
+| Option | Effect |
+|---|---|
+| **Allow once** | Allow this call only |
+| **Allow always** | Allow this permission (or these patterns) for the rest of the session. It lasts until you restart Symbiotic Code; to make it permanent, add a rule to your configuration file |
+| **Reject** | Deny the call. Other pending requests in the session are also rejected |
+
+Use `←`/`→` (or `h`/`l`) and `Enter`, or click an option. `Esc` rejects. `Ctrl+F` shows the request full screen.
+
+When a subagent's request is rejected, you can tell the agent what to do instead.
+
+When the agent asks you a question, pick an answer with `1`-`9` or the arrow keys and press `Enter`, or choose **Type your own answer**. `Esc` dismisses the question. With several questions, use `Tab` to move between them and review your answers in the **Confirm** tab.
+
+---
+
+## Work with messages
+
+Click one of your messages to open **Message Actions**:
+
+- **Revert:** undo this message and everything after it, including the file changes, and put the message back in the prompt
+- **Copy:** copy the message text
+- **Fork:** start a new session from this point
+
+| Action | Keybind | Command |
+|---|---|---|
+| Undo the last message and its file changes | `Ctrl+X U` | `/undo` |
+| Redo | `Ctrl+X R` | `/redo` |
+| Jump to a message | `Ctrl+X G` | `/timeline` |
+| Fork from a message | | `/fork` |
+| Copy the last assistant message | `Ctrl+X Y` | |
+| Copy the whole transcript | | `/copy` |
+| Export the session to Markdown | `Ctrl+X X` | `/export` |
+| Summarize the session to free up context | `Ctrl+X C` | `/compact` |
+
+### Scroll
+
+| Action | Keybind |
+|---|---|
+| Scroll up / down | `PageUp` / `PageDown`, or the mouse wheel |
+| Scroll up / down by a smaller step | `Ctrl+Alt+U` / `Ctrl+Alt+D` |
+| Go to the first / last message | `Ctrl+G` or `Home` / `Ctrl+Alt+G` or `End` |
+
+The view follows new output while you're at the bottom.
+
+### Display options
+
+| Option | How to toggle | Default |
+|---|---|---|
+| Thinking blocks | `/thinking` | Shown |
+| Message timestamps | `/timestamps` | Hidden |
+| Completed tool call details | **Hide tool details** in the command palette | Shown |
+| Generic tool output | **Show generic tool output** in the command palette | Hidden |
+| Code concealment in messages | `Ctrl+X H` | On |
+| Diff line wrapping | **Disable diff wrapping** in the command palette | On |
+
+These choices are saved between sessions, except code concealment.
+
+Diffs are shown side by side when the terminal is wider than 120 columns, and stacked otherwise. Set `diff_style` to `"stacked"` in [`tui.json`](#configuration) to always stack them.
+
+To browse all your git changes, use `/diff`. It opens a full-screen diff viewer; press `?` in it to see its keybinds.
+
+---
+
+## Subagents
+
+When the agent delegates work to a [subagent](/code/basics/agents), the task appears in the conversation. Click it to open the subagent's session.
+
+| Action | Keybind |
+|---|---|
+| List active and recent subagents | `Ctrl+O` (or `/subagents`) |
+| Move running subagents to the background | `Ctrl+Y` |
+| Stop background subagents | `Ctrl+Shift+Y` twice |
+| Open the first subagent session | `Ctrl+X Down` |
+| In a subagent session: go to the parent session | `Up` |
+| In a subagent session: next / previous subagent | `Right` / `Left` |
+
+In the subagent list, press `Ctrl+A` to abort a running subagent. Subagent sessions are read-only: permission requests from subagents appear in the parent session.
+
+---
+
+## Sessions
+
+Use `/sessions` (`Ctrl+X L`) to switch sessions. Sessions are grouped by date. In the list:
+
+- `Ctrl+F` pins a session (up to 9). Jump to pinned sessions with `Ctrl+X 1` to `Ctrl+X 9`
+- `Ctrl+R` renames a session
+- `Ctrl+D` twice deletes a session
+
+Start a new session with `/new` (`Ctrl+X N`).
+
+---
+
+## Command palette
+
+Press `Ctrl+P` to open the command palette. It lists every available action with its keybind, and a **Suggested** section at the top. Type to filter. Some actions are only available here, including:
+
+- **Stash prompt**, **Stash pop**, and **Stash list**
+- **Toggle appearance** (switch between dark and light)
+- **Show/Hide header**, **Hide tool details**, **Show generic tool output**, and **Toggle session scrollbar**
+- **Disable/Enable terminal title**, **Disable/Enable animations**, and **Disable/Enable diff wrapping**
+- **Open docs**
+
+---
+
+## Themes
+
+Use `/themes` (`Ctrl+X T`) to pick a theme. The list previews each theme as you move through it; press `Esc` to keep your current theme. The default theme is `symbiotic`.
+
+Built-in themes: `symbiotic`, `aura`, `ayu`, `carbonfox`, `catppuccin`, `catppuccin-frappe`, `catppuccin-macchiato`, `cobalt2`, `cursor`, `dracula`, `everforest`, `flexoki`, `github`, `gruvbox`, `kanagawa`, `lucent-orng`, `material`, `matrix`, `mercury`, `monokai`, `nightowl`, `nord`, `one-dark`, `opencode`, `orng`, `osaka-jade`, `palenight`, `rosepine`, `solarized`, `synthwave84`, `tokyonight`, `vercel`, `vesper`, and `zenburn`.
+
+The `system` theme uses your terminal's color palette. It's only listed if your terminal reports its palette.
+
+Symbiotic Code detects whether your terminal has a dark or light background. To override it, use **Toggle appearance** in the command palette.
+
+### Set a theme in the configuration
+
+Set `theme` in [`tui.json`](#configuration). It takes precedence over the theme picked with `/themes`.
+
+```json tui.json
+{
+  "$schema": "https://config.symbioticsec.ai/tui.json",
+  "theme": "tokyonight"
+}
+```
+
+### Create a custom theme
+
+Add a JSON file to a `themes` folder. The file name is the theme name.
+
+```
+~/.config/symbiotic/themes/my-theme.json   ← available everywhere
+.symbiotic/themes/my-theme.json            ← this project only
+```
+
+A theme defines a color for each key under `theme`. A color can be a hex value, the name of an entry in `defs`, a `{ "dark": ..., "light": ... }` pair, an ANSI color number (0-255), or `"none"` for transparent.
+
+```json .symbiotic/themes/my-theme.json
+{
+  "defs": {
+    "pink": "#C45D97",
+    "dark0": "#181818",
+    "light0": "#FAFAFB"
+  },
+  "theme": {
+    "primary": "pink",
+    "background": { "dark": "dark0", "light": "light0" },
+    "text": { "dark": "light0", "light": "dark0" }
+  }
+}
+```
+
+The example above is shortened. A theme must define every color key below; only `selectedListItemText`, `backgroundMenu`, and `thinkingOpacity` (a number, default `0.6`) are optional.
+
+<Accordion title="Theme color keys">
+- **Base:** `primary`, `secondary`, `accent`, `error`, `warning`, `success`, `info`, `text`, `textMuted`, `background`, `backgroundPanel`, `backgroundElement`, `border`, `borderActive`, `borderSubtle`
+- **Diff:** `diffAdded`, `diffRemoved`, `diffContext`, `diffHunkHeader`, `diffHighlightAdded`, `diffHighlightRemoved`, `diffAddedBg`, `diffRemovedBg`, `diffContextBg`, `diffLineNumber`, `diffAddedLineNumberBg`, `diffRemovedLineNumberBg`
+- **Markdown:** `markdownText`, `markdownHeading`, `markdownLink`, `markdownLinkText`, `markdownCode`, `markdownBlockQuote`, `markdownEmph`, `markdownStrong`, `markdownHorizontalRule`, `markdownListItem`, `markdownListEnumeration`, `markdownImage`, `markdownImageText`, `markdownCodeBlock`
+- **Syntax:** `syntaxComment`, `syntaxKeyword`, `syntaxFunction`, `syntaxVariable`, `syntaxString`, `syntaxNumber`, `syntaxType`, `syntaxOperator`, `syntaxPunctuation`
+</Accordion>
+
+---
+
+## Configuration
+
+TUI settings live in `tui.json` (or `tui.jsonc`), separate from `symbiotic.json`:
+
+- Global: `~/.config/symbiotic/tui.json`
+- Project: `tui.json` at the root of your project, or `.symbiotic/tui.json`
+- Custom path: the `SYMBIOTIC_TUI_CONFIG` environment variable
+
+Project files override global ones.
+
+| Key | Description | Default |
+|---|---|---|
+| `theme` | Theme name | `symbiotic` |
+| `keybinds` | Keybind overrides. See [Keybinds](/code/configuration/keybinds) | |
+| `scroll_speed` | Lines scrolled per mouse wheel step | `3` |
+| `scroll_acceleration.enabled` | Enable macOS-style scroll acceleration (replaces `scroll_speed`) | `false` |
+| `diff_style` | `"auto"` (side by side on wide terminals) or `"stacked"` | `"auto"` |
+
+```json tui.json
+{
+  "$schema": "https://config.symbioticsec.ai/tui.json",
+  "theme": "symbiotic",
+  "scroll_speed": 5,
+  "diff_style": "stacked",
+  "keybinds": {
+    "leader": "ctrl+x"
+  }
+}
+```
+
+<Warning>
+`tui.json` is validated strictly. If it contains an unknown key, the whole file is ignored and a warning is written to the log.
+</Warning>
+
+If you still have `theme` or `keybinds` in `symbiotic.json`, they are moved automatically to a `tui.json` next to it on startup.
+
+### Leader key
+
+Most shortcuts start with the leader key, `Ctrl+X` by default. Press `Ctrl+X`, release it, then press the next key within 2 seconds. For example, `Ctrl+X N` starts a new session. See [Keybinds](/code/configuration/keybinds) to change it or any other shortcut.
+
+### Environment variables
+
+| Variable | Effect |
+|---|---|
+| `SYMBIOTIC_TUI_CONFIG` | Path to an additional `tui.json` |
+| `SYMBIOTIC_DISABLE_TERMINAL_TITLE` | Don't change the terminal title (by default it shows `SC \| <session title>`) |
+| `SYMBIOTIC_EXPERIMENTAL_DISABLE_COPY_ON_SELECT` | Disable copy on select (disabled by default on Windows) |
+| `VISUAL` / `EDITOR` | Editor used by `/editor` and `/export` |
+
+---
+
+## Mouse and clipboard
+
+The TUI supports the mouse: click messages, tool calls, buttons, list items, and sidebar sections, and scroll with the wheel.
+
+**Copy text:** select it with the mouse. It's copied to the clipboard when you release the button, and a **Copied to clipboard** notification appears. On Windows, copy on select is off by default: select the text, then press `Ctrl+C` or right-click to copy it.
+
+Clipboard copy works over SSH and in tmux or screen, through the OSC 52 terminal sequence (your terminal must support it).
+
+---
+
+## Exit
+
+- Press `Ctrl+C` on an empty prompt (`Ctrl+C` first clears the input if it isn't empty)
+- Press `Ctrl+D` on an empty prompt, or `Ctrl+X Q`
+- Type `/exit` (or `/quit`, `/q`), or type `exit`, `quit`, or `:q` and press `Enter`
+
+`Ctrl+Esc` suspends the TUI and returns you to the shell. Run `fg` to resume.
+
+---
+
+## Attach to a running server
+
+The TUI can connect to a Symbiotic Code server started with `symbiotic serve` or `symbiotic web`, for example on a remote machine or in a container:
+
+```bash
+symbiotic serve --port 4096
+symbiotic attach http://localhost:4096
+```
+
+`attach` accepts `--dir` (directory to work in on the server), `-c`, `-s`, `--fork`, and `-p, --password`. The password defaults to the `SYMBIOTIC_SERVER_PASSWORD` environment variable.
+
+---
+
+## Next steps
+
+<Columns cols={3}>
+  <Card title="Common commands" icon="terminal" href="/code/basics/common_commands">
+    All slash commands and CLI commands.
+  </Card>
+  <Card title="Keybinds" icon="keyboard" href="/code/configuration/keybinds">
+    Customize every shortcut.
+  </Card>
+  <Card title="Agents" icon="layers" href="/code/basics/agents">
+    Build, Plan, Ask, Debug, and subagents.
+  </Card>
+</Columns>

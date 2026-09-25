@@ -7,10 +7,67 @@ description: "Common issues and how to solve them"
 
 | Issue | Solution |
 | --- | --- |
-| `command not found: symbiotic` | Ensure `~/.local/bin` is in your PATH and restart your terminal |
+| `command not found: symbiotic` | Make sure the install location is in your PATH and restart your terminal: the npm global bin directory (`npm config get prefix`, then `bin/`) for npm installs, or `~/.symbiotic/bin` for the install script |
 | Authentication fails | Verify your token is valid in the portal and hasn't expired |
-| Permission denied | Run `chmod +x ~/.local/bin/symbiotic` |
+| Permission denied | Run `chmod +x ~/.symbiotic/bin/symbiotic` (install script), or see [Installation issues](#installation-issues) for npm installs |
+| `Configuration is invalid at ...` | A config file contains an unknown key or a wrong value type. The message lists the file and the offending key; see [Configuration issues](#configuration-issues) |
+| `Config file at ... is not valid JSON(C)` | Fix the syntax error at the reported line and column |
 | Can't go to the next line | Use one of these keybindings: `shift+return`, `ctrl+return`, `alt+return`, or `ctrl+j` |
+
+---
+
+## Logs
+
+Symbiotic Code writes log files to:
+
+- **macOS/Linux**: `~/.local/share/symbiotic/log/`
+- **Windows**: `%USERPROFILE%\.local\share\symbiotic\log`
+
+Log files are named with a timestamp (e.g., `2026-01-09T123456.log`) and only the most recent 10 are kept.
+
+To get more detail, raise the log level or print logs directly to your terminal:
+
+```bash
+symbiotic --log-level DEBUG          # DEBUG, INFO (default), WARN, ERROR
+symbiotic run "hello" --print-logs   # print logs to stderr instead of a file
+```
+
+---
+
+## Storage
+
+Symbiotic Code uses these directories (on Windows, under `%USERPROFILE%`):
+
+| Directory | Content |
+| --- | --- |
+| `~/.config/symbiotic/` | Global config (`symbiotic.json`, `tui.json`, `AGENTS.md`, agents, commands, plugins...) |
+| `~/.local/share/symbiotic/` | Data: `auth.json` (credentials), `mcp-auth.json`, `symbiotic.db` (sessions), `log/`, `snapshot/`, `bin/` (downloaded tools and language servers) |
+| `~/.cache/symbiotic/` | Cache: model catalog, installed npm packages for plugins |
+| `~/.local/state/symbiotic/` | TUI state: recent models, prompt history, key-value settings (such as the current security mode) |
+
+Run `symbiotic debug paths` to print the exact paths on your machine. These follow `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_CACHE_HOME`, and `XDG_STATE_HOME` if set.
+
+<Warning>
+`auth.json` contains your API keys and tokens. Don't share it or include it in bug reports.
+</Warning>
+
+---
+
+## Configuration issues
+
+- **See the final config:** `symbiotic debug config` prints the fully merged configuration for the current directory, so you can check which value actually wins. See [Configuration file](/code/basics/configuration_file#locations) for precedence.
+- **Unknown key errors:** the config schema is strict. Typos or keys from other tools cause `Configuration is invalid`. `theme` and `keybinds` belong in `tui.json`, not `symbiotic.json`.
+- **`bad file reference`:** a `{file:...}` substitution points to a file that doesn't exist. Relative paths are resolved from the directory of the config file.
+- **Settings not applied in a project:** a project `symbiotic.json`, a `.symbiotic/symbiotic.json`, `SYMBIOTIC_CONFIG_CONTENT`, or a managed config may override your global value.
+- **Isolate project config:** start with `SYMBIOTIC_DISABLE_PROJECT_CONFIG=1 symbiotic` to ignore all project-level config and rule files.
+- **Check agents and skills:** `symbiotic debug agent <name>` shows an agent's resolved configuration, and `symbiotic debug skill` lists the skills that were discovered.
+
+### Plugins causing crashes or hangs
+If Symbiotic Code crashes on startup or behaves strangely after adding plugins:
+
+1. Start once with `SYMBIOTIC_PURE=1 symbiotic` to skip external plugins listed in `plugin`.
+2. If that fixes it, remove entries from `plugin` in your config, or temporarily move plugin files out of `~/.config/symbiotic/plugins/` and `.symbiotic/plugins/`, then re-enable them one at a time.
+3. If a plugin install is stuck, quit Symbiotic Code and delete `~/.cache/symbiotic/` so it is rebuilt on the next start.
 
 ---
 
@@ -26,6 +83,8 @@ If the issue is related to PowerShell execution policy, run PowerShell as Admini
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
+On Windows, shell commands run in Git Bash when it is found next to your `git` installation, otherwise in `cmd.exe`. If Git Bash is installed in a non-standard location, set `SYMBIOTIC_GIT_BASH_PATH` to the full path of `bash.exe`.
+
 ### Permission denied (macOS/Linux)
 
 If you get a permission error when installing globally:
@@ -40,6 +99,9 @@ npm config set prefix "~/.npm-global"
 echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 ```
+
+### Automatic updates
+Symbiotic Code checks for updates when the TUI starts and upgrades itself using the same method it was installed with (npm, pnpm, yarn, bun, or the install script). If automatic updates fail (for example because the global npm directory is not writable), update manually with `npm install -g @symbioticsec/code`, or disable updates with `"autoupdate": false` in `~/.config/symbiotic/symbiotic.json` or `SYMBIOTIC_DISABLE_AUTOUPDATE=1`.
 
 ---
 
@@ -101,8 +163,11 @@ If you're behind a corporate firewall or proxy, you may need to allowlist the fo
 
 - `api.symbioticsec.ai:443`
 - `llm-proxy.symbioticsec.ai:443`
+- `app.symbioticsec.ai:443` (browser sign-in)
 
-**Proxy configuration:** If behind a corporate proxy, configure npm:
+Symbiotic Code also fetches the model catalog from `models.dev`. If it is blocked, set `SYMBIOTIC_DISABLE_MODELS_FETCH=1`. Language servers are downloaded on demand from GitHub and npm; set `SYMBIOTIC_DISABLE_LSP_DOWNLOAD=1` to turn this off.
+
+**Proxy configuration:** Symbiotic Code honors the standard `HTTPS_PROXY` / `HTTP_PROXY` environment variables. To install through a corporate proxy, also configure npm:
 
 ```bash
 npm config set proxy http://proxy.company.com:8080
@@ -146,6 +211,7 @@ npm install -g @symbioticsec/code
 **If issues persist**, save the health check output and contact support:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/SymbioticSec/mintlify-docs/refs/heads/main/assets/symbiotic-health-check.js -o symbiotic-health-check.js
 node symbiotic-health-check.js > healthcheck-results.txt 2>&1
 ```
 
@@ -157,6 +223,6 @@ node symbiotic-health-check.js > healthcheck-results.txt 2>&1
   </p>
 
   <p className="text-gray-600 dark:text-white/80 text-sm">
-    Contact us using the dedicated Slack channel or email us at <span>[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span> with your health check results, OS version, and network environment.
+    Contact us using the dedicated Slack channel or email us at <span>[support@symbioticsec.ai](mailto:support@symbioticsec.ai)</span> with your health check results, the latest log file from `~/.local/share/symbiotic/log/`, your OS version, and network environment.
   </p>
 </div>

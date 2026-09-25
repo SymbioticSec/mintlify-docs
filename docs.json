@@ -45,6 +45,7 @@
             "group": "Basics",
             "pages": [
               "code/basics/IDE_extension",
+              "code/basics/TUI",
               "code/basics/models_and_providers",
               "code/basics/agents",
               "code/basics/common_commands",
@@ -54,26 +55,31 @@
             ]
           },
           {
-            "group": "Tools",
+            "group": "Customize",
             "pages": [
-              "code/tools/custom_commands",
-              "code/tools/custom_agents",
-              "code/tools/custom_tools",
-              "code/tools/security_tools",
-              "code/tools/containers"
+              "code/customize/skills",
+              "code/customize/plugins",
+              "code/customize/custom_commands",
+              "code/customize/custom_agents",
+              "code/customize/custom_tools"
+            ]
+          },
+          {
+            "group": "Security",
+            "pages": [
+              "code/security/security_modes",
+              "code/security/security_tools",
+              "code/security/containers",
+              "code/security/tool_permissions"
             ]
           },
           {
             "group": "Configuration",
             "pages": [
-              "code/configuration/keybinds",
               "code/configuration/mcp",
-              "code/configuration/skills",
-              "code/configuration/plugins",
-              "code/configuration/tool_permissions",
-              "code/configuration/security_modes",
               "code/configuration/lsp",
-              "code/configuration/acp"
+              "code/configuration/acp",
+              "code/configuration/keybinds"
             ]
           }
         ]
@@ -200,5 +206,16 @@
       "linkedin": "https://linkedin.com/company/symbiotic-security",
       "github": "https://github.com/symbioticsec"
     }
-  }
+  },
+  "redirects": [
+    { "source": "/code/tools/custom_commands", "destination": "/code/customize/custom_commands" },
+    { "source": "/code/tools/custom_agents", "destination": "/code/customize/custom_agents" },
+    { "source": "/code/tools/custom_tools", "destination": "/code/customize/custom_tools" },
+    { "source": "/code/configuration/skills", "destination": "/code/customize/skills" },
+    { "source": "/code/configuration/plugins", "destination": "/code/customize/plugins" },
+    { "source": "/code/configuration/security_modes", "destination": "/code/security/security_modes" },
+    { "source": "/code/tools/security_tools", "destination": "/code/security/security_tools" },
+    { "source": "/code/configuration/tool_permissions", "destination": "/code/security/tool_permissions" },
+    { "source": "/code/tools/containers", "destination": "/code/security/containers" }
+  ]
 }

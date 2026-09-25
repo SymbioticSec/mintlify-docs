@@ -1,0 +1,70 @@
+---
+title: "Security tools"
+description: "Security tools for Symbiotic Code"
+---
+
+Symbiotic Code comes with a set of security tools that the agent uses automatically to produce secure code. How often they run depends on the [security mode](/code/security/security_modes): in **Permissive** mode they only run when you ask for them.
+
+The agent is only instructed to run these tools automatically when it can edit files (for example `build`, not `plan` or `ask`). You can still ask any agent that has access to them to run a scan.
+
+## Guardrails
+
+Guardrails are your organization's and repository's security requirements. When they are available, they are added to the agent's instructions so that all suggested implementations follow your company's standards and best practices:
+
+- **Organization guardrails** are defined in your Symbiotic Security organization and apply to all projects.
+- **Repository guardrails** are matched to the project using its git remote URL.
+
+Guardrails are loaded at startup and refreshed every 5 minutes.
+
+To generate guardrails for the current project, run `/generate-guardrails`. The Symbiotic CLI analyzes the repository and the result is saved for future sessions of this project. Guardrails generated locally take precedence over repository guardrails from your organization.
+
+
+## Security checkpoint
+
+The `securitycheck` tool is a prompt-based security review: the agent reviews the files it created or edited against each of the **OWASP Top 10 (2025)** categories and reports whether each check passed. If risks are identified, the agent adjusts the implementation.
+
+It runs after the security scan, so its review can use the scan findings. In **Balanced** mode, it only runs when the change touches a security-relevant area. In **Strict** mode, it runs on every feature implementation.
+
+
+## Security scan
+
+The `securityscan` tool runs a deterministic security scan with the Symbiotic CLI:
+
+- **Code scan (SAST)** for application source code
+- **Infrastructure scan** for infrastructure as code (Terraform, CloudFormation, Kubernetes, Dockerfiles, Ansible…)
+
+The agent runs one scan per type on the files it modified, then handles the findings according to the security mode. For example in **Balanced** mode, it fixes critical and high severity issues in code it just wrote, and asks you before fixing medium or low severity issues or issues in existing code. In **Strict** mode, it delegates low-confidence findings to the `triage` subagent to identify false positives.
+
+The scanner requires a Symbiotic API key: log in with the Symbiotic provider, or set the `SYMBIOTIC_API_KEY` environment variable. The Symbiotic CLI is downloaded and updated automatically.
+
+Files with no security-relevant code (documentation, images, fonts, archives, plain text…) are skipped.
+
+### Ignore a false positive
+
+To ignore a finding in future scans, add a comment on the line above it with the rule ID and a reason:
+
+```js
+// nosymbiotic SYM_JSTS_0102 -fp -- path is application-controlled, not user input
+await fs.rename(extractedBinaryPath, binaryPath)
+```
+
+The agent may add these comments itself when it is sure a finding is a false positive, so review them in your diffs.
+
+
+## Enforcement
+
+Outside of **Permissive** mode, if the agent modified files but didn't run `securityscan` and `securitycheck`, it is asked to run them before finishing. If it still ends its turn without a scan, a code scan runs automatically on the modified files and an error is shown if critical or high severity issues are found.
+
+
+## Commands
+
+| Command | Description |
+| --- | --- |
+| `/scan-codebase` | Scan the whole project (or a given path) with code and infrastructure scans, run an OWASP Top 10 checkpoint, and list the true positive findings |
+| `/owasp-security-review` | Run an OWASP Top 10 review of the project, a path, a commit, a branch or a PR in the background |
+| `/generate-guardrails` | Generate security guardrails for the project |
+
+
+## Permissions
+
+The security tools follow [tool permissions](/code/security/tool_permissions) with the `securityscan`, `securitycheck` and `generateguardrails` keys. They are allowed by default.

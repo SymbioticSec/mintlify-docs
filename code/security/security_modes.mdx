@@ -1,5 +1,5 @@
 ---
-title: "Security Modes"
+title: "Security modes"
 description: "Configure security modes for Symbiotic Code"
 ---
 
@@ -7,15 +7,30 @@ Symbiotic Code can automatically check the code it writes for security issues. S
 
 There are three modes: **Permissive**, **Balanced** (default), and **Strict**.
 
+Each mode changes the security workflow the agent is instructed to follow and whether Symbiotic Code enforces security tooling when files are modified. Security instructions are only added for agents that can edit files (for example, not for the read-only `ask` agent).
+
 ## How to switch modes
 
 | Method | How |
 |---|---|
-| CLI flag | `--security-mode permissive\|balanced\|strict` |
-| Keybind (TUI) | The configurable `security_mode_cycle` keybind (default: `Ctrl+S`) cycles through the three modes mid-session |
+| Keybind (TUI) | The configurable `security_mode_cycle` keybind (default: `Ctrl+S`) cycles through the three modes |
 | TUI command | Run `/security-mode` to choose a mode |
-| Agent config | Set `security_mode` on a specific agent definition to give it a fixed default |
-| Per-session | Mode can be changed at any point mid-conversation and applies from that turn forward |
+| CLI flag | `symbiotic run --security-mode permissive\|balanced\|strict` for non-interactive runs |
+| Agent config | Set `security_mode` on an [agent](/code/customize/custom_agents) definition to give it a fixed default |
+
+The current mode is shown below the prompt in the TUI and is remembered across restarts. You can change it at any point mid-conversation; it applies from the next message onward.
+
+When you switch to an agent that has `security_mode` set, the TUI uses that agent's mode. Switching back to an agent without one restores the mode you last selected.
+
+```json symbiotic.json
+{
+  "agent": {
+    "payments": {
+      "security_mode": "strict"
+    }
+  }
+}
+```
 
 If an invalid or missing value is ever encountered, the system falls back to **`balanced`**.
 
@@ -52,6 +67,7 @@ If an invalid or missing value is ever encountered, the system falls back to **`
 
 - Security design tasks are planned upfront, before any code is written.
 - Every file change, no matter how small, triggers a full security review.
+- Low-confidence scanner findings are sent to the `triage` subagent to filter out false positives.
 - Critical, high, and medium severity issues are fixed immediately and re-checked to confirm resolution.
 - Low-severity issues are flagged and you're asked whether you want them addressed.
 - Switching to Strict mode mid-session also applies the stricter workflow to security findings from earlier turns in the current session.
@@ -60,15 +76,27 @@ If an invalid or missing value is ever encountered, the system falls back to **`
 
 ---
 
+## Enforcement
+
+In Balanced and Strict modes, Symbiotic Code doesn't rely only on the agent following instructions:
+
+- **Forced security turn:** if the agent tries to finish after modifying files (other than documentation, images, and similar non-code files) without running both `securityscan` and `securitycheck`, it's given one extra turn with a reminder to run them.
+- **Automatic scan fallback:** if the agent still finishes without running `securityscan`, Symbiotic Code scans the modified files itself and shows an error if critical or high severity issues are found. This requires you to be logged in to Symbiotic.
+
+Neither happens in Permissive mode.
+
+---
+
 ## Quick comparison
 
 | Behavior | Permissive | Balanced (default) | Strict |
 |---|---|---|---|
-| Security-design planning tasks | Not added | Explicit todo tasks | Mandatory, before all implementation tasks |
+| Security-design planning tasks | Not added | Added before implementation tasks | Mandatory, before all implementation tasks |
 | `securitycheck` | Opt-in only | Only for security-relevant changes | Every feature implementation |
 | `securityscan` | Opt-in only | After feature implementations (skips docs/cosmetic) | After **every** file edit |
 | Guardrail compliance check | Skipped unless requested | Checked for security-relevant files | Always checked |
-| Auto-forced extra turn if unscanned edits exist | No | Yes | Yes |
+| Forced extra turn if security tools weren't run | No | Yes | Yes |
+| Automatic scan fallback | No | Yes | Yes |
 | Critical/high findings in new code | Reported only if you ask | Auto-fixed | Auto-fixed, blocks progress |
 | Medium findings in new code | Not surfaced automatically | Asks user | Auto-fixed |
 | Low findings in new code | Not surfaced automatically | Asks user | Asks user |

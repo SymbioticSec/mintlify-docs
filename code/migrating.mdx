@@ -1,9 +1,17 @@
 ---
 title: "Migrating to Symbiotic Code"
-description: "Move from Claude Code, Codex, or GitHub Copilot Chat to Symbiotic Code"
+description: "Move from any coding agent to Symbiotic Code"
 ---
 
-Already using Claude Code, Codex, GitHub Copilot Chat, or another terminal coding assistant? You can get started with Symbiotic Code in just a few minutes. Your existing instructions, commands, and integrations can come with you.
+Already using Claude Code, Codex, Cursor, GitHub Copilot, or OpenCode? You can get started with Symbiotic Code in a few minutes. Your existing instructions, skills, commands, agents, and MCP servers can come with you.
+
+| | Automatic migration | Manual migration |
+|---|---|---|
+| Instructions | `AGENTS.md`, `CLAUDE.md`, `~/.claude/CLAUDE.md` | `.cursorrules`, `.cursor/rules/`, `.github/copilot-instructions.md`, `GEMINI.md`, `~/.codex/AGENTS.md` |
+| Skills | `.claude/skills/`, `.agents/skills/` (project and global) | Any other location |
+| MCP servers | — | All sources |
+| Commands | — | All sources (mostly a copy) |
+| Agents | — | All sources (frontmatter must be converted) |
 
 ---
 
@@ -13,7 +21,7 @@ You can install Symbiotic Code in 2 ways: **VS Code extension** or **CLI**. You 
 
 ### VS Code extension
 
-[Download the `.vsix` extension](https://app.symbioticsec.ai/symbioticsec.vsix) and install it in VS Code or another VS Code-based IDE.
+[Download the `.vsix` extension](https://app.symbioticsec.ai/symbiotic-code.vsix) and install it in VS Code or another VS Code-based IDE.
 
 ### CLI
 
@@ -61,118 +69,346 @@ See [Models and providers](/code/basics/models_and_providers) for supported prov
 
 ## 4. Project memory / instructions
 
-Symbiotic Code automatically picks up instruction files from your existing tooling:
+### Loaded automatically
 
-| File | Tool it came from |
-|---|---|
-| `AGENTS.md` | Any coding agent |
-| `CLAUDE.md` | Claude Code |
-| `.cursorrules` | Cursor |
-| `.github/copilot-instructions.md` | GitHub Copilot |
+Symbiotic Code loads these instruction files without any configuration:
 
-For new projects, place instructions in `AGENTS.md` at your repo root, or in `.symbiotic/agents/build.md` for agent-specific prompts.
+| Scope | File | Tool it came from |
+|---|---|---|
+| Project | `AGENTS.md` | Codex, OpenCode, and most other agents |
+| Project | `CLAUDE.md` | Claude Code |
+| Global | `~/.config/symbiotic/AGENTS.md` | Symbiotic Code |
+| Global | `~/.claude/CLAUDE.md` | Claude Code |
+
+Project files are searched from your working directory up to the repository root.
+
+<Warning>
+Only **one** project file name is used. If a repo contains both `AGENTS.md` and `CLAUDE.md`, only `AGENTS.md` is loaded and `CLAUDE.md` is ignored. The same applies globally: if `~/.config/symbiotic/AGENTS.md` exists, `~/.claude/CLAUDE.md` is not loaded. Merge the files, or add the second one to `instructions` (see below).
+</Warning>
+
+### Add instructions from other tools
+
+Rule files from Cursor, GitHub Copilot, Gemini, Windsurf, and Codex's global `AGENTS.md` are **not** loaded automatically. Reference them with the `instructions` key in `symbiotic.json`. It accepts paths and glob patterns:
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "instructions": [
+    ".cursorrules",
+    ".cursor/rules/*.mdc",
+    ".github/copilot-instructions.md",
+    ".github/instructions/*.md",
+    ".windsurfrules",
+    "GEMINI.md"
+  ]
+}
+```
+
+For global rules, add them to `~/.config/symbiotic/symbiotic.json` instead, for example `"instructions": ["~/.codex/AGENTS.md"]`.
+
+<Tip>
+Paths that don't exist are skipped, so a single shared list works across repos that use different tools.
+</Tip>
 
 ---
 
-## 5. MCP servers
+## 5. Skills
 
-MCP servers are configured in `symbiotic.json` under `mcp`. For example, to use a local MCP server:
+Skills in these locations are picked up automatically, so no action is needed:
 
-```json
+- `.claude/skills/<name>/SKILL.md` and `~/.claude/skills/<name>/SKILL.md`
+- `.agents/skills/<name>/SKILL.md` and `~/.agents/skills/<name>/SKILL.md`
+
+For skills stored anywhere else, move them to `.symbiotic/skills/<name>/SKILL.md` (project) or `~/.config/symbiotic/skills/<name>/SKILL.md` (global), or point to their folder with `skills.paths`:
+
+```json symbiotic.json
 {
+  "skills": {
+    "paths": ["~/my-skills"]
+  }
+}
+```
+
+<Warning>
+A `SKILL.md` with missing `name` or `description` frontmatter is skipped. Check the [naming rules](/code/customize/skills#validate-names) if a skill does not show up.
+</Warning>
+
+To stop loading files from other tools:
+
+| Variable | Disables |
+|---|---|
+| `SYMBIOTIC_DISABLE_CLAUDE_CODE_PROMPT=1` | `~/.claude/CLAUDE.md` |
+| `SYMBIOTIC_DISABLE_EXTERNAL_SKILLS=1` | Skills in `.claude/skills/` and `.agents/skills/` |
+| `SYMBIOTIC_DISABLE_CLAUDE_CODE=1` | Both of the above |
+
+---
+
+## 6. MCP servers
+
+MCP servers are configured under the `mcp` key of `symbiotic.json`:
+
+- **Global** servers (available in every project): `~/.config/symbiotic/symbiotic.json`
+- **Project** servers (shared with your team): `symbiotic.json` at the repo root
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
-    "my-server": {
+    "my-local-server": {
       "type": "local",
-      "command": ["npx", "-y", "my-mcp-server"]
-    }
-  }
-}
-```
-
-Remote MCP servers with OAuth are also supported:
-
-```json
-{
-  "mcp": {
-    "remote-server": {
+      "command": ["npx", "-y", "my-mcp-server"],
+      "environment": {
+        "API_KEY": "{env:MY_API_KEY}"
+      }
+    },
+    "my-remote-server": {
       "type": "remote",
-      "url": "https://mcp.example.com"
+      "url": "https://mcp.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer {env:MY_TOKEN}"
+      }
     }
   }
 }
 ```
 
-See [MCP servers](/code/configuration/mcp) for details.
+You can also add servers interactively with `symbiotic mcp add`. See [MCP servers](/code/configuration/mcp) for all options.
+
+### Where your current config lives
+
+| Tool | Location | Key |
+|---|---|---|
+| Claude Code | `~/.claude.json` (user scope, and per project under `projects.<path>.mcpServers`), `.mcp.json` (project) | `mcpServers` |
+| Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS), `%APPDATA%\Claude\claude_desktop_config.json` (Windows) | `mcpServers` |
+| Codex | `~/.codex/config.toml`, `.codex/config.toml` (project) | `[mcp_servers.<name>]` tables (TOML) |
+| Cursor | `~/.cursor/mcp.json`, `.cursor/mcp.json` | `mcpServers` |
+| VS Code / GitHub Copilot | `.vscode/mcp.json`, or `mcp.json` in your VS Code user profile | `servers` |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` | `mcpServers` |
+| OpenCode | `opencode.json`, `~/.config/opencode/opencode.json` | `mcp` (same format, copy as-is) |
+
+### Field mapping
+
+| Other tools | Symbiotic Code |
+|---|---|
+| `command` + `args` | `"type": "local"`, `"command": [command, ...args]` |
+| `env` | `environment` |
+| `url`, or `type` set to `http`, `sse`, or `streamable-http` | `"type": "remote"`, `url` |
+| `headers` / Codex `http_headers` | `headers` |
+| Codex `bearer_token_env_var = "X"` | `"headers": { "Authorization": "Bearer {env:X}" }` |
+| `${VAR}` / `$VAR` in values | `{env:VAR}` |
+| `disabled: true` / Codex `enabled = false` | `"enabled": false` |
+| Timeouts in seconds (Codex `startup_timeout_sec`, `tool_timeout_sec`) | `timeout`, in **milliseconds** (default 30000) |
+| `cwd`, `alwaysAllow`, `autoApprove`, tool allow/deny lists, VS Code `${input:...}` | Not supported. Remove the field and set secrets through `{env:VAR}` |
+
+<Warning>
+MCP entries are validated strictly. A single unsupported field such as `args`, `env`, or `cwd` in **any** entry prevents the whole config file from loading. Copying a `mcpServers` block as-is will not work.
+</Warning>
+
+Local servers inherit your shell environment, so variables already exported in your shell don't need to be listed in `environment`.
+
+OAuth tokens are not transferred between tools. After migrating a remote server that uses OAuth, run:
+
+```bash
+symbiotic mcp auth <server-name>
+```
 
 ### Migrate your existing MCP config automatically
 
-Paste this prompt into your coding agent to scan your machine and migrate all existing MCP server configs to Symbiotic Code:
+Paste this prompt into Symbiotic Code (or your current coding agent) to find and convert your existing MCP servers:
 
 <Prompt description="Migrate MCP server configs from other tools to Symbiotic Code">
 I want to migrate my MCP server configurations to Symbiotic Code.
 
-Please do the following:
+1. Find all existing MCP configurations. Check these locations:
+   - Claude Code: ~/.claude.json (top-level "mcpServers", and "projects.\<path>.mcpServers" for the current project), and .mcp.json in the current project
+   - Claude Desktop: ~/Library/Application Support/Claude/claude_desktop_config.json (macOS) or %APPDATA%\Claude\claude_desktop_config.json (Windows), key "mcpServers"
+   - Codex: ~/.codex/config.toml and .codex/config.toml, TOML tables [mcp_servers.\<name>]
+   - Cursor: ~/.cursor/mcp.json and .cursor/mcp.json, key "mcpServers"
+   - VS Code / GitHub Copilot: .vscode/mcp.json and the user-profile mcp.json, key "servers"
+   - Windsurf: ~/.codeium/windsurf/mcp_config.json, key "mcpServers"
+   - OpenCode: opencode.json / opencode.jsonc in the project and ~/.config/opencode/, key "mcp"
 
-1. Find all existing MCP configurations on this machine. Check the standard locations:
-   - Claude Code: ~/.claude.json (mcpServers key)
-   - Claude Desktop: ~/Library/Application Support/Claude/claude_desktop_config.json (macOS) or %APPDATA%\Claude\claude_desktop_config.json (Windows)
-   - Codex: ~/.codex/config.json (mcpServers key)
-   - GitHub Copilot (VS Code): .vscode/mcp.json in any workspace, or VS Code user settings
-   - Cursor: ~/.cursor/mcp.json or .cursor/mcp.json in any workspace
-   - Windsurf: ~/.codeium/windsurf/mcp_config.json
+2. Show me every server you found, grouped by source, before changing anything.
 
-2. Show me every MCP server entry you find, grouped by source.
+3. Convert each server to the Symbiotic Code format using exactly these rules:
+   - If it has a "command": use "type": "local" and "command": [command, ...args] as a single array.
+   - If it has a "url" (or type http, sse, or streamable-http): use "type": "remote" and "url".
+   - Rename "env" to "environment". Keep "headers" (Codex "http_headers" becomes "headers").
+   - Codex "bearer_token_env_var = X" becomes "headers": \{ "Authorization": "Bearer \{env:X\}" \}.
+   - Replace $\{VAR\} or $VAR references with \{env:VAR\}. Never write secret values in plain text: if a value is a literal secret, replace it with \{env:NAME\} and tell me which variable to export.
+   - "disabled": true becomes "enabled": false.
+   - Timeouts go in "timeout" in milliseconds.
+   - The only allowed fields are: type, command, environment, enabled, timeout (local) and type, url, headers, oauth, enabled, timeout (remote). Drop every other field (cwd, args, env, alwaysAllow, autoApprove, tool lists, ...) and list what you dropped.
+   - OpenCode "mcp" entries are already in the right format: copy them unchanged.
 
-3. For each server, write the equivalent entry in Symbiotic Code's MCP config format and add it to symbiotic.json under the "mcp" key (create the file if it doesn't exist, merge if it does). Each entry should have a "type" field set to "local" and a "command" array with the command and its arguments.
+4. Write user-level servers to ~/.config/symbiotic/symbiotic.json and project-level servers (.mcp.json, .cursor/mcp.json, .vscode/mcp.json, .codex/config.toml, project opencode.json) to symbiotic.json in the project root, under the "mcp" key. Create the file with "$schema": "https://config.symbioticsec.ai/config.json" if it doesn't exist, and merge if it does. Never overwrite an existing entry with the same name.
 
-4. Do not overwrite any existing entries in symbiotic.json — only add new ones.
+5. Validate that each resulting file is valid JSON.
 
-5. Report what was migrated, what was skipped (e.g. duplicates), and flag any entries that use environment variables or secrets so I can verify them manually.
+6. Report what was migrated, what was skipped and why, which fields were dropped, which environment variables I need to set, and which remote servers need "symbiotic mcp auth \<name>".
 </Prompt>
-
 
 ---
 
-## 6. Custom commands and agents
+## 7. Custom commands
 
-Move your existing workflows into Symbiotic Code without changing their format:
+Symbiotic Code commands are Markdown files with optional YAML frontmatter, very close to Claude Code and Cursor commands:
 
-- **Commands:** Copy Claude Code commands from `.claude/commands/` to `.symbiotic/commands/`. See [Custom commands](/code/tools/custom_commands).
-- **Agents:** Store project-specific agents in `.symbiotic/agents/`. See [Custom agents](/code/tools/custom_agents).
+| Scope | Location |
+|---|---|
+| Project | `.symbiotic/commands/` |
+| Global | `~/.config/symbiotic/commands/` |
 
-For commands or agents shared across projects, use `~/.config/symbiotic/commands/` or `~/.config/symbiotic/agents/`.
+| Tool | Where your commands live | Notes |
+|---|---|---|
+| Claude Code | `.claude/commands/`, `~/.claude/commands/` | Copy as-is, then check the frontmatter below |
+| Cursor | `.cursor/commands/` | Plain Markdown, copy as-is |
+| Codex | `~/.codex/prompts/` | Copy as-is. Named placeholders like `$FILE` are not supported; use `$1`, `$2`, or `$ARGUMENTS` |
+| GitHub Copilot | `.github/prompts/*.prompt.md` | Rename to `<name>.md` and remove the `mode` and `tools` fields |
+| OpenCode | `.opencode/command/`, `~/.config/opencode/command/` | Copy as-is |
+
+These placeholders work the same way as in Claude Code: `$ARGUMENTS`, `$1`, `$2`, ..., `` !`shell command` `` and `@path/to/file`.
+
+**Frontmatter differences:**
+
+| Field | Behavior in Symbiotic Code |
+|---|---|
+| `description`, `agent`, `subtask` | Supported |
+| `model` | Must include the provider, for example `anthropic/claude-sonnet-4-5`. A bare model name like `claude-3-5-haiku-20241022` fails when the command runs. Remove the field to use the current model. |
+| `allowed-tools`, `argument-hint` | Ignored. Use [tool permissions](/code/security/tool_permissions) instead of `allowed-tools`. |
+
+<Info>
+Subfolders become part of the command name: `.symbiotic/commands/frontend/component.md` is invoked as `/frontend/component`.
+</Info>
+
+See [Custom commands](/code/customize/custom_commands) for details.
+
+---
+
+## 8. Custom agents
+
+Agents are also Markdown files with YAML frontmatter, but **the frontmatter is not compatible with Claude Code** and must be converted.
+
+| Scope | Location |
+|---|---|
+| Project | `.symbiotic/agents/` |
+| Global | `~/.config/symbiotic/agents/` |
+
+| Tool | Where your agents live |
+|---|---|
+| Claude Code | `.claude/agents/`, `~/.claude/agents/` |
+| GitHub Copilot | `.github/agents/*.agent.md`, or `.github/chatmodes/*.chatmode.md` (legacy) |
+| OpenCode | `.opencode/agent/`, `~/.config/opencode/agent/` (copy as-is) |
+
+<Warning>
+Copying a Claude Code agent file without converting it prevents Symbiotic Code from loading its configuration: `tools: Read, Grep` and `color: blue` are rejected.
+</Warning>
+
+**Frontmatter mapping:**
+
+| Claude Code | Symbiotic Code |
+|---|---|
+| `name` | Remove it. The agent name is the file name. |
+| `description` | `description` (unchanged) |
+| `tools: Read, Grep, Glob` (comma-separated list) | `permission` map, see the example below |
+| `model: inherit` | Remove the field |
+| `model: sonnet` / `opus` / `haiku` | A full `provider/model` id, for example `anthropic/claude-sonnet-4-5` |
+| `color: blue` | A hex color (`"#3B82F6"`) or a theme color: `primary`, `secondary`, `accent`, `success`, `warning`, `error`, `info` |
+| — | `mode: subagent` to keep the Claude Code behavior (invoked by other agents or with `@name`). Without it, the agent is also available as a primary agent. |
+
+**Example:** this Claude Code agent
+
+```markdown .claude/agents/code-reviewer.md
+---
+name: code-reviewer
+description: Reviews code for quality and security issues
+tools: Read, Grep, Glob
+model: sonnet
+color: blue
+---
+You are a senior code reviewer...
+```
+
+becomes:
+
+```markdown .symbiotic/agents/code-reviewer.md
+---
+description: Reviews code for quality and security issues
+mode: subagent
+model: anthropic/claude-sonnet-4-5
+color: "#3B82F6"
+permission:
+  edit: deny
+  bash: deny
+  webfetch: deny
+---
+You are a senior code reviewer...
+```
+
+Tools that aren't listed are allowed or ask for confirmation according to your [tool permissions](/code/security/tool_permissions), so deny explicitly the ones the agent should not use. Claude Code tools map to these permission keys: `Read` → `read`, `Edit`/`Write`/`MultiEdit` → `edit`, `Bash` → `bash`, `Grep` → `grep`, `Glob` → `glob`, `LS` → `list`, `WebFetch` → `webfetch`, `WebSearch` → `websearch`, `Task` → `task`, `TodoWrite` → `todowrite`.
+
+See [Custom agents](/code/customize/custom_agents) for all options.
 
 ### Migrate your existing commands and agents automatically
 
 <Prompt description="Migrate custom commands and agents from other tools to Symbiotic Code">
 I want to migrate my custom commands and agents to Symbiotic Code.
 
-Please do the following:
+1. Find existing commands and agents in these locations only:
+   - Claude Code commands: .claude/commands/ and ~/.claude/commands/
+   - Claude Code agents: .claude/agents/ and ~/.claude/agents/
+   - Cursor commands: .cursor/commands/
+   - Codex prompts: ~/.codex/prompts/
+   - GitHub Copilot prompts: .github/prompts/*.prompt.md
+   - GitHub Copilot agents: .github/agents/*.agent.md and .github/chatmodes/*.chatmode.md
+   - OpenCode: .opencode/command/, .opencode/agent/, ~/.config/opencode/command/, ~/.config/opencode/agent/
 
-1. Find all existing custom commands and agents on this machine. Check the standard locations:
-   - Claude Code commands: .claude/commands/ in the current project, or ~/.claude/commands/ globally
-   - Claude Code agents: .claude/agents/ in the current project, or ~/.claude/agents/ globally
-   - Cursor rules: .cursorrules or .cursor/rules/ in the current project
-   - Codex agents: .codex/agents/ in the current project
-   - Any other .md or .txt files used as system prompts or instructions for coding agents
+2. Show me every file you found, grouped by source tool, before changing anything.
 
-2. Show me every file you find, grouped by source tool.
+3. Copy commands to .symbiotic/commands/ (project sources) or ~/.config/symbiotic/commands/ (global sources), keeping subfolders and file names. Copilot "\<name>.prompt.md" files become "\<name>.md". In the frontmatter:
+   - Keep description, agent, and subtask.
+   - If model has no provider prefix (no "/"), remove it.
+   - Remove allowed-tools, argument-hint, mode, and tools.
+   - Keep the body unchanged ($ARGUMENTS, $1, !`cmd` and @file work as-is).
 
-3. Copy each file to the equivalent Symbiotic Code location:
-   - Project-level commands go to .symbiotic/commands/
-   - Project-level agents go to .symbiotic/agents/
-   - Global commands go to ~/.config/symbiotic/commands/
-   - Global agents go to ~/.config/symbiotic/agents/
-   Keep the original filenames. Create directories if they do not exist.
+4. Copy agents to .symbiotic/agents/ (project sources) or ~/.config/symbiotic/agents/ (global sources). Copilot "\<name>.agent.md" / "\<name>.chatmode.md" files become "\<name>.md". Convert the frontmatter:
+   - Remove name (the file name is the agent name).
+   - Keep description.
+   - Add "mode: subagent" for Claude Code agents.
+   - model: remove "inherit"; replace sonnet/opus/haiku with a full "anthropic/\<model-id>"; remove any other model without a "/" prefix.
+   - color: convert color names to a quoted hex value like "#3B82F6".
+   - tools (comma-separated list or array): replace with a "permission" map that sets "deny" for every tool that was NOT listed, using the keys read, edit, bash, grep, glob, list, webfetch, websearch, task, todowrite (Edit/Write/MultiEdit map to edit, LS maps to list). If tools was not set, add no permission map.
+   - Remove any other field that isn't one of: description, mode, model, color, temperature, top_p, steps, hidden, permission.
+   - OpenCode agents are already in the right format: copy them unchanged.
 
-4. Do not overwrite any existing files in the Symbiotic Code directories — only add new ones.
+5. Never overwrite an existing file in the Symbiotic Code directories.
 
-5. Report what was migrated, what was skipped (e.g. duplicates), and flag any files that reference tool-specific syntax or commands that may need manual review.
+6. Report what was migrated, what was skipped, every frontmatter field you changed or removed, and any body content that references tool-specific features that may need manual review.
 </Prompt>
 
 ---
 
-## 7. Security modes
+## 9. Coming from OpenCode
+
+Symbiotic Code uses the same configuration format as OpenCode, but it does not read OpenCode's files. To migrate:
+
+1. Rename `opencode.json` / `opencode.jsonc` to `symbiotic.json` / `symbiotic.jsonc`, and `~/.config/opencode/` to `~/.config/symbiotic/`.
+2. Rename `.opencode/` to `.symbiotic/`.
+3. Replace the `$schema` value with `https://config.symbioticsec.ai/config.json`.
+4. Move skills from `.opencode/skills/` to `.symbiotic/skills/`.
+
+---
+
+## 10. What is not migrated
+
+- **Claude Code hooks:** use [plugins](/code/customize/plugins) instead.
+- **Permission rules in Claude Code `settings.json`** (for example `Bash(git diff:*)`): rewrite them as [tool permissions](/code/security/tool_permissions), for example `"bash": { "git diff *": "allow" }`.
+- **OAuth tokens and API keys:** reconnect with `/connect` for providers and `symbiotic mcp auth <name>` for MCP servers.
+- **Session history.**
+
+---
+
+## 11. Security modes
 
 Symbiotic Code adds a security mode that Claude Code and OpenCode don't have. Toggle it with `Ctrl+S` while running, or set a default per-agent in config:
 
@@ -188,4 +424,4 @@ Symbiotic Code adds a security mode that Claude Code and OpenCode don't have. To
 
 Options: `permissive` (fastest, fewest confirmations), `balanced` (default), `strict` (most confirmations).
 
-See [Security Modes](/code/configuration/security_modes) for details.
+See [Security Modes](/code/security/security_modes) for details.

@@ -3,7 +3,21 @@ title: "Configuration file"
 description: "Configuration file for Symbiotic Code"
 ---
 
-You can configure Symbiotic Code using a JSON  or JSONC config file.
+You can configure Symbiotic Code using a JSON or JSONC (JSON with comments and trailing commas) config file named `symbiotic.json` or `symbiotic.jsonc`.
+
+```jsonc symbiotic.jsonc
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "model": "anthropic/claude-sonnet-4-5",
+  "autoupdate": true,
+}
+```
+
+The `$schema` field enables validation and autocompletion in your editor. If a config file doesn't have one, Symbiotic Code adds it automatically the first time it loads the file.
+
+<Warning>
+The config is validated strictly: **unknown top-level keys are rejected** and Symbiotic Code will report `Configuration is invalid at <path>` with the offending key. Check spelling if you see this error.
+</Warning>
 
 ## Locations
 
@@ -13,16 +27,43 @@ You can place your config in a couple of different locations and they have a dif
 Configuration files are **merged together**, not replaced.
 </Warning> 
 
-- Remote config (from `.well-known/symbiotic`) - organizational defaults
-- Global config (`~/.config/symbiotic/symbiotic.json`) - user preferences
-- Custom config (`SYMBIOTIC_CONFIG` env var) - custom overrides
-- Project config (`symbiotic.json` in project) - project-specific settings
-- `.symbiotic` directories - agents, commands, plugins
-- Inline config (`SYMBIOTIC_CONFIG_CONTENT` env var) - runtime overrides
-- Managed config files (`/Library/Application Support/symbiotic/symbiotic.json` on macOS) - admin-controlled
-- Managed config files - highest priority and not user-overridable
+Sources are loaded in this order, each one overriding the previous ones (later wins):
 
-This means **project configs can override global defaults**, and **global configs can override remote organizational defaults**. Account-level organization configuration is also loaded for the active account, and managed settings override everything.
+1. **Remote config** (from `<url>/.well-known/symbiotic`) - organizational defaults, loaded for each URL you logged in to with `symbiotic providers login <url>`
+2. **Global config** (`~/.config/symbiotic/symbiotic.json` or `symbiotic.jsonc`) - user preferences
+3. **Custom config** (file path in the `SYMBIOTIC_CONFIG` env var) - custom overrides
+4. **Project config** (`symbiotic.json` / `symbiotic.jsonc`, searched from the current directory up to the Git root) - project-specific settings
+5. **`.symbiotic` directories** - `.symbiotic/symbiotic.json(c)` plus agents, commands, plugins, tools, and skills (see below)
+6. **Inline config** (JSON content in the `SYMBIOTIC_CONFIG_CONTENT` env var) - runtime overrides
+7. **Account organization config** - fetched from Symbiotic for your active account's organization
+8. **Managed config files** (see [Managed settings](#managed-settings)) - admin-controlled, highest priority
+
+This means **project configs can override global defaults**, and **global configs can override remote organizational defaults**. Objects are deep-merged; for the `instructions` and `plugin` arrays, entries from all sources are **combined** (with duplicates removed) instead of replaced.
+
+<Note>
+Set `SYMBIOTIC_DISABLE_PROJECT_CONFIG=1` to ignore project config files, project `.symbiotic/` directories, and project rule files.
+</Note>
+
+### .symbiotic directories
+Besides JSON files, Symbiotic Code loads additional configuration from these directories:
+
+- `~/.config/symbiotic/`
+- `.symbiotic/` in the current directory and each parent directory up to the Git root
+- `~/.symbiotic/`
+- The directory set in `SYMBIOTIC_CONFIG_DIR`
+
+Each directory can contain:
+
+| Path | Content |
+| --- | --- |
+| `symbiotic.json` / `symbiotic.jsonc` | Config file (not read from `~/.config/symbiotic/` a second time) |
+| `agents/*.md` | [Custom agents](/code/customize/custom_agents) |
+| `commands/*.md` | [Custom commands](/code/customize/custom_commands) |
+| `skills/*/SKILL.md` | [Skills](/code/customize/skills) |
+| `plugins/*.{ts,js}` | [Plugins](/code/customize/plugins) |
+| `tools/*.{ts,js}` | [Custom tools](/code/customize/custom_tools) |
+
+Singular folder names (`agent/`, `command/`, `skill/`, `plugin/`, `tool/`) are also accepted.
 
 ### Managed settings
 Organizations can **enforce configuration that users cannot override**. Managed settings are loaded at the highest priority tier.
@@ -36,17 +77,102 @@ Drop a `symbiotic.json` or `symbiotic.jsonc` file in the system managed config d
 | Windows | `%ProgramData%\symbiotic` |
 
 <Info>
-These directories require admin/root access to write, so users cannot modify them.
+These directories require admin/root access to write, so users cannot modify them. Only the config file is read from the managed directory; agents, commands, skills, and plugins placed there are ignored.
 </Info>
 
-## Configuration 
+<Note>
+A few environment variables are applied on top of the merged config, after managed settings: `SYMBIOTIC_PERMISSION` (merged into `permission`), `SYMBIOTIC_DISABLE_AUTOCOMPACT` and `SYMBIOTIC_DISABLE_PRUNE`. See [Environment variables](#environment-variables).
+</Note>
 
-### Tools
-You can manage the tools an LLM can use through the legacy `tools` option, but new configurations should use `permission`.
+### Checking the resolved config
+To see the final merged configuration for the current directory, run:
+
+```bash
+symbiotic debug config
+```
+
+## Variables
+You can reference environment variables and files inside any config file.
+
+### Env vars
+Use `{env:VARIABLE_NAME}` to substitute an environment variable. If the variable is not set, it is replaced with an empty string.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "provider": {
+    "anthropic": {
+      "options": {
+        "apiKey": "{env:ANTHROPIC_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+### Files
+Use `{file:path/to/file}` to substitute the contents of a file (leading and trailing whitespace is trimmed). Paths can be absolute, start with `~/`, or be relative to the directory of the config file.
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "provider": {
+    "openai": {
+      "options": {
+        "apiKey": "{file:~/.secrets/openai-key}"
+      }
+    }
+  }
+}
+```
+
+If the referenced file doesn't exist, loading the config fails with a `bad file reference` error. References on lines commented out with `//` are ignored.
+
+## Configuration 
+
+### Top-level keys
+
+| Key | Description |
+| --- | --- |
+| `$schema` | JSON schema URL for editor validation |
+| `model` | Default model, as `provider/model` |
+| `small_model` | Model for lightweight tasks (titles, commit messages, prompt enhancement) |
+| `default_agent` | Primary agent used when none is specified |
+| `provider` | Provider options and model overrides |
+| `enabled_providers` / `disabled_providers` | Provider allowlist / denylist |
+| `agent` | Agent configuration ([Custom agents](/code/customize/custom_agents)) |
+| `command` | Custom commands ([Custom commands](/code/customize/custom_commands)) |
+| `permission` | Tool permissions ([Tool permissions](/code/security/tool_permissions)) |
+| `tools` | Legacy tool toggles (use `permission` instead) |
+| `mcp` | MCP servers ([MCP](/code/configuration/mcp)) |
+| `instructions` | Additional instruction files, globs, or URLs ([Rules](/code/basics/rules)) |
+| `skills` | Extra skill locations: `paths` (folders) and `urls` ([Skills](/code/customize/skills)) |
+| `plugin` | npm or local plugins ([Plugins](/code/customize/plugins)) |
+| `lsp` | Language servers, or `false` to disable all ([LSP](/code/configuration/lsp)) |
+| `formatter` | Code formatters, or `false` to disable all |
+| `compaction` | Context compaction behavior |
+| `watcher` | File watcher ignore patterns |
+| `snapshot` | Set to `false` to stop recording file snapshots (undo/revert won't restore file changes). Default `true` |
+| `autoupdate` | `true`, `false`, or `"notify"` |
+| `username` | Name displayed in conversations instead of your system username |
+| `subagent_depth` | Maximum nesting depth for subagents launched via the task tool. Default `1` |
+| `attachment` | Image attachment limits: `image.auto_resize` (default `true`), `image.max_width` / `image.max_height` (default `2000`), `image.max_base64_bytes` (default `5242880`) |
+| `server` | `port`, `hostname`, `mdns`, `mdnsDomain`, `cors` for `symbiotic serve` / `symbiotic web` |
+| `commit_message` | `prompt`: custom prompt for commit message generation |
+| `enterprise` | `url`: enterprise server URL used for session sharing |
+| `experimental` | Experimental options (see below) |
+| `logLevel` | Accepted but currently not applied; use the `--log-level` CLI flag instead |
+
+<Note>
+TUI settings such as `theme` and `keybinds` live in a separate `tui.json` file (see [Keybinds](/code/configuration/keybinds)). If these keys are found in `symbiotic.json`, they are automatically moved to a `tui.json` next to it (a `.tui-migration.bak` backup is kept). The deprecated `mode` and `layout` keys are still accepted; use `agent` instead of `mode`.
+</Note>
+
+### Tools
+You can manage the tools an LLM can use through the legacy `tools` option, but new configurations should use `permission`. `true` maps to `allow` and `false` to `deny`; `write`, `patch`, and `multiedit` map to the `edit` permission.
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "tools": {
     "write": false,
     "bash": false
@@ -59,21 +185,21 @@ You can configure the providers and models you want to use in your Symbiotic Cod
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "provider": {},
   "model": "anthropic/claude-sonnet-4-5",
   "small_model": "anthropic/claude-haiku-4-5"
 }
 ```
 
-The `small_model` option configures a separate model for lightweight tasks like title generation. **By default, Symbiotic Code tries to use a cheaper model if one is available from your provider**, otherwise it falls back to your main model.
+The `small_model` option configures a separate model for lightweight tasks like title generation. **By default, Symbiotic Code tries to use a cheaper model if one is available from your provider** (for example a Haiku, Flash, or nano model), otherwise it falls back to your main model.
 
 ### Provider options
-Provider options can include `timeout`, `chunkTimeout`, and `setCacheKey`:
+Provider options can include `apiKey`, `baseURL`, `timeout`, `chunkTimeout`, and `setCacheKey`:
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "provider": {
     "anthropic": {
       "options": {
@@ -89,9 +215,13 @@ Provider options can include `timeout`, `chunkTimeout`, and `setCacheKey`:
 
 | Option | Description |
 |--------|-------------|
-| `timeout` | Request timeout in milliseconds (default: 300000). Set to false to disable. |
-| `chunkTimeout` | Timeout in milliseconds between streamed response chunks. If no chunk arrives in time, the request is aborted. |
-| `setCacheKey` | Ensure a cache key is always set for designated provider. |
+| `apiKey` | API key for the provider. Use `{env:...}` or `{file:...}` rather than a literal secret. |
+| `baseURL` | Custom API endpoint URL |
+| `timeout` | Total request timeout in milliseconds. No timeout is applied unless set; `false` disables it explicitly. |
+| `chunkTimeout` | Timeout in milliseconds between streamed response chunks (default: 300000). If no chunk arrives in time, the request is aborted. |
+| `setCacheKey` | Always send a prompt cache key for this provider (default: `false`). |
+
+You can also restrict the models a provider exposes with `whitelist` / `blacklist` (arrays of model IDs), and override or add models under `models`.
 
 ### Provider-specific options
 Some providers support additional configuration options beyond the generic timeout and apiKey settings.
@@ -101,7 +231,7 @@ Amazon Bedrock supports AWS-specific configuration:
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "provider": {
     "amazon-bedrock": {
       "options": {
@@ -116,9 +246,9 @@ Amazon Bedrock supports AWS-specific configuration:
 
 | Option | Description | Notes |
 |--------|-------------|----------------|
-| `region` | AWS region for Bedrock | Defaults to AWS_REGION env var or us-east-1 |
-| `profile` | AWS named profile from `~/.aws/credentials` | Defaults to AWS_PROFILE env var |
-| `endpoint` | Custom endpoint URL for VPC endpoints | This is an alias for the generic baseURL option using AWS-specific terminology. If both are specified, endpoint takes precedence.
+| `region` | AWS region for Bedrock | Defaults to the `AWS_REGION` env var, then `us-east-1` |
+| `profile` | AWS named profile from `~/.aws/credentials` | Defaults to the `AWS_PROFILE` env var |
+| `endpoint` | Custom endpoint URL for VPC endpoints | This is an alias for the generic `baseURL` option using AWS-specific terminology. If both are specified, `endpoint` takes precedence. |
 
 
 Bearer tokens (`AWS_BEARER_TOKEN_BEDROCK` or `/connect`) take precedence over profile-based authentication.
@@ -127,45 +257,44 @@ Bearer tokens (`AWS_BEARER_TOKEN_BEDROCK` or `/connect`) take precedence over pr
 ### Agents
 You can configure specialized agents for specific tasks through the agent option.
 
-```json symbiotic.json
+```jsonc symbiotic.jsonc
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "agent": {
     "code-reviewer": {
       "description": "Reviews code for best practices and potential issues",
       "model": "anthropic/claude-sonnet-4-5",
       "prompt": "You are a code reviewer. Focus on security, performance, and maintainability.",
-      "tools": {
+      "permission": {
         // Disable file modification tools for review-only agent
-        "write": false,
-        "edit": false,
+        "edit": "deny",
       },
     },
   },
 }
 ```
 
-You can also define agents using markdown files in `~/.config/symbiotic/agents/` or `.symbiotic/agents/`. 
+You can also define agents using markdown files in `~/.config/symbiotic/agents/` or `.symbiotic/agents/`. See [Custom agents](/code/customize/custom_agents).
 
 ### Default agent
 You can set the default agent using the `default_agent` option. This determines which agent is used when none is explicitly specified.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "default_agent": "plan"
 }
 ```
 
-The default agent must be a **primary agent** (not a subagent). This can be a built-in agent like "build" or "plan", or a custom agent you’ve defined. If the specified agent doesn’t exist or is a subagent, **Symbiotic Code will fall back to "build" with a warning.**
+The default agent must be a **primary agent** (not a subagent or hidden agent). This can be a built-in agent like `build` or `plan`, or a custom agent you’ve defined. When `default_agent` is not set, `build` is used. **If the specified agent doesn’t exist, is a subagent, or is hidden, there is no silent fallback**: the TUI just selects the first primary agent, and requests that don't name an agent (for example `symbiotic run` without `--agent`, or ACP clients) fail with an error such as `default agent "x" not found`. Fix or remove the setting.
 
-This setting applies across all interfaces: TUI, CLI (Symbiotic Code run).
+This setting applies across interfaces: TUI, CLI (`symbiotic run`), and ACP clients.
 
 
 ### Commands
 You can configure custom commands for repetitive tasks through the `command` option.
 
-```json symbiotic.json
+```jsonc symbiotic.jsonc
 {
   "$schema": "https://config.symbioticsec.ai/config.json",
   "command": {
@@ -182,28 +311,32 @@ You can configure custom commands for repetitive tasks through the `command` opt
   },
 }
 ```
-You can also define commands using markdown files in `~/.config/symbiotic/commands/` or `.symbiotic/commands/`.
+You can also define commands using markdown files in `~/.config/symbiotic/commands/` or `.symbiotic/commands/`. See [Custom commands](/code/customize/custom_commands).
 
 
 
 ### Auto-update
-Symbiotic Code will automatically download any new updates when it starts up. You can disable this with the `autoupdate` option.
+Symbiotic Code checks for a new version when the TUI starts and automatically installs it. You can disable this with the `autoupdate` option.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "autoupdate": false
 }
 ```
 
-If you don’t want updates but want to be notified when a new version is available, set autoupdate to `notify`. Notice that this only works if it was not installed using a package manager such as Homebrew.
+If you don’t want updates but want to be notified when a new version is available, set `autoupdate` to `"notify"`.
+
+<Note>
+`autoupdate` is only read from your **global** config (`~/.config/symbiotic/`); setting it in a project config has no effect. You can also disable updates with `SYMBIOTIC_DISABLE_AUTOUPDATE=1`. Automatic installation works for the install script and for global npm, pnpm, yarn, and bun installs.
+</Note>
 
 ### Formatters
-You can configure code formatters through the formatter option.
+You can configure code formatters through the formatter option. Use `$FILE` as a placeholder for the file path. Set `"formatter": false` to disable all formatters.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "formatter": {
     "prettier": {
       "disabled": true
@@ -221,13 +354,13 @@ You can configure code formatters through the formatter option.
 
 
 ### Permissions
-The base agent starts from permissive defaults, with safety exceptions for external directories, environment-file reads, and selected control actions. You can change this using the `permission` option.
+By default, all tools are allowed except for a few safety exceptions that ask for confirmation: accessing files outside the project (`external_directory`), reading `.env` files (`*.env`, `*.env.*`; `*.env.example` is allowed), and repeated identical tool calls (`doom_loop`). You can change this using the `permission` option.
 
 For example, to ensure that the edit and bash tools require user approval:
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "permission": {
     "edit": "ask",
     "bash": "ask"
@@ -235,12 +368,14 @@ For example, to ensure that the edit and bash tools require user approval:
 }
 ```
 
+See [Tool permissions](/code/security/tool_permissions) for pattern-based rules.
+
 ### Compaction
 You can control context compaction behavior through the `compaction` option.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "compaction": {
     "auto": true,
     "prune": true,
@@ -251,16 +386,20 @@ You can control context compaction behavior through the `compaction` option.
 
 | Option | Description | Default |
 | --- | --- | --- |
-| `auto` | Automatically compact the session when context is full | true |
-| `prune` | Remove old tool outputs to save tokens | true |
-| `reserved` | Token buffer for compaction. Leaves enough window to avoid overflow during compaction |  |
+| `auto` | Automatically compact the session when context is full | `true` |
+| `prune` | Remove old tool outputs to save tokens | `true` |
+| `reserved` | Token buffer for compaction. Leaves enough window to avoid overflow during compaction | 20000, or the model's max output tokens if lower |
+| `tail_turns` | Number of recent user turns (with their responses) kept verbatim during compaction | `2` |
+| `preserve_recent_tokens` | Maximum number of tokens from recent turns kept verbatim after compaction | Based on the model's context size |
+
+`SYMBIOTIC_DISABLE_AUTOCOMPACT=1` and `SYMBIOTIC_DISABLE_PRUNE=1` force `auto` and `prune` to `false`.
 
 ### Watcher
 You can configure file watcher ignore patterns through the `watcher` option.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "watcher": {
     "ignore": ["node_modules/**", "dist/**", ".git/**"]
   }
@@ -270,11 +409,11 @@ You can configure file watcher ignore patterns through the `watcher` option.
 Patterns follow glob syntax. Use this to exclude noisy directories from file watching.
 
 ### MCP servers
-You can configure MCP servers you want to use through the `mcp` option.
+You can configure MCP servers you want to use through the `mcp` option. See [MCP](/code/configuration/mcp) for the full format and the `symbiotic mcp` commands.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {}
 }
 ```
@@ -283,11 +422,11 @@ You can configure MCP servers you want to use through the `mcp` option.
 ### Plugins
 Plugins extend Symbiotic Code with custom tools, hooks, and integrations.
 
-Place plugin files in `.symbiotic/plugins/` or `~/.config/symbiotic/plugins/`. You can also load plugins from npm through the plugin option.
+Place plugin files in `.symbiotic/plugins/` or `~/.config/symbiotic/plugins/`. You can also load plugins from npm through the plugin option. See [Plugins](/code/customize/plugins).
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "plugin": ["@my-org/custom-plugin"]
 }
 ```
@@ -297,27 +436,25 @@ You can configure the instructions for the model you’re using through the `ins
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "instructions": ["CONTRIBUTING.md", "docs/guidelines.md", ".cursor/rules/*.md"]
 }
 ```
 
-This takes an array of paths and glob patterns to instruction files.
+This takes an array of paths, glob patterns, and URLs to instruction files. See [Rules](/code/basics/rules).
 
 ### Disabled providers
 You can disable providers that are loaded automatically through the `disabled_providers` option. This is useful when you want to prevent certain providers from being loaded even if their credentials are available.
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "disabled_providers": ["openai", "gemini"]
 }
 ```
 
 <Info>
-- The `disabled_providers` takes priority over `enabled_providers`.
-
-- The `disabled_providers` option accepts an array of provider IDs. When a provider is disabled:
+The `disabled_providers` option accepts an array of provider IDs. When a provider is disabled:
   - It won’t be loaded even if environment variables are set.
   - It won’t be loaded even if API keys are configured through the `/connect` command.
   - The provider’s models won’t appear in the model selection list.
@@ -328,7 +465,7 @@ You can specify an allowlist of providers through the `enabled_providers` option
 
 ```json symbiotic.json
 {
-  "$schema": "https://symbiotic.ai/config.json",
+  "$schema": "https://config.symbioticsec.ai/config.json",
   "enabled_providers": ["anthropic", "openai"]
 }
 ```
@@ -336,6 +473,44 @@ You can specify an allowlist of providers through the `enabled_providers` option
 This is useful when you want to restrict Symbiotic Code to only use specific providers rather than disabling them one by one.
 
 <Info>
-- The `disabled_providers` takes priority over `enabled_providers`.
-- If a provider appears in both `enabled_providers` and `disabled_providers`, the `disabled_providers` takes priority for backwards compatibility.
+If a provider appears in both `enabled_providers` and `disabled_providers`, `disabled_providers` takes priority.
 </Info>
+
+### Experimental
+The `experimental` object contains options that may change or be removed:
+
+| Option | Description |
+| --- | --- |
+| `batch_tool` | Enable the batch tool |
+| `continue_loop_on_deny` | Continue the agent loop when a tool call is denied |
+| `mcp_timeout` | Timeout in milliseconds for MCP requests |
+| `primary_tools` | Tools that should only be available to primary agents |
+| `disable_paste_summary` | Don't summarize large pasted content |
+| `openTelemetry` | Enable OpenTelemetry spans for AI SDK calls |
+
+## Environment variables
+
+Boolean variables accept `1` or `true`.
+
+| Variable | Description |
+| --- | --- |
+| `SYMBIOTIC_CONFIG` | Path to an additional config file (loaded after the global config) |
+| `SYMBIOTIC_CONFIG_DIR` | Additional config directory (config file, agents, commands, skills, plugins, tools, `AGENTS.md`) |
+| `SYMBIOTIC_CONFIG_CONTENT` | Inline JSON config, applied after all file-based configs |
+| `SYMBIOTIC_TUI_CONFIG` | Path to an additional `tui.json` file |
+| `SYMBIOTIC_DISABLE_PROJECT_CONFIG` | Ignore project config files, `.symbiotic/` directories, and project rule files |
+| `SYMBIOTIC_PERMISSION` | JSON object merged into `permission`, on top of all config sources |
+| `SYMBIOTIC_DISABLE_AUTOUPDATE` | Disable automatic updates |
+| `SYMBIOTIC_DISABLE_AUTOCOMPACT` | Disable automatic compaction |
+| `SYMBIOTIC_DISABLE_PRUNE` | Disable pruning of old tool outputs |
+| `SYMBIOTIC_DISABLE_CLAUDE_CODE` | Disable `~/.claude/CLAUDE.md` and Claude Code skills |
+| `SYMBIOTIC_DISABLE_CLAUDE_CODE_PROMPT` | Disable only `~/.claude/CLAUDE.md` |
+| `SYMBIOTIC_DISABLE_CLAUDE_CODE_SKILLS` | Disable skills from `.claude/` (and `.agents/`) |
+| `SYMBIOTIC_DISABLE_EXTERNAL_SKILLS` | Disable skills from `.claude/` and `.agents/` |
+| `SYMBIOTIC_DISABLE_LSP_DOWNLOAD` | Don't download language servers automatically |
+| `SYMBIOTIC_DISABLE_MODELS_FETCH` | Don't fetch the model catalog from models.dev |
+| `SYMBIOTIC_DISABLE_TERMINAL_TITLE` | Don't update the terminal title |
+| `SYMBIOTIC_PURE` | Skip loading external plugins configured in `plugin` |
+| `SYMBIOTIC_SERVER_PASSWORD` | Enable HTTP basic auth on `symbiotic serve` / `symbiotic web` |
+| `SYMBIOTIC_SERVER_USERNAME` | Basic auth username (default: `symbiotic`) |
+| `SYMBIOTIC_GIT_BASH_PATH` | Windows: path to the Git Bash executable used for shell commands |

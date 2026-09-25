@@ -1,0 +1,230 @@
+---
+title: "Custom commands"
+description: "Create custom commands to automate tasks & actions"
+---
+
+Custom commands let you define reusable prompts that run when you type `/command-name` in the TUI. They support dynamic flow via arguments, shell output, and file references.
+
+## Built-in commands
+
+Symbiotic Code ships with these commands:
+
+| Command | Description |
+| --- | --- |
+| `/init` | Create or update `AGENTS.md` for the project |
+| `/review` | Review changes (commit, branch or PR); defaults to uncommitted changes. Runs as a subtask |
+| `/local-review` | Review the current branch |
+| `/local-review-uncommitted` | Review uncommitted changes |
+| `/scan-codebase` | Scan the codebase for vulnerabilities (optional path); defaults to the entire project |
+| `/owasp-security-review` | OWASP Top 10 review (path, commit, branch or PR); defaults to the whole project. Runs in the background with the `owasp-security-review` subagent |
+| `/generate-guardrails` | Generate security guardrails for the project. See [Security tools](/code/security/security_tools) |
+
+A custom command with the same name as a built-in command replaces it.
+
+## Creating commands
+
+### Markdown files (recommended)
+
+Create `.md` files in one of two directories:
+
+| Scope | Directory |
+| --- | --- |
+| Global | `~/.config/symbiotic/commands/` |
+| Project | `.symbiotic/commands/` |
+
+The file path (without `.md`) becomes the command name. Subfolders are part of the name: `.symbiotic/commands/frontend/component.md` is invoked as `/frontend/component`. The singular folder name `command/` also works.
+
+<Warning>
+Project commands are only available when you launch Symbiotic Code inside that project (from the directory containing `.symbiotic/` or one of its subdirectories).
+</Warning>
+
+#### Example
+
+1. Create a file named `test.md` in `.symbiotic/commands/` with the following content:
+
+```markdown .symbiotic/commands/test.md
+---
+description: Run tests with coverage
+model: anthropic/claude-sonnet-4-5
+---
+
+Run the full test suite with coverage report and show any failures.
+Focus on the failing tests and suggest fixes.
+```
+
+2. Use it in Symbiotic Code TUI:
+
+```
+/test
+```
+
+### JSON config
+
+Alternatively, define commands under the `command` key in `symbiotic.json` (project root), `.symbiotic/symbiotic.json` (project), or `~/.config/symbiotic/symbiotic.json` (global). `.jsonc` variants are also supported. The prompt goes in the required `template` field:
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "command": {
+    "fix": {
+      "template": "Fix all issues in @$ARGUMENTS and explain each change.",
+      "description": "Fix a file"
+    },
+    "review-file": {
+      "template": "Review $1 focusing on $2.\n\nRecent changes:\n!`git diff HEAD~1 HEAD -- $1`",
+      "description": "Review a file with git context"
+    },
+    "test": {
+      "template": "Run the full test suite with coverage report and show any failures.\nFocus on the failing tests and suggest fixes.",
+      "description": "Run tests with coverage",
+      "model": "anthropic/claude-sonnet-4-5"
+    }
+  }
+}
+```
+<Tip>
+Supports `//` single-line comments (`.jsonc` style).
+</Tip>
+
+---
+
+## Frontmatter options
+
+The same fields are available in Markdown frontmatter and in JSON config. Other frontmatter keys (for example Claude Code's `allowed-tools` or `argument-hint`) are ignored.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `description` | string | Short description shown in the command palette |
+| `agent` | string | [Agent](/code/customize/custom_agents) that runs the command. Defaults to the current agent |
+| `model` | string | Model in `provider/model` format, for example `anthropic/claude-sonnet-4-5`. A bare model name fails when the command runs. Defaults to the model of the command's `agent` if it has one, otherwise the current model |
+| `subtask` | boolean | Run the command in a separate subagent session so it doesn't fill your main conversation's context. Commands whose `agent` is a subagent run as subtasks unless you set `subtask: false` |
+| `background` | boolean | When the command runs as a subtask, run it in the background so you can keep working. You're notified when it finishes |
+
+<Warning>
+A field with the wrong type (for example `subtask: "yes"`) prevents the configuration from loading. A file with malformed YAML frontmatter is skipped and an error is shown.
+</Warning>
+
+---
+
+## Template syntax
+
+Use these placeholders in your command templates:
+
+#### `$ARGUMENTS`: full argument string
+
+Pass the entire argument string as a value in the prompt.
+
+**Example:**
+
+```markdown
+---
+description: Fix a file
+---
+
+Fix all issues in $ARGUMENTS and explain each change.
+```
+
+```
+/fix src/core/session.ts
+```
+↪ `$ARGUMENTS` is replaced with `src/core/session.ts` in the prompt.
+
+---
+
+#### `$1`, `$2`, `$3`...: positional arguments
+
+Pass the argument at the specified position as a value in the prompt. Arguments are split on whitespace.
+
+**Example:**
+
+```markdown
+---
+description: Create a component
+---
+
+Create a TUI component named $1 in $2.
+Follow the existing patterns in that directory.
+```
+
+```
+/create-component Sidebar src/cli/tui/components
+```
+
+- `$1` → `Sidebar`
+- `$2` → `src/cli/tui/components`
+
+Arguments also support quoting:
+
+```
+/create-component "My Component" src/cli/tui/components
+```
+
+The highest-numbered placeholder receives all remaining arguments: with `/create-component Sidebar src/components with tests`, `$2` becomes `src/components with tests`. Placeholders without a matching argument are replaced with an empty string.
+
+<Info>
+If a template contains neither `$ARGUMENTS` nor a `$N` placeholder, the arguments you type are appended to the end of the prompt.
+</Info>
+
+---
+
+#### `` !`command` ``: shell output injection
+
+Inject the output of a shell command into the prompt.
+
+```markdown
+---
+description: Review recent git changes
+---
+
+Recent git changes:
+!`git diff HEAD~1 HEAD --stat`
+
+Review these changes and suggest improvements.
+```
+
+The command runs in the current working directory, before the prompt is sent to the model. Its stdout is injected inline into the prompt. A failing shell command doesn't stop the custom command.
+
+<Warning>
+Shell commands in templates run directly on your machine: they don't go through [tool permissions](/code/security/tool_permissions) or the [agents container](/code/security/containers). Arguments are substituted **before** the shell command runs, so a template like `` !`git log $1` `` executes whatever you pass as `$1`. Only use argument placeholders inside shell commands with input you trust.
+</Warning>
+
+---
+
+#### `@path`: file references
+
+Reference a file or directory with `@` followed by its path. It is attached to the prompt.
+
+```markdown
+---
+description: Review a component
+---
+
+Review the component in @src/components/Button.tsx and check for accessibility issues.
+```
+
+Paths are resolved relative to the project root; `~/` refers to your home directory. If no file exists at that path but an agent has that name (for example `@explore`), that agent is invoked as a subagent. References to missing files are ignored.
+
+---
+
+## MCP prompts and skills
+
+Prompts exposed by [MCP servers](/code/configuration/mcp) are also available as commands, named `server:prompt` (characters other than letters, digits, `_` and `-` are replaced with `_`). Prompt arguments map to `$1`, `$2`, and so on, in order.
+
+[Skills](/code/customize/skills) can also be invoked as `/skill-name`, unless a command with that name already exists.
+
+---
+
+## Commands priority
+
+When the same command name exists in multiple sources, the highest-priority source wins:
+
+| Priority | Scope | Source |
+| --- | --- | --- |
+| 1 | Project | Markdown file in `.symbiotic/commands/` |
+| 2 | Project | `.symbiotic/symbiotic.json(c)` |
+| 3 | Global | Markdown file in `~/.config/symbiotic/commands/` |
+| 4 | Project | `symbiotic.json(c)` at the project root |
+| 5 | Global | `~/.config/symbiotic/symbiotic.json(c)` |
+| 6 | — | Built-in commands |
+
+Definitions are merged field by field: if a higher-priority definition omits a field (for example `description`), the value from the lower-priority source is kept. Configuration managed by your organization takes precedence over all of these sources.

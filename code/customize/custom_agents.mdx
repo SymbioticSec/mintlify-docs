@@ -1,0 +1,224 @@
+---
+title: "Custom agents"
+description: "Configure and use specialized agents"
+---
+
+Custom agents are specialized AI assistants that you can configure to **perform specific tasks and workflows.** Each agent can have its own prompt, model and [tool permissions](/code/security/tool_permissions).
+
+Symbiotic Code has [built-in agents](/code/basics/agents) for common tasks, but you can also create your own custom agents or customize the built-in ones.
+
+## Agent types
+
+Each agent has a `mode`:
+
+| Mode | Behavior |
+| --- | --- |
+| `primary` | A main agent you talk to directly. Switch between primary agents with `tab` / `shift+tab` or the `/agents` command |
+| `subagent` | A specialized assistant that primary agents call through the `task` tool for focused tasks. You can also invoke one manually by mentioning it with `@name` in your message |
+| `all` | Both: available as a primary agent and as a subagent. **This is the default for custom agents** |
+
+### Built-in agents
+
+| Agent | Mode | Description |
+| --- | --- | --- |
+| `build` | primary | The default agent. Executes tools based on configured permissions |
+| `plan` | primary | Plan mode. Disallows all edit tools, except plan files |
+| `debug` | primary | Diagnoses and fixes issues with a systematic debugging methodology |
+| `ask` | primary | Answers questions without changing the codebase: it can read, search and browse the web, but not edit files or run shell commands |
+| `general` | subagent | General-purpose agent for research and multi-step tasks, can run several units of work in parallel |
+| `explore` | subagent | Fast agent for exploring codebases: searches and reads code, can't edit files |
+| `triage` | subagent | Triages static analysis findings to separate true and false positives |
+| `owasp-security-review` | subagent | OWASP Top 10 reviewer used by `/owasp-security-review`: investigates code and reports findings, can't edit files |
+
+Symbiotic Code also uses hidden internal agents (`title`, `summary`, `compaction`) for session titles, summaries and context compaction. You can override their `model` or `prompt` like any other agent.
+
+---
+
+## Creating agents
+
+### Markdown files (recommended)
+
+Create a `.md` file in one of these directories:
+
+| Scope | Directory |
+| --- | --- |
+| Global | `~/.config/symbiotic/agents/` |
+| Project | `.symbiotic/agents/` |
+
+The file path (without `.md`) becomes the agent name, and the file body becomes the agent's system prompt. The singular folder name `agent/` also works.
+
+```markdown ~/.config/symbiotic/agents/review.md
+---
+description: Reviews code for quality and best practices
+mode: subagent
+model: anthropic/claude-sonnet-4-5
+temperature: 0.1
+permission:
+  edit: deny
+  bash: deny
+---
+
+You are in code review mode. Focus on:
+
+- Code quality and best practices
+- Potential bugs and edge cases
+- Performance implications
+- Security considerations
+
+Provide constructive feedback without making direct changes.
+```
+
+Here `review.md` creates a `review` subagent that primary agents can delegate to, and that you can invoke with `@review`.
+
+<Warning>
+Invalid frontmatter values (for example `color: blue` or `mode: agent`) prevent Symbiotic Code from loading its configuration. Migrating from Claude Code? See [Migrating](/code/migrating) for how to convert agent files.
+</Warning>
+
+### JSON config
+
+You can also define agents under the `agent` key in `symbiotic.json`, `.symbiotic/symbiotic.json` or `~/.config/symbiotic/symbiotic.json`:
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "agent": {
+    "docs-writer": {
+      "description": "Writes and maintains project documentation",
+      "mode": "primary",
+      "model": "anthropic/claude-sonnet-4-5",
+      "prompt": "{file:./prompts/docs-writer.md}",
+      "permission": {
+        "bash": "deny"
+      }
+    }
+  }
+}
+```
+
+`{file:path}` inserts the content of a file, resolved relative to the config file (`~/` is also supported). `{env:VAR}` inserts an environment variable.
+
+### Generate an agent with the CLI
+
+```bash
+symbiotic agent create
+```
+
+This interactive command asks where to save the agent (current project or global; global only outside a git repository), what it should do, which tools to enable and its mode, then uses the LLM to generate the agent name, description and system prompt. The file is written to `.symbiotic/agent/` or `~/.config/symbiotic/agent/`.
+
+You can also pass everything as options to run it non-interactively:
+
+```bash
+symbiotic agent create --path .symbiotic --description "Reviews SQL migrations" --mode subagent --tools "read,grep,glob"
+```
+
+| Option | Description |
+| --- | --- |
+| `--path` | Directory in which an `agent/` folder is created for the file |
+| `--description` | What the agent should do |
+| `--mode` | `all`, `primary` or `subagent` |
+| `--tools` | Comma-separated list of tools to enable (`bash`, `read`, `write`, `edit`, `list`, `glob`, `grep`, `webfetch`, `task`, `todowrite`, `todoread`). Defaults to all |
+| `--model`, `-m` | Model used to generate the agent, in `provider/model` format |
+
+Use `symbiotic agent list` to list all available agents with their mode and permissions.
+
+---
+
+## Options
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `description` | string | What the agent does and when to use it. Primary agents read it to decide when to call a subagent |
+| `mode` | `primary` \| `subagent` \| `all` | See [Agent types](#agent-types). Default: `all` |
+| `prompt` | string | System prompt (JSON config only; in Markdown files, the file body is the prompt). Replaces the default system prompt |
+| `model` | string | Model in `provider/model` format, for example `anthropic/claude-sonnet-4-5`. Defaults to the current model; subagents default to the model of the agent that calls them |
+| `variant` | string | Default model variant, applied only when the agent uses its configured `model` |
+| `temperature` | number | Sampling temperature |
+| `top_p` | number | Nucleus sampling value |
+| `permission` | object | Tool permissions for this agent, merged over your global [tool permissions](/code/security/tool_permissions) |
+| `security_mode` | `permissive` \| `balanced` \| `strict` | [Security mode](/code/security/security_modes) applied when you switch to this agent |
+| `steps` | integer | Maximum number of agentic iterations before the agent must respond with text only |
+| `color` | string | Color in the UI: a hex code (`"#FF5733"`) or a theme color: `primary`, `secondary`, `accent`, `success`, `warning`, `error`, `info` |
+| `hidden` | boolean | Hide the agent from the `@` autocomplete menu and the agent list. A hidden subagent can still be called by other agents |
+| `disable` | boolean | Remove the agent |
+| `options` | object | Extra options passed to the model provider |
+| `tools` | object | **Deprecated**, use `permission`. Map of tool name to `true`/`false`, converted to `allow`/`deny` |
+| `maxSteps` | integer | **Deprecated**, use `steps` |
+
+Any other key is passed to the model provider as an option, like the keys in `options`.
+
+### Permissions
+
+The `permission` field accepts the same values as the top-level [tool permissions](/code/security/tool_permissions): `allow`, `ask` or `deny` for a tool, or a map of patterns where the last matching rule wins.
+
+```markdown .symbiotic/agents/git-helper.md
+---
+description: Helps with git operations
+mode: primary
+permission:
+  edit: deny
+  bash:
+    "*": ask
+    "git status*": allow
+    "git log*": allow
+    "git diff*": allow
+---
+
+You help the user inspect and manage their git history.
+```
+
+A tool denied with `"*": deny` is not sent to the model at all.
+
+Use the `task` permission to control which subagents an agent can call, by subagent name:
+
+```json symbiotic.json
+{
+  "agent": {
+    "build": {
+      "permission": {
+        "task": {
+          "*": "allow",
+          "general": "deny"
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+## Customize built-in agents
+
+Configure a built-in agent with its name as the key. Only the fields you set are changed:
+
+```json symbiotic.json
+{
+  "agent": {
+    "build": {
+      "model": "anthropic/claude-sonnet-4-5",
+      "security_mode": "strict"
+    },
+    "plan": {
+      "disable": true
+    }
+  }
+}
+```
+
+Set `disable: true` to remove an agent. The same works for custom agents defined in another config file.
+
+### Default agent
+
+`default_agent` sets the primary agent selected on startup and used when none is specified. It must be an existing `primary` or `all` agent that isn't hidden. If it isn't set, `build` is used.
+
+```json symbiotic.json
+{
+  "default_agent": "docs-writer"
+}
+```
+
+---
+
+## Priority
+
+When an agent is defined in multiple places, the definitions are merged field by field, the higher-priority source winning for each field: project Markdown files, then `.symbiotic/symbiotic.json`, then global Markdown files, then the project `symbiotic.json`, then the global `symbiotic.json`. See [Configuration file](/code/basics/configuration_file) for the full load order.

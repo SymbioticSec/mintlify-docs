@@ -30,7 +30,7 @@ You can also use `pnpm install -g @symbioticsec/code`, `yarn global add @symbiot
   npm -v
 ```
 
-If they are not installed, install [them](https://nodejs.org/en/download/) and retry.
+If they are not installed, install [them](https://nodejs.org/en/download/) and retry. See also [Troubleshooting](/code/basics/troubleshooting).
 
 </Accordion>
 
@@ -39,44 +39,54 @@ To launch Symbiotic Code, use the `symbiotic` command in your terminal:
 symbiotic
 ```
 
+You can also pass a project path (`symbiotic path/to/project`), continue your last session with `symbiotic -c`, or pick a model with `symbiotic -m provider/model`. See [Terminal UI](/code/basics/TUI) for a tour of the interface, and [Common commands](/code/basics/common_commands) for all CLI commands.
+
 ### VSCode IDE extension install
-[Download](https://app.symbioticsec.ai/symbiotic-code.vsix) our extension and install it in all VSCode based IDEs.
+[Download](https://app.symbioticsec.ai/symbiotic-code.vsix) our extension and install it in all VSCode based IDEs. See [IDE Extension](/code/basics/IDE_extension).
 
-### Jetbrains IDE support
+### JetBrains IDE support
 
-You can use Symbiotic Code Agent in your Jetbrains IDE thanks to ACP. 
-In the AI Chat window, click on the three dots then on **Add Custom Agent**.
-Then in the agent-servers block, add the following configuration : 
+You can use Symbiotic Code in your JetBrains IDE through [ACP](/code/configuration/acp).
+In the AI Chat window, click the three dots, then **Add Custom Agent**. This opens `~/.jetbrains/acp.json`, where you add Symbiotic Code under `agent_servers`:
 
-```json
-  "Symbiotic": {
-        "default_config_options": {
-          "model": "symbiotic/claude-sonnet-5"
-        },
-        "type": "custom",
-        "command": "symbiotic",
-        "args": [
-          "acp",
-        ]
-      }
+```json acp.json
+{
+  "agent_servers": {
+    "Symbiotic Code": {
+      "command": "symbiotic",
+      "args": ["acp"]
+    }
+  }
+}
 ```
+
+If the IDE can't find the binary, use its absolute path (run `which symbiotic`) as `command`.
 
 ## Authentication
 
 <Info>
-A Symbiotic Security account is required. If you don't have access, contact your administrator or Symbiotic point of contact.
+A Symbiotic Security account is required. Create one for free at [app.symbioticsec.ai](https://app.symbioticsec.ai). If you don't have access, contact your administrator or Symbiotic point of contact.
 </Info>
 
-On first launch, you'll be prompted to enter your personal access token:
+On first launch, Symbiotic Code opens an authentication dialog:
 
 <Steps>
-Click the link in the authentication modal to open the [Symbiotic Portal](https://app.symbioticsec.ai)
-
-Create a new token or copy an existing one from your account settings
-
-Paste the token in the dialog and press `Enter`
-
-Your token is **securely stored** and used for all subsequent operations.
+  <Step title="Sign in in your browser">
+    Your browser opens the [Symbiotic Portal](https://app.symbioticsec.ai) to authorize Symbiotic Code. If it doesn't open, click the link in the dialog (press `c` to copy it).
+  </Step>
+  <Step title="Pick a model">
+    Once authorized, the dialog closes automatically and you can choose one of the Symbiotic models.
+  </Step>
 </Steps>
 
-Symbiotic Code detects whether it was installed with npm, pnpm, yarn, Bun, or the installer and uses the same method when checking for and applying updates.
+<Accordion title="Use an API token instead">
+Run `/connect`, select **Symbiotic**, then **API token**. Open the link shown in the dialog ([app.symbioticsec.ai/settings/api-token](https://app.symbioticsec.ai/settings/api-token)), create or copy a token, paste it and press `Enter`.
+
+For non-interactive environments (CI, containers), you can instead set the `SYMBIOTIC_API_KEY` environment variable.
+</Accordion>
+
+Credentials are stored in `~/.local/share/symbiotic/auth.json`, readable only by your user.
+
+## Updates
+
+Symbiotic Code detects whether it was installed with npm, pnpm, yarn, Bun, or the install script and uses the same method when checking for and applying updates. To update manually, run `symbiotic upgrade` (or `symbiotic upgrade <version>`). Set `"autoupdate": false` (or `"notify"`) in your global [configuration file](/code/basics/configuration_file) (`~/.config/symbiotic/symbiotic.json`) to control automatic updates, or set `SYMBIOTIC_DISABLE_AUTOUPDATE=1`.

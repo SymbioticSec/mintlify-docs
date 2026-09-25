@@ -3,101 +3,110 @@ title: "Settings"
 description: "Configure Symbiotic Code to match your workflow and security requirements"
 ---
 
-Configure Symbiotic Code through `symbiotic.json`/`symbiotic.jsonc`, the TUI, and agent definitions. The exact settings surface depends on the client and version; this page documents the current shared configuration concepts rather than an IDE-only Settings panel.
+The **Settings** panel of the IDE extension is a visual editor for your Symbiotic Code configuration. Most settings are stored in your global config file (`~/.config/symbiotic/symbiotic.json` or `symbiotic.jsonc`), so they also apply to the CLI. See [Configuration file](/code/basics/configuration_file) for the underlying keys and how config files are merged.
+
+Use the **Local Config** and **Global Config** buttons at the top of the panel to open `<workspace>/.symbiotic/symbiotic.json` and `~/.config/symbiotic/symbiotic.json` directly.
+
+<Note>
+Settings saved from the panel go to the global config. A project config or managed config that sets the same key takes precedence, so a change may appear not to apply in that project.
+</Note>
 
 ## Models
 
 Configure which AI models power your development workflow:
 
 ### Default Model
-Set the provider and model used for conversations with the `model` configuration. Symbiotic Code does not hard-code the model names described in this page; available models depend on the configured provider.
+Set the provider and model used for conversations (`model`). Available models depend on the providers you have connected.
 
 ### Small Model
-A lightweight, fast model optimized for quick tasks such as:
+A lightweight, fast model (`small_model`) used for quick tasks such as:
 - Title generation
 - Commit message generation
 - Prompt enhancement
-- Quick inline suggestions
 
-The small model is automatically configured for these tasks to maximize speed without sacrificing quality.
+When not set, Symbiotic Code picks a cheaper model from the same provider as your default model if one is available (for example a Haiku, Flash, or nano model), otherwise it uses the default model.
 
 ### Model per Mode
-Assign specific models to different agent modes for optimized performance:
+Assign specific models to each primary agent (mode). This sets `agent.<name>.model`:
 
 | Mode | Purpose | Default |
 | :--- | :--- | :--- |
 | **Build** | Active development with full tool access | Default Model |
-| **Plan** | Analysis and planning (read-only) | Default Model |
+| **Plan** | Analysis and planning; file edits are disabled | Default Model |
 | **Debug** | Debugging and bug fixing | Default Model |
 | **Ask** | Read-only queries and explanations | Default Model |
 
-This allows you to use specialized models for specific tasks, optimizing both cost and performance.
+Custom primary agents also appear in this list. This allows you to use specialized models for specific tasks, optimizing both cost and performance.
 
 ## Providers
 
 Manage and configure your AI model providers:
 
 ### Symbiotic (Default)
-The default managed provider featuring Symbiotic's curated and optimized models. Authentication is handled through the Symbiotic gateway using your account credentials.
+The default managed provider featuring Symbiotic's curated models, shown with a **Gateway** tag. Use **Sign in** / **Sign out** to authenticate with your Symbiotic account.
 
 ### Connected Providers
 View all third-party providers you've connected to Symbiotic Code:
-- Each provider displays its type (e.g., "API KEY", "CUSTOM")
-- Disconnect any provider with the **Disconnect** button
-- Manage API credentials in **Settings > Provider**
-
-Examples of connected providers:
-- Ollama Cloud
-- OpenAI
-- GitHub Copilot
+- Each provider displays where it comes from: **Environment** (API key found in environment variables), **API key**, **Config** (defined in your config file), or **Custom**
+- Disconnect a provider with the **Disconnect** button. Providers connected through environment variables can't be disconnected from the panel; unset the variable instead
+- Custom providers can be edited in place
 
 ### Popular Providers
 Pre-configured providers ready to connect:
 
-- **Anthropic:** Direct access to Claude models, including Pro and Max variants for advanced reasoning
-- **Google:** Gemini models optimized for fast, structured responses
-- **OpenRouter:** Access all supported models from one unified provider with consistent API
-- **Vercel AI Gateway:** Unified access to AI models with intelligent routing and load balancing
+- **Anthropic:** Direct access to Claude models, including Pro and Max
+- **GitHub Copilot:** Claude models for coding assistance
+- **OpenAI:** GPT models for fast, capable general AI tasks
+- **Google:** Gemini models for fast, structured responses
+- **OpenRouter:** Access all supported models from one provider
+- **Vercel AI Gateway:** Unified access to AI models with smart routing
 
-Connect any provider by clicking **+ Connect** and entering your API credentials.
+Connect any provider by clicking **Connect** and entering your credentials. Use **View all** to browse every supported provider, or add a **Custom provider** (any OpenAI-compatible API, by base URL). See [Models and providers](/code/basics/models_and_providers).
 
 ## Agent Behaviour
 
 Customize how agents behave and operate with multiple configuration tabs:
 
 ### Agents Tab
-View and manage all available agents:
+Choose the **Default Agent** (`default_agent`) and view and manage all available agents.
 
-**Built-in primary agents:**
-- **ask:** Get answers and explanations without making changes to the codebase (read-only)
-- **build:** The default agent with all tools enabled for full development access
+**Built-in primary agents (modes):**
+- **build:** The default agent. Executes tools based on configured permissions
+- **plan:** Plan mode that disallows file edits (except plan files)
 - **debug:** Diagnose and fix software issues with systematic debugging methodology
-- **explore:** Fast agent specialized for exploring codebases and finding files by patterns (subagent)
-- **general:** General-purpose agent for researching complex questions and executing multi-step tasks in parallel (subagent)
-- **plan:** Plan mode that disallows all edit tools and bash commands
-- **triage:** Security engineer specialist for triaging static analysis findings (subagent)
+- **ask:** Get answers and explanations without making changes to the codebase (read-only)
 
-`general`, `explore`, and `triage` are subagents used for research and specialized analysis. They are distinct from the primary agents selected for a conversation.
+**Built-in subagents:**
+- **general:** General-purpose agent for researching complex questions and executing multi-step tasks in parallel
+- **explore:** Fast agent specialized for exploring codebases and finding files by patterns
+- **triage:** Security engineer specialist for triaging static analysis findings
+- **owasp-security-review:** OWASP Top 10 security reviewer that reads code and reports findings to the parent agent
+
+Subagents are invoked by other agents for research and specialized analysis. They are distinct from the primary agents selected for a conversation.
+
+Selecting an agent lets you override its model, prompt, temperature, top P, max steps, and hide or disable it.
 
 **Actions:**
-- **Import:** Import custom agents from local files
-- **Create New Mode:** Define a new custom agent with a unique system prompt
+- **Import:** Import an agent definition from a JSON file
+- **Create New Mode:** Define a new custom agent with a unique name, description, and system prompt
+
+See [Custom agents](/code/customize/custom_agents).
 
 ### MCP Servers Tab
-Configure Model Context Protocol servers to extend agent capabilities.
+View, edit, and remove the Model Context Protocol servers configured in `mcp`, or browse the marketplace. See [MCP](/code/configuration/mcp).
 
 ### Rules Tab
-Define custom rules and constraints for agent behavior.
+Add **Additional Instruction Files** (`instructions`) that are included in the system prompt, and toggle **Load Claude Code Files** to use `~/.claude/CLAUDE.md` and Claude Code skills (off by default in the extension; requires a restart). See [Rules](/code/basics/rules).
 
 ### Workflows Tab
-Create and manage workflow definitions for common development tasks.
+Lists the custom commands defined in your config (`command`). Type `/command-name` in the chat to run one. See [Custom commands](/code/customize/custom_commands).
 
 ### Skills Tab
-Organize and enable/disable available skills that enhance agent functionality.
+View discovered skills, and add extra **Skill Folder Paths** (`skills.paths`) and **Skill URLs** (`skills.urls`). See [Skills](/code/customize/skills).
 
 ## Auto-Approve
 
-Define how tools are allowed to run with the `permission` configuration. Each permission resolves to `allow`, `ask`, or `deny`. Most tools default to `allow`, while external-directory access and environment-file reads require confirmation by default.
+Define how tools are allowed to run with the `permission` configuration. Each permission resolves to `allow`, `ask`, or `deny`. Most tools default to `allow`; external-directory access, `.env` file reads, and repeated identical tool calls (`doom_loop`) ask for confirmation by default. See [Tool permissions](/code/security/tool_permissions).
 
 ### External Directory
 Access files outside the workspace. Triggered when accessing files outside the current project directory.
@@ -106,13 +115,12 @@ Access files outside the workspace. Triggered when accessing files outside the c
 - **+ Add path:** Add specific allowed or restricted paths
 
 ### Bash
-Run terminal commands. Allows execution of shell commands (e.g., git status, npm install).
+Run terminal commands. Allows execution of shell commands (e.g., `git status`).
 
-- **Bash:** Configure command patterns such as `git *`, `npm *`, or `rm *` with explicit rules when needed. Do not assume that every command requires the same approval behavior.
-- **Exceptions:** Define specific commands with custom approval settings:
-  - `grep *` — Set to "Allow" (search is safe by default)
-  - `git push` — Set to "Ask" (requires confirmation)
-  - `rm *` — Set to "Ask" (deletion requires confirmation)
+- **All commands (*):** Default is "Allow"
+- **Exceptions:** Define specific command patterns with their own approval setting, for example:
+  - `git push *` — "Ask" (requires confirmation)
+  - `rm *` — "Ask" (deletion requires confirmation)
 - **+ Add command:** Add additional command-specific rules
 
 ### Read
@@ -120,18 +128,17 @@ Read files. Allows the agent to read file contents matching the specified path.
 
 - **Environment files:** `*.env` and `*.env.*` require confirmation by default; `*.env.example` remains readable.
 
-### Write
-Write files. Allows the agent to create and modify files (automatically managed by agent permissions).
+### Edit
+Modify files. Allows the agent to create or edit files, including patches and multi-file updates. Supports path exceptions like Read.
 
-### Execute
-Execute external processes and integrations.
-
-### Network
-Make network requests and external API calls (managed by agent security level).
+### Other tools
+Set a single level for `glob`, `grep`, `list`, `task` (launch subagents), `skill`, `lsp`, `todoread` / `todowrite`, `websearch` / `codesearch`, `webfetch`, and `doom_loop`.
 
 ## Guardrails
 
-Security modes control the security workflow for the current session:
+The Guardrails tab shows whether **organization** and **repository** guardrails are active for the current project, when they were last fetched, and their content. Guardrails are fetched from Symbiotic and included in every agent session; see [AI Guardrails](/flow/admins/guardrails).
+
+Guardrails are separate from **security modes**, which control the security workflow for the current session and are selected from the chat input:
 
 | Level | Description | Use Case |
 | :--- | :--- | :--- |
@@ -139,16 +146,27 @@ Security modes control the security workflow for the current session:
 | **Balanced** | (Default) Context-aware security with reasonable speed | Daily development, refactoring, general engineering |
 | **Strict** | Maximum security with comprehensive audits | Sensitive codebases, credential management, high-audit environments |
 
-Organization and repository guardrails are separate from security modes. Symbiotic Code fetches active guardrails from the backend and includes them in the prompt when the project starts; see [AI Guardrails](/flow/admins/guardrails).
+See [Security modes](/code/security/security_modes).
 
 ## Commit Message
 
-Configure automatic commit message generation:
-- **Enable/disable automatic generation:** Toggle AI-powered commit messages
-- **Message style preferences:** Choose between conventional commits, free-form, or custom formats
-- **Commit message templates:** Define templates for consistent messaging
-- **Length preferences:** Set minimum and maximum message length
+Commit messages are generated with the small model using a built-in conventional-commits prompt. Enable **Use Custom Prompt** to write your own prompt, stored in `commit_message.prompt`.
+
+<Note>
+In the current version, the custom prompt is saved to your config but commit message generation still uses the built-in prompt.
+</Note>
 
 ## Other configuration
 
-Provider connections, MCP servers, rules, skills, plugins, keybinds, LSP, and server behavior are configured in their dedicated pages. Configuration files are merged by precedence; use the shared schema for editor validation.
+| Tab | What it configures |
+| :--- | :--- |
+| **Browser** | Browser automation through the Playwright MCP server: enable, use your installed Chrome, headless mode |
+| **Checkpoints** | Enable snapshots before file edits so you can restore previous states (`snapshot`) |
+| **Display** | Custom username shown in conversations (`username`) |
+| **Autocomplete** | Inline completions, smart inline task keybinding, chat autocomplete |
+| **Context** | Auto compaction (`compaction.auto`), pruning old tool outputs (`compaction.prune`), file watcher ignore patterns (`watcher.ignore`) |
+| **Experimental** | Formatter and LSP on/off, paste summary, batch tool, continue on deny, MCP timeout, legacy tool toggles |
+| **Language** | UI language ("Auto" follows your VS Code display language) |
+| **About Symbiotic Code** | Server status and version, reset extension settings, export/import settings, telemetry |
+
+Keybinds, themes, plugins, LSP, and server behavior are configured in their dedicated pages: [Keybinds](/code/configuration/keybinds), [Plugins](/code/customize/plugins), [LSP](/code/configuration/lsp).
