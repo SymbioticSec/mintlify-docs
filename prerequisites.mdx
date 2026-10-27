@@ -1,0 +1,104 @@
+---
+title: "Prerequisites"
+description: "Prepare your environment for testing Symbiotic VCS integrations, Symbiotic Flow, and Symbiotic Code"
+---
+
+Use this checklist to prepare your environment before testing Symbiotic VCS integrations, Symbiotic Flow, and Symbiotic Code. Only complete the sections that match what you plan to test.
+
+| I want to test... | Complete these sections |
+| --- | --- |
+| VCS integrations | [Accounts](#accounts) and [VCS testing](#vcs-testing) |
+| Symbiotic Flow (IDE extension) | [Accounts](#accounts), [Shared requirements](#shared-requirements-for-flow-and-code), and [Symbiotic Flow](#symbiotic-flow) |
+| Symbiotic Code (coding agent) | [Accounts](#accounts), [Shared requirements](#shared-requirements-for-flow-and-code), and [Symbiotic Code](#symbiotic-code) |
+
+## Quick environment check
+
+Run the health check script to automatically verify your setup before you start.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/SymbioticSec/mintlify-docs/refs/heads/main/assets/symbiotic-health-check.js | node
+```
+
+The script requires [Node.js](https://nodejs.org/en/download/) to run. It checks:
+
+- Node.js and npm availability (Node.js 14 or higher recommended)
+- Permission to install global npm packages
+- PowerShell execution policy (Windows only)
+- Proxy configuration
+- Access to the npm registry (`registry.npmjs.org:443`)
+- Access to `api.symbioticsec.ai:443` and `llm-proxy.symbioticsec.ai:443`
+
+<Note>
+  The script is designed for the Symbiotic Code installation. It does not check IDE requirements for Symbiotic Flow or VCS account requirements, so review those sections manually.
+</Note>
+
+## Accounts
+
+- [ ] A Symbiotic Security account. Create one at [app.symbioticsec.ai](https://app.symbioticsec.ai), or ask your admin or Symbiotic point of contact for an invitation.
+
+## VCS testing
+
+- [ ] A GitHub organization (a free organization is sufficient).
+- [ ] A GitLab Premium account.
+
+## Shared requirements for Flow and Code
+
+- [ ] A computer running Linux, Windows, or macOS.
+- [ ] Network access allowing downloads and uploads to `*.symbioticsec.ai`.
+
+<Warning>
+  Linux ARM64 is the only unsupported platform for Symbiotic Flow and Symbiotic Code.
+</Warning>
+
+<Accordion title="Behind a firewall, proxy, or TLS inspection?">
+  Ask your network administrator to allow the following endpoints on port 443:
+
+  | Endpoint | Used for |
+  | --- | --- |
+  | `app.symbioticsec.ai` | Browser sign-in and API tokens |
+  | `api.symbioticsec.ai` | Symbiotic API |
+  | `llm-proxy.symbioticsec.ai` | Model access for Symbiotic Code |
+  | `registry.npmjs.org` | Installing Symbiotic Code with npm |
+
+  If TLS inspection is enabled, allowlist `*.symbioticsec.ai` to avoid SSL certificate errors. See [Network and connectivity](/code/basics/troubleshooting#network-and-connectivity) for proxy configuration.
+</Accordion>
+
+## Symbiotic Flow
+
+In addition to the shared requirements:
+
+- [ ] A VS Code-based IDE installed (VS Code, Cursor, Kiro, Antigravity, etc.).
+- [ ] Permission to install the Symbiotic CLI. See [antivirus troubleshooting](/flow/devs/support/common_problems#cli-is-seen-as-a-malware-by-your-antivirus) if your antivirus blocks it.
+- [ ] Permission to install an IDE extension.
+
+## Symbiotic Code
+
+In addition to the shared requirements:
+
+- [ ] Node.js and npm installed. Verify with `node -v` and `npm -v`.
+- [ ] Permission to install a global npm package (`npm install -g @symbioticsec/code`).
+- [ ] A terminal, such as the default terminal, [iTerm](https://iterm2.com), [Warp](https://warp.dev), or an IDE terminal.
+
+<Tip>
+  On Windows, if the install fails in PowerShell, check your execution policy or try Git Bash. See [Installation issues](/code/basics/troubleshooting#installation-issues).
+</Tip>
+
+## Next steps
+
+Once your environment is ready, continue with the installation guide for the product you want to test.
+
+<Columns cols={2}>
+  <Card title="Symbiotic Code" icon="square-terminal" href="/code/get_started">
+    Install the coding agent and authenticate.
+  </Card>
+  <Card title="Symbiotic Flow" icon="search-code" href="/flow/devs/intro/quickstart">
+    Install the IDE extension and start scanning.
+  </Card>
+</Columns>
+
+## Troubleshooting
+
+For setup issues or more information, see:
+
+- [Symbiotic Code - Troubleshooting](/code/basics/troubleshooting)
+- [Symbiotic Flow - Troubleshooting](/flow/devs/support/common_problems)
