@@ -2,7 +2,19 @@
 title: "Keybinds"
 description: "Customize your keybinds."
 ---
-Symbiotic Code supports custom keybinds that you can configure through `tui.json` that can be found in `~/.config/symbiotic/tui.json`. For project-specific keybinds, place `tui.json` in the root of your project.
+Symbiotic Code supports custom keybinds that you configure in the `keybinds` section of `tui.json` (or `tui.jsonc`).
+
+- Global: `~/.config/symbiotic/tui.json`
+- Project: `tui.json` at the root of your project (or any directory between your working directory and the git root), or `.symbiotic/tui.json`
+- Custom path: set the `SYMBIOTIC_TUI_CONFIG` environment variable
+
+Files are merged, with project files overriding global ones. You only need to list the keybinds you want to change.
+
+<Note>
+If you still have `keybinds` in `symbiotic.json`, they are moved automatically to a `tui.json` next to it on startup (a `.tui-migration.bak` backup is kept).
+</Note>
+
+The defaults are:
 
 ```json title="tui.json"
 {
@@ -22,15 +34,30 @@ Symbiotic Code supports custom keybinds that you can configure through `tui.json
     "session_list": "<leader>l",
     "session_timeline": "<leader>g",
     "session_fork": "none",
-    "session_rename": "none",
+    "session_rename": "ctrl+r",
+    "session_delete": "ctrl+d",
+    "session_pin_toggle": "ctrl+f",
+    "session_quick_switch_1": "<leader>1",
+    "session_quick_switch_2": "<leader>2",
+    "session_quick_switch_3": "<leader>3",
+    "session_quick_switch_4": "<leader>4",
+    "session_quick_switch_5": "<leader>5",
+    "session_quick_switch_6": "<leader>6",
+    "session_quick_switch_7": "<leader>7",
+    "session_quick_switch_8": "<leader>8",
+    "session_quick_switch_9": "<leader>9",
     "session_share": "none",
     "session_unshare": "none",
     "session_interrupt": "escape",
+    "session_subagent_interrupt": "ctrl+shift+y",
     "session_compact": "<leader>c",
     "session_child_first": "<leader>down",
     "session_child_cycle": "right",
     "session_child_cycle_reverse": "left",
     "session_parent": "up",
+    "session_background": "ctrl+y",
+    "session_subagent_list": "ctrl+o",
+    "stash_delete": "ctrl+d",
     "messages_page_up": "pageup,ctrl+alt+b",
     "messages_page_down": "pagedown,ctrl+alt+f",
     "messages_line_up": "ctrl+alt+y",
@@ -51,7 +78,10 @@ Symbiotic Code supports custom keybinds that you can configure through `tui.json
     "model_cycle_recent_reverse": "shift+f2",
     "model_cycle_favorite": "none",
     "model_cycle_favorite_reverse": "none",
+    "model_provider_list": "ctrl+a",
+    "model_favorite_toggle": "ctrl+f",
     "variant_cycle": "ctrl+t",
+    "security_mode_cycle": "ctrl+s",
     "command_list": "ctrl+p",
     "agent_list": "<leader>a",
     "agent_cycle": "tab",
@@ -85,8 +115,8 @@ Symbiotic Code supports custom keybinds that you can configure through `tui.json
     "input_delete_to_line_start": "ctrl+u",
     "input_backspace": "backspace,shift+backspace",
     "input_delete": "ctrl+d,delete,shift+delete",
-    "input_undo": "ctrl+-,super+z",
-    "input_redo": "ctrl+.,super+shift+z",
+    "input_undo": "ctrl+-,super+z,ctrl+z",
+    "input_redo": "ctrl+.,super+shift+z,ctrl+shift+z",
     "input_word_forward": "alt+f,alt+right,ctrl+right",
     "input_word_backward": "alt+b,alt+left,ctrl+left",
     "input_select_word_forward": "alt+shift+f,alt+shift+right",
@@ -95,7 +125,7 @@ Symbiotic Code supports custom keybinds that you can configure through `tui.json
     "input_delete_word_backward": "ctrl+w,ctrl+backspace,alt+backspace",
     "history_previous": "up",
     "history_next": "down",
-    "terminal_suspend": "ctrl+z",
+    "terminal_suspend": "ctrl+esc",
     "terminal_title_toggle": "none",
     "tips_toggle": "<leader>h",
     "display_thinking": "none"
@@ -109,9 +139,23 @@ Symbiotic Code supports custom keybinds that you can configure through `tui.json
 
 Symbiotic Code uses a `leader` key for most keybinds. This avoids conflicts in your terminal.
 
-By default, `ctrl+x` is the leader key and most actions require you to first press the leader key and then the shortcut. For example, to start a new session you first press `ctrl+x` and then press `n`.
+By default, `ctrl+x` is the leader key and most actions require you to first press the leader key and then the shortcut. For example, to start a new session you first press `ctrl+x` and then press `n`. The leader key stays active for 2 seconds.
 
 You don't need to use a leader key for your keybinds but we recommend doing so.
+
+---
+
+## Keybind syntax
+
+- Combine modifiers and a key with `+`, for example `ctrl+shift+a`. Supported modifiers are `ctrl`, `alt` (also `meta` or `option`), `shift`, and `super`.
+- Use `<leader>` to reference the leader key, for example `<leader>n`.
+- Separate alternative bindings with commas, for example `"pageup,ctrl+alt+b"`.
+
+Some keybinds only apply inside a specific dialog: `session_delete` and `session_pin_toggle` in the session list, `stash_delete` in the stash dialog, and `model_provider_list` and `model_favorite_toggle` in the model list. That's why they can share keys with other actions.
+
+<Warning>
+Keybind names are validated. If `tui.json` contains an unknown keybind name, the whole file is ignored and a warning is written to the log.
+</Warning>
 
 ---
 

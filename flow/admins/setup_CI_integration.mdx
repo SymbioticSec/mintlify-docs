@@ -176,6 +176,12 @@ If you are not using Github you can still use our cli in your pipelines :
 
 You can configure what makes the CI fail using our [configuration file](/flow/devs/actions/configure_detection).
 
+```yaml Minimal configuration for CI
+# SYMBIOTIC SECURITY CONFIGURATION FILE
+blocking: 
+  severity_threshold: low
+```
+
 <Info>
   If there is no configuration file in the repository or if this configuration file has no blocking property, the CI will pass by default.
 </Info>

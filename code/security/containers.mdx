@@ -1,0 +1,106 @@
+---
+title: "Agents container"
+description: "Run the agent's shell commands in secure, isolated Docker Sandboxes"
+---
+
+Symbiotic Code integrates with **Docker Sandboxes (sbx)** to run the agent's shell commands in an isolated environment. When the sandbox is enabled, every command run by the `bash` tool executes inside a lightweight microVM instead of directly on your machine, so the agent can run tests and scripts without access to the rest of your system.
+
+## Why use Agent Sandboxing?
+
+When AI agents run directly on a host machine, their shell commands have access to the user's files, SSH keys, shell history, environment variables, and local network. With the Agents container enabled:
+
+- **Isolated runtime:** Shell commands run inside a microVM with its own Linux kernel, filesystem and network. Only your project folder is shared with it.
+- **Workspace boundary:** File tools (`read`, `write`, `edit`, `glob`, `grep`, `apply_patch`) are blocked from accessing files outside your project folder.
+- **Network control:** Outbound connections from the sandbox follow a [network policy](#network-policies).
+- **Destructive command blocking:** Commands like `rm` or `git reset --hard` are blocked before they run.
+
+<Info>
+Only `bash` tool commands run inside the sandbox. File tools, [MCP servers](/code/configuration/mcp), [custom tools](/code/customize/custom_tools), [plugins](/code/customize/plugins) and `` !`command` `` placeholders in [custom commands](/code/customize/custom_commands) still run on your machine, and changes to your project folder are real changes. Keep using [tool permissions](/code/security/tool_permissions) alongside the sandbox.
+</Info>
+
+---
+
+## Requirements
+
+1. **sbx CLI:** The standalone Docker Sandboxes CLI (version 0.26.0 or later). Docker Desktop is not required: sbx runs its own daemon. If sbx is missing, Symbiotic Code offers to install it for you with `brew install docker/tap/sbx` on macOS or `winget install Docker.sbx` on Windows. On Linux, [install it manually](https://www.docker.com/products/docker-sandboxes/).
+2. **Docker account:** sbx requires you to sign in with a Docker account. If you aren't signed in, Symbiotic Code offers to run `sbx login`, which opens a browser to authenticate.
+
+---
+
+## Setup & Activation
+
+Agent sandboxing can be configured at two levels:
+
+- **Organization level:** Administrators define a security policy in the Symbiotic Security platform. They can force a setting (it shows as **Locked by org**) or restrict the values you can choose.
+- **Local level:** Developers change the settings that aren't locked with the `/agents-security` command. Local preferences are stored in `~/.local/share/symbiotic/user-prefs.json`.
+
+The sandbox starts in the background when Symbiotic Code launches. The first sandbox creation can take a while: you see a "Waiting for sbx to start..." notification if the agent runs a command before it's ready. A sandbox is reused for the same project across sessions.
+
+<Warning>
+If sbx can't start (not installed, not signed in, daemon unavailable), shell commands are **blocked** rather than run on your machine, unless **Fallback to host** is enabled. If you decline the install or sign-in suggestion and your organization doesn't make the sandbox mandatory, commands run on your machine instead and you aren't asked again until the policy changes.
+</Warning>
+
+---
+
+## Security Parameters
+
+These parameters can be set with the `/agents-security` command, or enforced by the organization policy:
+
+| Setting | Default | Description |
+| :--- | :--- | :--- |
+| Agents sandbox | Depends on your organization's policy | Enable or disable the sandbox |
+| Fallback to host | Off | Run shell commands on your machine when the sandbox is unavailable, instead of blocking them |
+| Worktree isolation | On | Run the sandbox on a dedicated git branch, see [Worktree isolation](#worktree-isolation) |
+| Block destructive commands | On | Block destructive commands, see [Command guardrails](#command-guardrails) |
+| Network policy | `allow-all` | See [Network policies](#network-policies) |
+
+### Network policies
+Control what outbound connections shell commands can make from inside the sandbox:
+
+| Policy | Description |
+| :--- | :--- |
+| `allow-all` | *(Default)* Outgoing network access is allowed, except for blocked hosts and IP ranges. |
+| `balanced` | *(Recommended)* sbx's curated preset: AI services, package registries, GitHub and cloud APIs are allowed; internal IP ranges and risky ports are denied. |
+| `deny-all` | All outgoing network access is blocked, except for allowed hosts and IP ranges. |
+
+By default, private and link-local IP ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16`) are blocked, and `api.github.com` and `registry.npmjs.org` are allowed. Admins can add organization-wide **allowlists** and **blocklists** of hosts and IP ranges (e.g., to prevent data exfiltration to unauthorized endpoints). A blocked host takes precedence over an allowed one. Shell commands that explicitly target a host blocked by your organization (for example `curl https://blocked.example.com`) are refused before they run.
+
+<Note>
+Network policies are global to sbx on your machine: Symbiotic Code resets and reapplies them each time it starts a sandbox, which overwrites policies you set manually with `sbx policy`. If the policy can't be applied, the sandbox is not used and shell commands are blocked.
+</Note>
+
+### Command guardrails
+Prevent the execution of destructive or unsafe commands.
+
+- **Destructive command blocking:** When enabled, Symbiotic Code blocks these commands before they run: `rm`, `rmdir`, `unlink`, `shred`, `truncate`, `mkfs`, `dd … of=`, `chmod 777`, `git reset --hard`, `git clean -f`, `git checkout .` and redirections to block devices. The agent is told to use a safer alternative or ask you to run the command yourself. This check also applies when commands fall back to running on your machine.
+- **Organization blocklist:** Admins can block specific programs by name (for example `curl` or `ssh`). The agent is told the command is restricted by your organization.
+
+### Worktree isolation
+Worktree isolation keeps the agent's changes off your current branch.
+
+- **How it works:** In a git repository, the sandbox is created on a new branch named after your current branch (`<branch>-agent1`, `<branch>-agent2`, …), using a git worktree stored in a `.sbx/` folder of your project. Add `.sbx/` to your `.gitignore`.
+- **Reviewing work:** Inspect the agent's branch with regular git commands, then run `/sandbox-merge` to merge it into the branch it was created from.
+- If the project isn't a git repository, or if your sbx version doesn't support branches, the project folder is mounted directly and the agent works on your current branch.
+
+---
+
+## Sandbox commands
+
+| Command | Description |
+| :--- | :--- |
+| `/agents-security` | View and change the sandbox settings |
+| `/sandbox-list` (or `/sandbox`) | List the sandbox sessions of the project and resume, merge or delete them |
+| `/sandbox-status` | Show how many sandboxes are running or stopped for the project |
+| `/sandbox-cp` | Copy a file between your machine and the running sandbox |
+| `/sandbox-secret` | List, add or remove API keys stored by sbx (for example for `github`, `openai` or `anthropic`), globally or for the running sandbox |
+| `/sandbox-pick` | Resume a stopped sandbox session |
+| `/sandbox-merge` | Merge a sandbox branch into the branch it was created from |
+| `/sandbox-delete` | Delete a sandbox session, including its worktree and branch |
+
+`/sandbox-pick`, `/sandbox-merge` and `/sandbox-delete` are only available when worktree isolation is on. Stopped sandboxes are never deleted automatically, so that you don't lose the agent's branch: use `/sandbox-delete` to clean them up.
+
+---
+
+## Technical Details
+
+For more details on how the underlying sandboxing technology operates, refer to the [Official Docker Sandboxes Documentation](https://docs.docker.com/ai/sandboxes/).

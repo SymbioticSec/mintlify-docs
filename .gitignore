@@ -4,3 +4,5 @@
 
 # Symbiotic Security - Security Rules (auto-generated)
 .agent/rules/symbiotic_security_rules.md
+
+.DS_Store

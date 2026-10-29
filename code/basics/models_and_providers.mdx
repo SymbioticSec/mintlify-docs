@@ -5,16 +5,86 @@ description: "Choose your models and providers"
 
 ## Models 
 
-By default you have access to Symbiotic's models. You can list and switch between them using the `/models` command. To use a different model, you can add or connect another provider using the `/connect` command.
+By default you have access to Symbiotic's models through the **Symbiotic** provider. List and switch between models with the `/models` command (or press `Ctrl+X` then `M`). To use a different model, add or connect another provider with the `/connect` command.
+
+In the `/models` dialog, press `Ctrl+F` to mark a model as a favorite and `Ctrl+A` to open the provider list. Press `F2` / `Shift+F2` to cycle through recently used models, and `Ctrl+T` to cycle through the model's variants (for example reasoning effort levels), when available.
+
+Models are identified as `provider/model`, for example `anthropic/claude-sonnet-4-5`. To list the available model IDs, run:
+
+```bash
+symbiotic models            # all models
+symbiotic models anthropic  # models from one provider
+```
+
+### Set a default model
+
+Set `model` in your [configuration file](/code/basics/configuration_file). You can also set `small_model`, used for lightweight tasks like title generation. When `small_model` is not set, a cheaper model from the same provider is picked automatically.
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "model": "anthropic/claude-sonnet-4-5",
+  "small_model": "anthropic/claude-haiku-4-5"
+}
+```
+
+When starting, Symbiotic Code picks the model in this order:
+
+1. The `--model` / `-m` flag, e.g. `symbiotic -m anthropic/claude-sonnet-4-5`
+2. The `model` key in your configuration
+3. The default model of the Symbiotic provider (or of the first available provider)
+4. Your most recently used model
+
+The model you pick in `/models` applies to the current agent. You can also assign a model to a specific agent with its `model` option. See [Custom agents](/code/customize/custom_agents).
 
 ## Providers 
 
 Symbiotic Code **supports 75+ LLM providers and it supports running local models**.
 
-To add a provider you only need to add the API keys from the provider of your choice using the `/connect` command. 
+To add a provider, run the `/connect` command and enter the API key (or sign in) for the provider of your choice. You can also do it from the command line:
+
+```bash
+symbiotic providers login   # add credentials (alias: symbiotic auth login)
+symbiotic providers list    # list stored credentials and environment variables
+symbiotic providers logout  # remove credentials
+```
+
+Credentials are stored in `~/.local/share/symbiotic/auth.json`. Providers are also enabled automatically when their API key environment variable is set (for example `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`).
 
 **Most popular providers are preloaded by default.** If you’ve added the credentials for a provider through the `/connect` command, they’ll be available when you start Symbiotic Code.
 
+### Restrict providers
+
+Use `enabled_providers` to allow only specific providers, or `disabled_providers` to hide providers that would otherwise be loaded automatically:
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "enabled_providers": ["symbiotic", "anthropic"],
+  "disabled_providers": ["openai"]
+}
+```
+
+### Configure a provider
+
+Each entry under `provider` can set `options` (such as `apiKey`, `baseURL`, `timeout`, `chunkTimeout`, and `setCacheKey`), and restrict its models with `whitelist` or `blacklist`:
+
+```json symbiotic.json
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "provider": {
+    "anthropic": {
+      "options": {
+        "apiKey": "{env:MY_ANTHROPIC_KEY}",
+        "timeout": 600000
+      },
+      "whitelist": ["claude-sonnet-4-5", "claude-haiku-4-5"]
+    }
+  }
+}
+```
+
+`{env:VAR}` and `{file:path}` are replaced with the value of an environment variable or the content of a file. See [Provider options](/code/basics/configuration_file#provider-options) for details.
 
 ### Create a custom provider
 If you want to use a local model or a model hosted in your own infrastructure, you can create a custom provider by **adding a "provider" section to your symbiotic.json configuration file**.
@@ -25,7 +95,7 @@ If you want to use a local model or a model hosted in your own infrastructure, y
   "provider": {
     "myprovider": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "My AI ProviderDisplay Name",
+      "name": "My AI Provider Display Name",
       "options": {
         "baseURL": "https://api.myprovider.com/v1"
       },
@@ -37,5 +107,10 @@ If you want to use a local model or a model hosted in your own infrastructure, y
     }
   }
 }
-
 ```
+
+- `npm`: the AI SDK package used to talk to the provider. Use `@ai-sdk/openai-compatible` for any OpenAI-compatible API (Ollama, LM Studio, vLLM, llama.cpp…).
+- `options.baseURL`: the API endpoint, for example `http://localhost:11434/v1` for a local Ollama server.
+- `models`: the models to expose. The key is the model ID sent to the API.
+
+The model is then available as `myprovider/my-model-name`. If the provider requires an API key, set `options.apiKey` or store it with `symbiotic providers login` (select **Other** and enter `myprovider` as the provider ID).

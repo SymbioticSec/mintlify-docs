@@ -49,14 +49,16 @@ There are multiple ways to provide more context to your prompts and get better r
 
 ## Agents
 
-Symbiotic Code has 4 agents. Switch between them with `Tab` or the `/agents` command.
+Symbiotic Code has 4 primary agents. Cycle between them with `Tab` (`Shift+Tab` to go back) or pick one with the `/agents` command.
 
 | Agent | What it does | When to use it |
 |---|---|---|
-| **Build** | Full access — files, shell, all tools | Default for development work |
-| **Plan** | Read-only analysis; asks before any write or shell command | Exploring a codebase or planning a feature or refactor |
-| **Ask** | Read-only agent for getting answers and explanations | Understanding code or learning about patterns |
-| **Debug** | Specialized agent for diagnosing and fixing bugs | Investigating unexpected behavior or tracking down errors |
+| **Build** | Default agent. Uses all tools according to your [permissions](/code/security/tool_permissions) | Default for development work |
+| **Plan** | Planning mode: file edits are denied (except plan files in `.symbiotic/plans/`) and the agent is instructed to stay read-only | Exploring a codebase or planning a feature or refactor |
+| **Ask** | Read-only: can read, search and browse the web, but cannot edit files or run shell commands | Understanding code or learning about patterns |
+| **Debug** | Evidence-based debugging: instruments code, reproduces the bug, and fixes only with runtime proof | Investigating unexpected behavior or tracking down errors |
+
+Primary agents can also delegate work to built-in subagents (`general`, `explore`, `triage`, `owasp-security-review`). You can call one yourself with `@`, for example `@explore where is the auth middleware?`.
 
 <Tip>
   Start in **Plan** agent when working in an unfamiliar codebase, and then switch to **Build** once you have a clear plan.
@@ -68,19 +70,22 @@ Symbiotic Code has 4 agents. Switch between them with `Tab` or the `/agents` com
 
 ## Command palette
 
-Press `Ctrl+P` or type `/` to open the command palette.
+Press `Ctrl+P` to open the command palette, or type `/` in the prompt to autocomplete slash commands.
 
 | Command | What it does |
 |---|---|
 | `/new` | Start a fresh session |
 | `/agents` | Switch between agents |
 | `/models` | Change the active model |
-| `/mcp` | Enable or disable MCP servers |
-| `/skills` | Load a skill into the current session |
-| `/review` | Launch a subagent to review your code |
+| `/security-mode` | Switch between permissive, balanced and strict [security modes](/code/security/security_modes) |
+| `/mcps` | Enable or disable MCP servers |
+| `/skills` | Pick a skill to invoke |
+| `/review` | Review uncommitted changes (or a commit, branch or PR) in a subtask |
 | `/sessions` | Switch between saved sessions |
 
-[Full command reference](/code/basics/common_commands)
+Start a message with `!` to run it as a shell command directly, without going through the model.
+
+[Full command reference](/code/basics/common_commands) · [Terminal UI guide](/code/basics/TUI)
 
 ---
 
@@ -93,9 +98,11 @@ Skills are reusable instruction sets that the agent loads on demand. You install
     Place your skill in one of these locations:
 
     ```
-    ~/.agents/skills/<skill-name>/SKILL.md      ← available everywhere
-    .agents/skills/<skill-name>/SKILL.md        ← this project only
+    .symbiotic/skills/<skill-name>/SKILL.md            ← this project only
+    ~/.config/symbiotic/skills/<skill-name>/SKILL.md   ← available everywhere
     ```
+
+    `.agents/skills/` and `.claude/skills/` (in the project or your home directory) are also discovered.
 
     Each `SKILL.md` starts with YAML frontmatter:
 
@@ -114,7 +121,7 @@ Skills are reusable instruction sets that the agent loads on demand. You install
 
   </Step>
   <Step title="Use it in a session">
-    Type `/skills` in the command palette to load available skills, or simply reference it in your prompt:
+    Type `/skills` to pick a skill, or invoke it directly with `/<skill-name>`. The agent can also load it on its own when relevant, or you can reference it in your prompt:
 
     ```
     Use the git-release skill to prepare the v2.1.0 release notes.
@@ -123,7 +130,7 @@ Skills are reusable instruction sets that the agent loads on demand. You install
   </Step>
 </Steps>
 
-[Learn more about skills](/code/configuration/skills)
+[Learn more about skills](/code/customize/skills)
 
 ---
 
@@ -134,6 +141,10 @@ MCPs allow Symbiotic Code to connect to external data sources (e.g. local files,
 <Warning>
   Each MCP server adds to the context window. Keep only what you actively use to avoid performance and security overhead.
 </Warning>
+
+<Tip>
+  You can also run `symbiotic mcp add` to add a server interactively.
+</Tip>
 
 <Steps>
   <Step title="Add it to your config file">
@@ -154,7 +165,7 @@ MCPs allow Symbiotic Code to connect to external data sources (e.g. local files,
 
   </Step>
   <Step title="Restart Symbiotic Code">
-    Relaunch Symbiotic Code. Use `/mcp` to confirm the server is connected and enabled.
+    Relaunch Symbiotic Code. Use `/mcps` to confirm the server is connected and enabled, or `/status` to see its connection status.
   </Step>
   <Step title="Reference it in your prompt">
     Call out the MCP by its config name:
@@ -196,9 +207,9 @@ Add the package name to your config file:
 }
 ```
 
-npm plugins are installed automatically via Bun on next launch.
+npm plugins are installed automatically on next launch. You can also run `symbiotic plugin <module>` (add `-g` for the global config) to install a plugin and add it to your config in one step.
 
-[Full plugin documentation](/code/configuration/plugins)
+[Full plugin documentation](/code/customize/plugins)
 
 ---
 
@@ -211,10 +222,10 @@ npm plugins are installed automatically via Bun on next launch.
   <Card title="MCP Servers" icon="plug" href="/code/configuration/mcp">
     Full reference for local and remote MCP configuration.
   </Card>
-  <Card title="Skills" icon="graduation-cap" href="/code/configuration/skills">
+  <Card title="Skills" icon="graduation-cap" href="/code/customize/skills">
     Write and distribute reusable agent instruction sets.
   </Card>
-  <Card title="Plugins" icon="puzzle" href="/code/configuration/plugins">
+  <Card title="Plugins" icon="puzzle" href="/code/customize/plugins">
     Extend Symbiotic Code with hooks and custom behavior.
   </Card>
   <Card title="Agents" icon="layers" href="/code/basics/agents">

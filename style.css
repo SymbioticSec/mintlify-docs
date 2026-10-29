@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Instrument+Sans:wdth,wght@85,400..700&display=swap');
+
 /* Peix-Symbio custom font for the homepage title */
 @font-face {
   font-family: "Peix-Symbio";
@@ -7,10 +9,18 @@
   font-display: swap;
 }
 
+/* Instrument Sans SemiCondensed for the homepage title only */
 .homepage-title {
-  font-family: "Peix-Symbio", sans-serif !important;
+  font-family: 'Instrument Sans', sans-serif !important;
+  font-stretch: 85% !important;
 }
 
+/* IBM Plex Mono as the monospace font */
+code, kbd, samp, pre,
+[class*="language-"],
+[class*="code"] {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace !important;
+}
 /* Custom tab icons: override Mintlify's inline mask-image with our SVGs.
    !important is required to beat the inline style attribute. */
 a.nav-tabs-item[href="/code/get_started"] svg {
@@ -20,9 +30,16 @@ a.nav-tabs-item[href="/code/get_started"] svg {
   -webkit-mask-size: 100% !important;
 }
 
-a.nav-tabs-item[href^="/flow"] svg {
+a.nav-tabs-item[href^="/flow/devs"] svg {
   -webkit-mask-image: url("/images/icons/symbiotic-flow.svg") !important;
   mask-image: url("/images/icons/symbiotic-flow.svg") !important;
+  mask-size: 100% !important;
+  -webkit-mask-size: 100% !important;
+}
+
+a.nav-tabs-item[href^="/flow/admins"] svg {
+  -webkit-mask-image: url("/images/icons/privacy.svg") !important;
+  mask-image: url("/images/icons/privacy.svg") !important;
   mask-size: 100% !important;
   -webkit-mask-size: 100% !important;
 }
@@ -33,34 +50,45 @@ html.dark [data-theme-icon] {
   filter: invert(1);
 }
 
-/* Remove active tab highlight on the homepage.
-   data-page-mode="custom" is set on <html> only on the homepage,
-   making it a safe ancestor scope for the nav tab override. */
-html[data-page-mode="custom"] .nav-tabs-item[data-active] {
-  color: rgb(var(--gray-800)) !important;
+/* Tab states: resting / hover / active */
+
+/* Resting: 80% opacity */
+a.nav-tabs-item {
+  opacity: 0.8 !important;
+  transition: opacity 0.15s ease !important;
+}
+
+/* Hover on inactive tab: bump to 100% */
+a.nav-tabs-item:not([data-active]):hover {
+  opacity: 1 !important;
+}
+
+/* Active tab: 100% opacity, pink text */
+a.nav-tabs-item[data-active] {
+  opacity: 1 !important;
+  color: #C45D97 !important;
   text-shadow: none !important;
 }
 
-html[data-page-mode="custom"] .nav-tabs-item[data-active]:hover {
-  color: rgb(var(--gray-800)) !important;
+/* Active tab icon: tint to pink via CSS color (works with mask-image) */
+a.nav-tabs-item[data-active] svg {
+  background-color: #C45D97 !important;
 }
 
-html.dark[data-page-mode="custom"] .nav-tabs-item[data-active] {
-  color: rgb(var(--gray-200)) !important;
+/* Active tab on hover: no change (already full opacity, already pink) */
+a.nav-tabs-item[data-active]:hover {
+  opacity: 1 !important;
+  color: #C45D97 !important;
 }
 
-html.dark[data-page-mode="custom"] .nav-tabs-item[data-active]:hover {
-  color: rgb(var(--gray-300)) !important;
+/* Active tab pill/underline: let Mintlify render it naturally */
+
+/* Remove active tab highlight on the homepage.
+   The homepage has no active tab concept so suppress pink bleed. */
+html[data-page-mode="custom"] a.nav-tabs-item[data-active] {
+  color: inherit !important;
 }
 
-html[data-page-mode="custom"] .nav-tabs-item[data-active] > div:last-child {
-  background-color: transparent !important;
-}
-
-html[data-page-mode="custom"] .nav-tabs-item[data-active]:hover > div:last-child {
-  background-color: rgb(var(--gray-200)) !important;
-}
-
-html.dark[data-page-mode="custom"] .nav-tabs-item[data-active]:hover > div:last-child {
-  background-color: rgb(var(--gray-700)) !important;
+html[data-page-mode="custom"] a.nav-tabs-item[data-active] svg {
+  background-color: currentColor !important;
 }

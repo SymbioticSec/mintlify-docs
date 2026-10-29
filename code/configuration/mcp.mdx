@@ -11,11 +11,48 @@ When you use an MCP server, it adds to the context. This can quickly add up if y
 
 ---
 
-## Enable
+## Add a server from the CLI
+
+The quickest way to add a server is the interactive `mcp add` command:
+
+```bash
+symbiotic mcp add
+```
+
+It asks for:
+
+1. **Location**: the current project (`symbiotic.json` at the repository root) or global (`~/.config/symbiotic/symbiotic.json`). Inside a non-git directory, the server is always added globally.
+2. **Name** of the server.
+3. **Type**: `Local` (a command to run) or `Remote` (a URL).
+4. For local servers, the **command** to run, for example `npx -y @modelcontextprotocol/server-everything`.
+5. For remote servers, the **URL**, and whether the server uses **OAuth** (with an optional pre-registered client ID and secret).
+
+The entry is written to the chosen config file, keeping any existing comments and formatting. To add environment variables, headers, or a timeout, edit the entry afterwards.
+
+<Info>
+The command is split on spaces, so arguments that contain spaces must be edited in the config file afterwards.
+</Info>
+
+### All `mcp` commands
+
+| Command | Description |
+|---|---|
+| `symbiotic mcp add` | Add a local or remote MCP server interactively |
+| `symbiotic mcp list` (or `ls`) | List configured servers with their connection status |
+| `symbiotic mcp auth [name]` | Authenticate with an OAuth server. Without a name, pick from a list |
+| `symbiotic mcp auth list` | List OAuth-capable servers and their authentication status |
+| `symbiotic mcp logout [name]` | Remove the stored OAuth credentials of a server |
+| `symbiotic mcp debug <name>` | Diagnose the connection and OAuth flow of a remote server |
+
+In the TUI, use `/mcps` to see your servers and press `Space` to enable or disable one for the current session.
+
+---
+
+## Configure
 
 You can define MCP servers in your [configuration file](/code/basics/configuration_file) under `mcp`. Add each MCP with a unique name. You can refer to that MCP by name when prompting the LLM.
 
-```jsonc title="symbiotic.jsonc" {6}
+```jsonc symbiotic.jsonc
 {
   "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
@@ -32,11 +69,17 @@ You can define MCP servers in your [configuration file](/code/basics/configurati
 
 You can also disable a server by setting `enabled` to `false`. This is useful if you want to temporarily disable a server without removing it from your config.
 
+<Warning>
+MCP entries are validated strictly. Unknown fields such as `args`, `env`, or `cwd` (used by other tools) make the whole config file invalid. See [Migrating](/code/migrating#6-mcp-servers) to convert configs from Claude Code, Codex, Cursor, or VS Code.
+</Warning>
+
+---
+
 ## Local
 
 Add local MCP servers by setting `type` to `"local"` within the MCP object.
 
-```jsonc title="symbiotic.jsonc" {15}
+```jsonc symbiotic.jsonc
 {
   "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
@@ -53,11 +96,11 @@ Add local MCP servers by setting `type` to `"local"` within the MCP object.
 }
 ```
 
-The command is how the local MCP server is started. You can also pass in a list of environment variables as well.
+`command` is an array holding the executable and each of its arguments. The server is started in the current project directory and inherits your shell environment; `environment` adds or overrides variables.
 
 For example, here's how you can add the test [`@modelcontextprotocol/server-everything`](https://www.npmjs.com/package/@modelcontextprotocol/server-everything) MCP server.
 
-```jsonc title="symbiotic.jsonc"
+```jsonc symbiotic.jsonc
 {
   "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
@@ -71,15 +114,11 @@ For example, here's how you can add the test [`@modelcontextprotocol/server-ever
 
 And to use it I can add `use the mcp_everything tool` to my prompts.
 
-```txt "mcp_everything"
+```txt
 use the mcp_everything tool to add the number 3 and 4
 ```
 
----
-
 #### Options
-
-Here are all the options for configuring a local MCP server.
 
 | Option        | Type    | Required | Description                                                                         |
 | ------------- | ------- | -------- | ----------------------------------------------------------------------------------- |
@@ -87,24 +126,24 @@ Here are all the options for configuring a local MCP server.
 | `command`     | Array   | Yes      | Command and arguments to run the MCP server.                                        |
 | `environment` | Object  |          | Environment variables to set when running the server.                               |
 | `enabled`     | Boolean |          | Enable or disable the MCP server on startup.                                        |
-| `timeout`     | Number  |          | Timeout in ms for fetching tools from the MCP server. Defaults to 5000 (5 seconds). |
+| `timeout`     | Number  |          | Timeout in ms for connecting to the server and for tool calls. See [Timeouts](#timeouts). |
 
 ---
 
 ## Remote
 
-Add remote MCP servers by setting `type` to `"remote"`.
+Add remote MCP servers by setting `type` to `"remote"`. Symbiotic Code connects with Streamable HTTP and falls back to SSE automatically, so the same config works for both transports.
 
-```json title="symbiotic.json"
+```json symbiotic.json
 {
   "$schema": "https://config.symbioticsec.ai/config.json",
   "mcp": {
     "my-remote-mcp": {
       "type": "remote",
-      "url": "https://my-mcp-server.com",
+      "url": "https://my-mcp-server.com/mcp",
       "enabled": true,
       "headers": {
-        "Authorization": "Bearer MY_API_KEY"
+        "Authorization": "Bearer {env:MY_API_KEY}"
       }
     }
   }
@@ -113,8 +152,6 @@ Add remote MCP servers by setting `type` to `"remote"`.
 
 The `url` is the URL of the remote MCP server and with the `headers` option you can pass in a list of headers.
 
----
-
 #### Options
 
 | Option    | Type    | Required | Description                                                                         |
@@ -122,6 +159,157 @@ The `url` is the URL of the remote MCP server and with the `headers` option you 
 | `type`    | String  | Yes      | Type of MCP server connection, must be `"remote"`.                                  |
 | `url`     | String  | Yes      | URL of the remote MCP server.                                                       |
 | `enabled` | Boolean |          | Enable or disable the MCP server on startup.                                        |
-| `headers` | Object  |          | Headers to send with the request.                                                   |
-| `oauth`   | Object  |          | OAuth authentication configuration.          |
-| `timeout` | Number  |          | Timeout in ms for fetching tools from the MCP server. Defaults to 5000 (5 seconds). |
+| `headers` | Object  |          | Headers to send with each request.                                                  |
+| `oauth`   | Object or `false` |  | OAuth configuration, see [OAuth](#oauth). Set to `false` to disable OAuth detection. |
+| `timeout` | Number  |          | Timeout in ms for connecting to the server and for tool calls. See [Timeouts](#timeouts). |
+
+---
+
+## Keep secrets out of your config
+
+Don't write API keys directly in `symbiotic.json`, especially in a project config that is committed. Use variable substitution instead:
+
+| Syntax | Replaced with |
+|---|---|
+| `{env:VAR_NAME}` | The value of the environment variable, or an empty string if it isn't set |
+| `{file:path/to/file}` | The contents of the file. Relative paths are resolved from the config file's directory, and `~/` from your home directory |
+
+```json symbiotic.json
+{
+  "mcp": {
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
+      }
+    },
+    "my-db": {
+      "type": "local",
+      "command": ["npx", "-y", "my-db-mcp"],
+      "environment": {
+        "DB_PASSWORD": "{file:~/.secrets/db-password}"
+      }
+    }
+  }
+}
+```
+
+---
+
+## OAuth
+
+Symbiotic Code handles OAuth for remote servers automatically. When a server responds with `401 Unauthorized`, the server shows **needs authentication** and you can start the flow:
+
+```bash
+symbiotic mcp auth my-remote-mcp
+```
+
+A browser window opens so you can sign in. If it can't be opened, the URL is printed so you can open it manually. The redirect is received on `http://127.0.0.1:19876/mcp/oauth/callback`.
+
+By default, Symbiotic Code uses [dynamic client registration](https://datatracker.ietf.org/doc/html/rfc7591). If the server requires a pre-registered application, provide its credentials:
+
+```json symbiotic.json
+{
+  "mcp": {
+    "my-remote-mcp": {
+      "type": "remote",
+      "url": "https://my-mcp-server.com/mcp",
+      "oauth": {
+        "clientId": "{env:MY_CLIENT_ID}",
+        "clientSecret": "{env:MY_CLIENT_SECRET}",
+        "scope": "read write"
+      }
+    }
+  }
+}
+```
+
+| Option | Description |
+|---|---|
+| `clientId` | OAuth client ID. If omitted, dynamic client registration is attempted. |
+| `clientSecret` | OAuth client secret, if the authorization server requires one. |
+| `scope` | Scopes to request during authorization. |
+
+For servers that authenticate with an API key in a header, set `"oauth": false` so no OAuth flow is attempted.
+
+Tokens are stored in `~/.local/share/symbiotic/mcp-auth.json`, readable only by your user, and refreshed automatically. Use `symbiotic mcp logout <name>` to remove them, and `symbiotic mcp debug <name>` to troubleshoot a failing flow.
+
+---
+
+## Timeouts
+
+`timeout` applies both to connecting to the server and to each tool call. It defaults to 30 seconds for connecting. To set a default for all servers, use `experimental.mcp_timeout`:
+
+```json symbiotic.json
+{
+  "experimental": {
+    "mcp_timeout": 60000
+  },
+  "mcp": {
+    "slow-server": {
+      "type": "local",
+      "command": ["npx", "-y", "slow-mcp"],
+      "timeout": 120000
+    }
+  }
+}
+```
+
+Long-running tool calls that report progress don't time out while they keep sending progress updates.
+
+---
+
+## Security scanning
+
+Before connecting to a new server, Symbiotic Code scans it for risky prompts, tools, and resources. If the scan finds a vulnerability, the server is **blocked** and shows as blocked in `symbiotic mcp list` and `/mcps`. Scan results are cached, so a server is only scanned again when its config changes.
+
+Your organization can also allow or deny specific MCP servers from the Symbiotic Portal. Servers denied by your organization show as **blocked by organizational policy**.
+
+---
+
+## Use MCP tools, prompts, and resources
+
+- **Tools** are named `<server>_<tool>`, for example `mcp_everything_add`. Characters other than letters, digits, `_`, and `-` are replaced with `_`.
+- **Prompts** exposed by a server appear as slash commands named `/<server>:<prompt>`. Prompt arguments map to `$1`, `$2`, and so on.
+- **Resources** exposed by a server can be attached to a message with `@`, like files.
+
+### Control access with permissions
+
+MCP tools follow [tool permissions](/code/security/tool_permissions), using the tool name as the permission key. Wildcards let you target a whole server:
+
+```json symbiotic.json
+{
+  "permission": {
+    "mcp_everything_*": "ask",
+    "github_delete_*": "deny"
+  }
+}
+```
+
+A tool denied with `"deny"` is removed from the list of tools sent to the model. You can also do this per agent, for example to only give one [agent](/code/customize/custom_agents) access to a server:
+
+```json symbiotic.json
+{
+  "permission": {
+    "github_*": "deny"
+  },
+  "agent": {
+    "reviewer": {
+      "permission": {
+        "github_*": "allow"
+      }
+    }
+  }
+}
+```
+
+---
+
+## Troubleshooting
+
+- Run `symbiotic mcp list` to see the status of every server. `failed` entries include the error returned by the server.
+- For local servers, run the `command` yourself in a terminal to check that it starts.
+- For remote servers, run `symbiotic mcp debug <name>` to check connectivity and the OAuth configuration.
+- If the whole config fails to load, check for unsupported fields in your `mcp` entries.

@@ -1,0 +1,129 @@
+---
+title: "Plugins"
+description: "Add plugins to Symbiotic Code"
+---
+
+Plugins allow you to extend Symbiotic Code by hooking into various events and customizing behavior. You can create plugins to **add new features, integrate with external services, or modify Symbiotic Code's default behavior.**
+
+---
+
+## Use plugins
+
+There are two ways to load plugins:
+
+### 1. From local files
+
+Place JavaScript or TypeScript files in the plugin directory.
+
+- `.symbiotic/plugins/` (or `.symbiotic/plugin/`) - Project-level plugins
+- `~/.config/symbiotic/plugins/` (or `~/.config/symbiotic/plugin/`) - Global plugins
+
+`.ts` and `.js` files directly in these directories are automatically loaded at startup (subdirectories aren't scanned).
+
+---
+
+### 2. From npm or a path
+
+Specify npm packages or local paths in the `plugin` array of your config file. Relative paths are resolved from the config file that declares them. To pass options to a plugin, use a `[specifier, options]` tuple; the options are passed as the second argument of the plugin function.
+
+```json title="symbiotic.json"
+{
+  "$schema": "https://config.symbioticsec.ai/config.json",
+  "plugin": [
+    "@my-org/custom-plugin",
+    "some-plugin@1.2.0",
+    "./plugins/local-plugin.ts",
+    ["@my-org/configurable-plugin", { "level": "strict" }]
+  ]
+}
+```
+
+Both regular and scoped npm packages are supported. Without a version, the latest version is used.
+
+<Info>
+  You can install an npm plugin and add it to your config with `symbiotic plugin <module>` (alias `symbiotic plug`). By default it's added to `.symbiotic/` in your project; use `--global` (`-g`) to add it to `~/.config/symbiotic/` instead, and `--force` (`-f`) to replace an existing version.
+</Info>
+
+---
+
+### How plugins are installed
+
+- **npm plugins** are installed automatically using Bun at startup, with install scripts disabled. Packages and their dependencies are cached in `~/.cache/symbiotic/node_modules/`. If a package declares `engines.symbiotic` in its `package.json` and the running version doesn't match, the plugin is skipped.
+- **Local plugins** are loaded directly from the plugin directory. To use external packages, add a `package.json` with your dependencies to the config directory (`.symbiotic/` or `~/.config/symbiotic/`); Symbiotic Code runs `bun install --ignore-scripts` there at startup. You can also publish the plugin to npm and [add it to your config](/code/basics/configuration_file#plugins).
+
+---
+
+### Load order
+
+Plugins are loaded from all sources and all hooks run in sequence. The load order is:
+
+1. Global config (`~/.config/symbiotic/symbiotic.json`)
+2. Project config (`symbiotic.json`)
+3. Global plugin directory (`~/.config/symbiotic/plugins/`)
+4. Project plugin directory (`.symbiotic/plugins/`)
+
+If the same npm package is listed more than once, it's loaded once, and the last occurrence (highest priority) wins, whatever its version. Local files are deduplicated by path, so a local plugin and an npm plugin with similar names are both loaded.
+
+Set `SYMBIOTIC_PURE=1` to skip all external plugins.
+
+---
+
+### Organization policy
+
+Plugins aren't security-scanned, but your organization can allow or deny specific plugins from the Symbiotic Portal. A plugin blocked by organizational policy is loaded but its hooks and tools are discarded.
+
+---
+
+## Create a plugin
+
+A plugin is a **JavaScript/TypeScript module** that exports one or more plugin functions. Each function receives a context object and returns a hooks object.
+
+```ts title=".symbiotic/plugins/example.ts"
+import type { Plugin } from "@symbioticsec/plugin"
+
+export const MyPlugin: Plugin = async ({ project, client, $, directory, worktree }, options) => {
+  return {
+    "tool.execute.before": async (input, output) => {
+      if (input.tool === "read" && output.args.filePath.includes(".env")) {
+        throw new Error("Do not read .env files")
+      }
+    },
+  }
+}
+```
+
+The plugin function receives:
+
+- `project`: The current project information.
+- `directory`: The current working directory.
+- `worktree`: The git worktree path.
+- `client`: A Symbiotic Code SDK client connected to the local server.
+- `serverUrl`: The URL of the local server.
+- `$`: Bun's [shell API](https://bun.com/docs/runtime/shell) for executing commands.
+
+Types come from the `@symbioticsec/plugin` package, which is installed automatically in your config directories.
+
+### Hooks
+
+| Hook | When it runs |
+| --- | --- |
+| `event` | For every event published on the bus (for example `session.idle`, `session.error`, `message.updated`, `permission.asked`, `file.edited`, `todo.updated`) |
+| `config` | Once at startup, with the resolved config |
+| `tool` | Registers custom tools (use the `tool()` helper from `@symbioticsec/plugin`) |
+| `auth`, `provider` | Adds authentication methods or models for a provider |
+| `chat.message` | When a new user message is received |
+| `chat.params`, `chat.headers` | Before calling the model, to change parameters or HTTP headers |
+| `chat.complete` | When a model completion finishes, with token usage and cost |
+| `command.execute.before` | Before a slash command runs |
+| `tool.execute.before`, `tool.execute.after` | Before and after each tool call; throw in `before` to block the call |
+| `tool.definition` | To change a tool's description or parameters sent to the model |
+| `shell.env` | To inject environment variables into shell commands |
+| `session.start`, `session.stop` | When a session starts, resumes, or is compacted, and when an assistant turn ends |
+| `experimental.chat.messages.transform`, `experimental.chat.system.transform` | To transform messages or the system prompt before they are sent |
+| `experimental.session.compacting`, `experimental.compaction.autocontinue` | To customize compaction |
+| `experimental.text.complete` | When a text part finishes |
+
+### Some interesting plugins
+
+- `btw-opencode`: Replicates the `/btw` command of Claude Code that allows you to ask questions while the agent is working.
+- `@symbioticsec/rtk-plugin`: Rewrites bash commands using the rtk CLI for token optimization.
