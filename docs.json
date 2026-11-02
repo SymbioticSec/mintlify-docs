@@ -34,7 +34,7 @@
     },
     "tabs": [
       {
-        "tab": "Code",
+        "tab": "Symbiotic Code",
         "icon": "square-terminal",
         "pages": [
           "code/get_started",
@@ -85,7 +85,7 @@
         ]
       },
       {
-        "tab": "Flow",
+        "tab": "Symbiotic Flow",
         "icon": "search-code",
         "groups": [
               {
