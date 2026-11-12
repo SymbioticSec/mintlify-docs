@@ -70,6 +70,7 @@
               "code/security/security_modes",
               "code/security/security_tools",
               "code/security/containers",
+              "code/security/pentest_command",
               "code/security/tool_permissions"
             ]
           },
